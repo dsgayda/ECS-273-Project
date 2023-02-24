@@ -5,3 +5,4 @@ policy_database.xlsx
 .ipynb_checkpoints/gun_violence_preprocess-checkpoint.ipynb
 gunviolence.pickle
 *.csv
+*.xlsx
