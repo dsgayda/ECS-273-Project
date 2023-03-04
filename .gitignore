@@ -43,3 +43,8 @@ instance/
 
 # Ignore .DS_Store files (macOS)
 .DS_Store
+
+# Ignore data files
+*.csv
+*.xlsx
+*.pickle
