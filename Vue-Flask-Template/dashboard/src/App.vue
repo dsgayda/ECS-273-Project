@@ -28,7 +28,7 @@ export default {
           <v-col cols="6">
 
             <!-- Top-left box -->
-            <v-row no-gutters style="height: 50%; padding-right: 5px; padding-bottom: 5px;">
+            <v-row no-gutters style="height: calc(50% + 3vh); padding-right: 5px; padding-bottom: 5px;">
               <v-col cols="12" style="background-color: #FFD700; padding: 10px;">
                 Top-left box
                 <PolicyScatterplot></PolicyScatterplot>
@@ -36,7 +36,7 @@ export default {
             </v-row>
 
             <!-- Bottom-left box -->
-            <v-row no-gutters style="height: 50%; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;">
+            <v-row no-gutters style="height: calc(50% - 3vh); padding-right: 5px; padding-top: 5px; padding-bottom: 5px;">
 
               <!-- Left column of bottom-left box -->
               <v-col cols="8" style="height: 100%; padding: 0px;">
@@ -90,7 +90,7 @@ export default {
             <!-- Top-right box -->
             <v-row no-gutters style="height: 50%; padding-left: 5px; padding-bottom: 5px;">
               <!-- Left column of top-right box -->
-              <v-col cols="8" style="background-color: #00FA9A; height: 100%; padding-left: 5px; padding: 10px;">
+              <v-col cols="8" style="background-color: #00FA9A; height: calc(100% - 3vh); padding-left: 5px; padding: 10px;">
                 <v-row no-gutters>
                   <v-col cols="12">
                     Left column of top-right box
@@ -99,7 +99,7 @@ export default {
               </v-col>
 
               <!-- Right column of top-right box -->
-              <v-col cols="4" style="background-color: #DC143C; height: 100%; padding: 10px; overflow-y: auto;">
+              <v-col cols="4" style="background-color: #DC143C; height: calc(100% - 3vh); padding: 10px; overflow-y: auto;">
                 <v-row no-gutters>
                   <v-col cols="12">
                     Right column of top-right box
@@ -114,7 +114,7 @@ export default {
             </v-row>
 
             <!-- Bottom-right box -->
-            <v-row no-gutters style="height: 50%; padding-left: 5px; padding-top: 5px;">
+            <v-row no-gutters style="height: calc(50% + 3vh - 5px); padding-left: 5px; padding-top: 5px; margin-top: -3vh;">
               <v-col cols="12" style="background-color: #FFA07A; padding: 10px;">
                 Bottom-right box
               </v-col>
