@@ -40,31 +40,36 @@ def preprocessGunViolenceData():
     df.reset_index(inplace=True)
 
     # parsing data for keywords
+
     suicide = [False] * len(df)
     mass_shooting = [False] * len(df)
     gang = [False] * len(df)
     wounded = [False] * len(df)
     dead = [False] * len(df)
+    non_suicide = [False] * len(df)
 
     for i in range(len(df.incident_characteristics)):
         if pd.isna(df.incident_characteristics.iloc[i]) == False:
             if "mass shooting" in df.incident_characteristics[i].lower():
                 mass_shooting[i] = True
-            if "suicide" in df.incident_characteristics[i].lower():
+            if "Suicide" in df.incident_characteristics[i]:
                 suicide[i] = True
             if "gang involvement" in df.incident_characteristics[i].lower():
                 gang[i] = True
-            if "dead" in df.incident_characteristics[i].lower():
+            if "Dead" in df.incident_characteristics[i]:
                 dead[i] = True
-            if "wounded" in df.incident_characteristics[i].lower():
+            if "Wounded" in df.incident_characteristics[i]:
                 wounded[i] = True
+            if "Suicide^" not in df.incident_characteristics[i] and "Suicide - Attempt" not in df.incident_characteristics[i]:
+                non_suicide[i] = True
+                
                 
     df["suicide"] = suicide
     df["mass shooting"] = mass_shooting
     df["gang"] = gang
     df["wounded"] = wounded
     df["dead"] = dead
-
+    df["non-suicide"] = non_suicide
     df.to_pickle("../server/data/gunViolenceData.pickle")
 
 
@@ -97,6 +102,35 @@ def preprocessPolicyMetadata():
     metadata_df = metadata_df[metadata_df.year < 2021]
 
     metadata_df.to_pickle('../server/data/policyMetadata.pickle', index=False)
+
+def preprocessGunViolenceMetadata():
+    gun_violence_data_filepath = '../server/data/gunViolenceData.pickle'
+    population_data_filepath = '../server/data/populationData.xlsx'
+
+    if not os.path.exists(os.getcwd() + gun_violence_data_filepath):
+        preprocessGunViolenceData()
+    
+    # create gun violence metadata
+    gun_violence_data = pd.read_pickle(gun_violence_data_filepath)
+    all_incidents = gun_violence_data[['year', 'state']].groupby(['state', 'year']).size()
+    all_incidents.name = 'all incidents'
+    gun_violence_metadata = gun_violence_data[['year', 'state', 'suicide', 'mass shooting', 'gang', 'non-suicide']].groupby(['state', 'year']).sum().astype(int)
+    gun_violence_metadata = gun_violence_metadata.join(all_incidents)
+
+    # load and preprocess population data
+    population_data = pd.read_excel(population_data_filepath)
+    population_data.rename(columns={'July 1': 2020}, inplace=True)
+    population_data.dropna(inplace=True)
+    population_data['state'] = population_data['Unnamed: 0'].str.replace('[^\w\s]','')
+    population_data = pd.melt(population_data, id_vars=['state'], value_vars=[2014, 2015, 2016, 2017, 2018, 2019, 2020])
+    population_data.rename(columns={'variable': 'year', 'value':'population'}, inplace=True)
+
+    # get metadata per capita instead of total counts
+    gun_violence_metadata['population'] = list(gun_violence_metadata.merge(population_data, on=['year', 'state'], how='left')['population'])
+    gun_violence_metadata = gun_violence_metadata.div(gun_violence_metadata['population'], axis=0).drop(columns=['population'])
+
+    # store data
+    gun_violence_metadata.to_pickle('../server/data/gunViolenceMetadata.pickle')   
 
 
 def processPolicyScatterplot(num_clusters: int = 3, method: str = 'PCA'):
@@ -134,7 +168,7 @@ def processPolicyScatterplot(num_clusters: int = 3, method: str = 'PCA'):
 
 
 def processGroupedBarChart(cluster_labels: list):
-    if not os.path.exists(os.getcwd() +'../server/data/gunViolenceData.pickle'):
-        preprocessGunViolenceData()
+    if not os.path.exists(os.getcwd() +'../server/data/gunViolenceMetadata.pickle'):
+        preprocessGunViolenceMetadata()
     
 
