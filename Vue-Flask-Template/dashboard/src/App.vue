@@ -31,7 +31,6 @@ export default {
             <v-row no-gutters style="height: calc(50% + 3vh); padding-right: 5px; padding-bottom: 5px;">
               <v-col cols="12" style="background-color: #FFD700; padding: 10px;">
                 Top-left box
-                <PolicyScatterplot></PolicyScatterplot>
               </v-col>
             </v-row>
 
@@ -91,11 +90,8 @@ export default {
             <v-row no-gutters style="height: 50%; padding-left: 5px; padding-bottom: 5px;">
               <!-- Left column of top-right box -->
               <v-col cols="8" style="background-color: #00FA9A; height: calc(100% - 3vh); padding-left: 5px; padding: 10px;">
-                <v-row no-gutters>
-                  <v-col cols="12">
-                    Left column of top-right box
-                  </v-col>
-                </v-row>
+                Left column of top-right box
+                <PolicyScatterplot></PolicyScatterplot>
               </v-col>
 
               <!-- Right column of top-right box -->
