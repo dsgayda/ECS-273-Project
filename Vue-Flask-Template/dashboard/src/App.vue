@@ -62,7 +62,7 @@ export default {
           </v-col>
 
           <!-- Right column of bottom-left box -->
-          <v-col cols="4" style="background-color: #7B68EE; height: 100%; padding: 10px; overflow: auto;">
+          <v-col cols="4" style="background-color: #7B68EE; height: 100%; padding: 10px; overflow-y: auto;">
             <v-row no-gutters>
               <v-col cols="12">
                 Right column of bottom-left box
