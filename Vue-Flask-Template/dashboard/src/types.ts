@@ -15,3 +15,9 @@ export interface Point {
     readonly posX: number;
     readonly posY: number;
 }
+
+
+export interface PolicyPoint {
+    readonly dimension1: number;
+    readonly dimension2: number;
+}
