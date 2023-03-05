@@ -62,10 +62,11 @@ export default {
           </v-col>
 
           <!-- Right column of bottom-left box -->
-          <v-col cols="4" style="background-color: #7B68EE; height: 100%; padding: 10px;">
+          <v-col cols="4" style="background-color: #7B68EE; height: 100%; padding: 10px; overflow: auto;">
             <v-row no-gutters>
               <v-col cols="12">
                 Right column of bottom-left box
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at sagittis justo. Aliquam blandit nibh non dolor placerat viverra. Aenean euismod erat quis sem elementum pharetra. Donec molestie a nulla ut bibendum. Proin sit amet aliquet eros, ut pretium lorem. Fusce id ipsum at ante elementum pulvinar. In hac habitasse platea dictumst. Duis accumsan elit enim, vel pharetra magna finibus quis. Maecenas vel volutpat libero. Donec ultrices lorem quis nisl gravida, sed scelerisque enim euismod.
               </v-col>
             </v-row>
           </v-col>
@@ -89,10 +90,11 @@ export default {
           </v-col>
 
           <!-- Right column of top-right box -->
-          <v-col cols="4" style="background-color: #DC143C; height: 100%; padding: 10px;">
+          <v-col cols="4" style="background-color: #DC143C; height: 100%; padding: 10px; overflow-y: auto;">
             <v-row no-gutters>
               <v-col cols="12">
                 Right column of top-right box
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at sagittis justo. Aliquam blandit nibh non dolor placerat viverra. Aenean euismod erat quis sem elementum pharetra. Donec molestie a nulla ut bibendum. Proin sit amet aliquet eros, ut pretium lorem. Fusce id ipsum at ante elementum pulvinar. In hac habitasse platea dictumst. Duis accumsan elit enim, vel pharetra magna finibus quis. Maecenas vel volutpat libero. Donec ultrices lorem quis nisl gravida, sed scelerisque enim euismod.
               </v-col>
             </v-row>
           </v-col>

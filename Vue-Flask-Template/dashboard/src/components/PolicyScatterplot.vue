@@ -117,7 +117,7 @@ export default {
                 .attr('dy', '0.5rem') // relative distance from the indicated coordinates.
                 .style('text-anchor', 'middle')
                 .style('font-weight', 'bold')
-                .text('Wine Dataset PCA Projection') // text content
+                .text('Policy PCA Projection') // text content
         },
     },
     watch: {
