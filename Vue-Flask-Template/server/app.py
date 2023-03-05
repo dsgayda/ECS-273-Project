@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
-from controller import processExample, processPolicyScatterPlot
+from controller import processExample, processPolicyScatterplot
 
 app = Flask(__name__)
 CORS(app)
@@ -28,8 +28,8 @@ def fetchExample():
 @app.route("/fetchPolicyScatterplot", methods=["GET", "POST"])
 @cross_origin()
 def fetchPolicyScatterplot():
-    points = processPolicyScatterPlot()
-    resp = jsonify(data=points)
+    points, cluster_names = processPolicyScatterplot()
+    resp = jsonify(data=points, clusters=cluster_names)
     return resp
 
 

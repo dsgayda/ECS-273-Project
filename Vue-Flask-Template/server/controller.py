@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-
+import os
 from sklearn.cluster import KMeans
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
@@ -30,7 +30,76 @@ def processExample(method: str = 'PCA') -> tuple[list[dict], list[int]]:
     return points.to_dict(orient='records'), list(target_names)
 
 
-def processPolicyScatterPlot(num_clusters: int = 3, method: str = 'PCA'):
+def preprocessGunViolenceData():
+    gun_violence_data_filepath = "../server/data/gunViolenceData.csv"
+
+    df = pd.read_csv(gun_violence_data_filepath)
+    df['year'] = pd.DatetimeIndex(df['date']).year
+    df = df[df.state != 'District of Columbia']
+    df = df[df.year > 2013]
+    df.reset_index(inplace=True)
+
+    # parsing data for keywords
+    suicide = [False] * len(df)
+    mass_shooting = [False] * len(df)
+    gang = [False] * len(df)
+    wounded = [False] * len(df)
+    dead = [False] * len(df)
+
+    for i in range(len(df.incident_characteristics)):
+        if pd.isna(df.incident_characteristics.iloc[i]) == False:
+            if "mass shooting" in df.incident_characteristics[i].lower():
+                mass_shooting[i] = True
+            if "suicide" in df.incident_characteristics[i].lower():
+                suicide[i] = True
+            if "gang involvement" in df.incident_characteristics[i].lower():
+                gang[i] = True
+            if "dead" in df.incident_characteristics[i].lower():
+                dead[i] = True
+            if "wounded" in df.incident_characteristics[i].lower():
+                wounded[i] = True
+                
+    df["suicide"] = suicide
+    df["mass shooting"] = mass_shooting
+    df["gang"] = gang
+    df["wounded"] = wounded
+    df["dead"] = dead
+
+    df.to_pickle("../server/data/gunViolenceData.pickle")
+
+
+def preprocessPolicyMetadata():
+    policy_data_filepath = "../server/data/policyDatabase.xlsx"
+    policy_codebook_filepath = "../server/data/policyCodebook.xlsx"
+
+    policies = pd.read_excel(policy_data_filepath)
+    codebook = pd.read_excel(policy_codebook_filepath)
+
+    sub_categories = {}
+    for category in set(codebook['Sub-Category']):
+        sub_categories[category] = list(codebook[codebook['Sub-Category'] == category]['Variable Name'])
+
+    metadata = {'year':[], 'state':[], 'category':[], 'sub_category':[], 'policies_implemented':[]}
+    for i in range(len(policies)):
+        for j, (sub_category, variables) in enumerate(sub_categories.items()):
+            metadata['year'].append(policies.year[i])
+            metadata['state'].append(policies.state[i])
+            metadata['category'].append(codebook[codebook['Sub-Category'] == sub_category].Category.iloc[0])
+            metadata['sub_category'].append(sub_category)
+            policies_implemented = 0
+            for variable in variables:
+                policies_implemented += policies[variable][i]
+            metadata['policies_implemented'].append(policies_implemented)
+
+    metadata_df = pd.DataFrame(metadata)
+    metadata_df.sort_values(['year', 'state', 'category'], inplace=True)
+    metadata_df = metadata_df[metadata_df.year > 2013]
+    metadata_df = metadata_df[metadata_df.year < 2021]
+
+    metadata_df.to_pickle('../server/data/policyMetadata.pickle', index=False)
+
+
+def processPolicyScatterplot(num_clusters: int = 3, method: str = 'PCA'):
     # load data
     data_filepath = "../server/data/policyDatabase.xlsx"
     df = pd.read_excel(data_filepath)
@@ -57,7 +126,15 @@ def processPolicyScatterPlot(num_clusters: int = 3, method: str = 'PCA'):
     df_embeddings["dimension1"] = data_embedded[:, 0]
     df_embeddings["dimension2"] = data_embedded[:, 1]
 
-    return df_embeddings.to_dict(orient='records')
+    cluster_names = []
+    for i in range(num_clusters):
+        cluster_names.append(f'cluster {i + 1}')
+
+    return df_embeddings.to_dict(orient='records'), list(cluster_names)
 
 
+def processGroupedBarChart(cluster_labels: list):
+    if not os.path.exists(os.getcwd() +'../server/data/gunViolenceData.pickle'):
+        preprocessGunViolenceData()
+    
 
