@@ -131,40 +131,48 @@ def preprocessPolicyMetadata():
     metadata_df = metadata_df[metadata_df.year > 2013]
     metadata_df = metadata_df[metadata_df.year < 2019]
 
-    metadata_df.to_pickle('../server/data/policyMetadata.pickle', index=False)  
+    metadata_df.to_pickle('../server/data/policyMetadata.pickle')  
 
 
 def processPolicyScatterplot(num_clusters: int = 3, method: str = 'PCA'):
-    # load data
-    data_filepath = "../server/data/policyDatabase.xlsx"
-    df = pd.read_excel(data_filepath)
-    df = df[(df.year > 2013) & (df.year < 2019)]
-    X = df.drop(columns=['state', 'year', 'lawtotal'])
-
-    # cluster data
-    clusterer = KMeans(n_clusters=num_clusters, init='k-means++')
-    predictions = clusterer.fit_predict(X)
-
-    if method == 'PCA':
-        pca = PCA(n_components=2)
-        data_embedded = pca.fit_transform(X)
-
-    elif method == 't-SNE':
-        tsne = TSNE(n_components=2, verbose=1)
-        data_embedded = tsne.fit_transform(X)
-    else:
-        raise ValueError("Requested a method that is not supported")
-    
-    df_embeddings = pd.DataFrame()
-    df_embeddings['cluster'] = predictions
-    df_embeddings['state'] = list(df['state'])
-    df_embeddings['year'] = list(df['year'])
-    df_embeddings["dimension1"] = data_embedded[:, 0]
-    df_embeddings["dimension2"] = data_embedded[:, 1]
-
     cluster_names = []
     for i in range(num_clusters):
         cluster_names.append(f'cluster {i + 1}')
+
+    # if we have calculated this already, it is much faster to save the result
+    # and return it than recalculate it every time 
+    output_filepath = f'../server/data/policyClusters_{num_clusters}_{method}.pickle'
+    if os.path.exists(os.getcwd() + output_filepath):
+        df_embeddings = pd.read_pickle(output_filepath)
+    else: 
+        # load data
+        data_filepath = "../server/data/policyDatabase.xlsx"
+        df = pd.read_excel(data_filepath)
+        df = df[(df.year > 2013) & (df.year < 2019)]
+        X = df.drop(columns=['state', 'year', 'lawtotal'])
+
+        # cluster data
+        clusterer = KMeans(n_clusters=num_clusters, init='k-means++')
+        predictions = clusterer.fit_predict(X)
+
+        if method == 'PCA':
+            pca = PCA(n_components=2)
+            data_embedded = pca.fit_transform(X)
+
+        elif method == 't-SNE':
+            tsne = TSNE(n_components=2, verbose=1)
+            data_embedded = tsne.fit_transform(X)
+        else:
+            raise ValueError("Requested a method that is not supported")
+        
+        df_embeddings = pd.DataFrame()
+        df_embeddings['cluster'] = predictions
+        df_embeddings['state'] = list(df['state'])
+        df_embeddings['year'] = list(df['year'])
+        df_embeddings["dimension1"] = data_embedded[:, 0]
+        df_embeddings["dimension2"] = data_embedded[:, 1]
+
+        df_embeddings.to_pickle(output_filepath)
 
     return df_embeddings.to_dict(orient='records'), list(cluster_names)
 
@@ -184,7 +192,8 @@ def processGroupedBarChart(policy_clusters: dict, cluster_names:list):
     policy_clusters.set_index(['state', 'year'], inplace=True)
     print(policy_clusters.index)
     all_data = gun_violence_metadata.join(policy_clusters)
-
+    
+    # get average of each incident type for each cluster
     data = []
     for cluster in range(len(cluster_names)):
         cluster_data = all_data[all_data.cluster == cluster]
@@ -196,6 +205,30 @@ def processGroupedBarChart(policy_clusters: dict, cluster_names:list):
     return data
 
 
+def processPolicyClusterCategories(policy_clusters: dict, target_cluster: int):
+    """
+    I'm expecting clusters to be the same data that is outputted 
+    by processPolicyScatterplot
+    """
+    policy_metadata_filepath = '../server/data/policyMetadata.pickle'
+    if not os.path.exists(os.getcwd() + policy_metadata_filepath):
+        preprocessPolicyMetadata()
+    
+    policy_metadata = pd.read_pickle(policy_metadata_filepath)
+    policy_metadata.set_index(['year', 'state'], inplace=True) # for grouping purposes
+    policy_clusters = pd.DataFrame(policy_clusters)
+
+    target_cluster_data = policy_clusters[policy_clusters.cluster == target_cluster]
+    target_cluster_data.set_index(['year', 'state'], inplace=True) # for grouping purposes
+
+    all_data = target_cluster_data.join(policy_metadata, on=['year', 'state'])
+    all_data.reset_index(inplace=True)
+    all_data = all_data[['sub_category', 'policies_implemented']]
+    all_data = all_data.groupby('sub_category').mean()
+    all_data.sort_values('policies_implemented', ascending=False, inplace=True)
+    all_data.reset_index(inplace=True)
+
+    return all_data.to_dict(orient='records')
 
     
 
