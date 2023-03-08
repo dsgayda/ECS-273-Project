@@ -29,7 +29,6 @@ from sklearn.datasets import load_wine
     # # How to JSON serialize pandas dataframes and numpy arrays
     # return points.to_dict(orient='records'), list(target_names)
 
-
 def preprocessGunViolenceData():
     gun_violence_data_filepath = "../server/data/gunViolenceData.csv"
 
@@ -77,7 +76,9 @@ def preprocessGunViolenceMetadata():
     gun_violence_data_filepath = '../server/data/gunViolenceData.pickle'
     population_data_filepath = '../server/data/populationData.xlsx'
 
-    if not os.path.exists(os.getcwd() + gun_violence_data_filepath):
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, gun_violence_data_filepath)
+    if not os.path.exists(filename):
         preprocessGunViolenceData()
     
     # create gun violence metadata
@@ -134,6 +135,28 @@ def preprocessPolicyMetadata():
     metadata_df.to_pickle('../server/data/policyMetadata.pickle')  
 
 
+def processMap(min_year: int = 2014, max_year: int = 2018):
+    policy_data_filepath = "../server/data/policyDatabase.xlsx"
+    gun_violence_metadata_filepath = '../server/data/gunViolenceMetadata.pickle'
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, gun_violence_metadata_filepath)
+    if not os.path.exists(filename):
+        print("path doesn't exist")
+        preprocessGunViolenceMetadata()
+    gun_violence_metadata = pd.read_pickle(gun_violence_metadata_filepath)
+    policy_data = pd.read_excel(policy_data_filepath).set_index(['year', 'state'])
+    map_data = gun_violence_metadata.join(policy_data[['lawtotal']])
+    map_data = map_data.reset_index()
+    # filter by year range
+    map_data = map_data[(map_data.year >= min_year) & (map_data.year <= max_year)].set_index(['state'])
+    # get average within range
+    map_data = map_data.groupby(by=['state']).mean()
+    map_data =  map_data[['all incidents', 'lawtotal']].reset_index()
+    map_data.rename(columns={'lawtotal': 'policies_implemented', 'all_incidents':'incidents_per_capita'})
+
+    return map_data.to_dict(orient='records')
+
+
 def processPolicyScatterplot(num_clusters: int = 3, method: str = 'PCA'):
     cluster_names = []
     for i in range(num_clusters):
@@ -142,7 +165,9 @@ def processPolicyScatterplot(num_clusters: int = 3, method: str = 'PCA'):
     # if we have calculated this already, it is much faster to save the result
     # and return it than recalculate it every time 
     output_filepath = f'../server/data/policyClusters_{num_clusters}_{method}.pickle'
-    if os.path.exists(os.getcwd() + output_filepath):
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, output_filepath)
+    if os.path.exists(filename):
         df_embeddings = pd.read_pickle(output_filepath)
     else: 
         # load data
@@ -184,7 +209,9 @@ def processGroupedBarChart(policy_clusters: dict, cluster_names:list):
     NOTE: Might need to log scale the bar chart data because numbers are so small
     """
     gun_violence_metadata_filepath = '../server/data/gunViolenceMetadata.pickle'
-    if not os.path.exists(os.getcwd() + gun_violence_metadata_filepath):
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, gun_violence_metadata_filepath)
+    if not os.path.exists(filename):
         preprocessGunViolenceMetadata()
 
     gun_violence_metadata = pd.read_pickle(gun_violence_metadata_filepath)
@@ -211,7 +238,9 @@ def processPolicyClusterCategories(policy_clusters: dict, target_cluster: int):
     by processPolicyScatterplot
     """
     policy_metadata_filepath = '../server/data/policyMetadata.pickle'
-    if not os.path.exists(os.getcwd() + policy_metadata_filepath):
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, policy_metadata_filepath)
+    if not os.path.exists(filename):
         preprocessPolicyMetadata()
     
     policy_metadata = pd.read_pickle(policy_metadata_filepath)
@@ -231,4 +260,6 @@ def processPolicyClusterCategories(policy_clusters: dict, target_cluster: int):
     return all_data.to_dict(orient='records')
 
     
-
+if __name__ == "__main__":
+    os.chdir('C:/Users/nammy/Desktop/ECS-273-Project/Vue-Flask-Template/dashboard/')
+    print(processMap())

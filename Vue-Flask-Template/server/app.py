@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
-from controller import processPolicyScatterplot, processGroupedBarChart, processPolicyClusterCategories #, plotprocessExample
+from controller import processMap, processPolicyScatterplot, processGroupedBarChart, processPolicyClusterCategories #, plotprocessExample
 
 app = Flask(__name__)
 CORS(app)
@@ -23,6 +23,13 @@ def hello_world():
 #         points, cluster_names = processExample(method)
 #         resp = jsonify(data=points, clusters=cluster_names)
 #         return resp
+
+@app.route("/fetchMap", methods=["GET", "POST"])
+@cross_origin()
+def fetchMap():
+    data = processMap()
+    resp = jsonify(data=data)
+    return resp
 
 
 @app.route("/fetchPolicyScatterplot", methods=["GET", "POST"])
