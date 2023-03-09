@@ -36,15 +36,6 @@ export default {
         
         // this.store.fetchPolicyScatterplotAndBarChart();
     },
-    data() {
-        // Here we define the local states of this component. If you think the component as a class, then these are like its private variables.
-        return {
-            bars: [] as GroupedBar[], // "as <Type>" is a TypeScript expression to indicate what data structures this variable is supposed to store.
-            clusters: [] as string[],
-            size: { width: 0, height: 0 } as ComponentSize,
-            margin: {left: 50, right: 20, top: 20, bottom: 20} as Margin,
-        }
-    },
    
     methods: {
         onResize() {  // record the updated size of the target element
