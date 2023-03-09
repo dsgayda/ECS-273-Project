@@ -3,7 +3,7 @@ import axios from "axios"
 import { isEmpty } from 'lodash';
 import { server } from '../helper';
 
-import { Point, ComponentSize, Margin, GroupedBar } from '../types';
+import { Point, ComponentSize, Margin, GroupedBar, PolicyCategory } from '../types';
 interface ScatterPoint extends Point{
     cluster: string;
 }
@@ -13,6 +13,7 @@ export const useDataStore = defineStore('dataStore', {
         points: [] as ScatterPoint[], // "as <Type>" is a TypeScript expression to indicate what data structures this variable is supposed to store.
         bars: [] as GroupedBar[], // "as <Type>" is a TypeScript expression to indicate what data structures this variable is supposed to store.
         clusters: [] as string[],
+        categories: [] as PolicyCategory[],
         size: { width: 0, height: 0 } as ComponentSize,
         margin: {left: 20, right: 20, top: 20, bottom: 40} as Margin,
 }),
@@ -33,6 +34,9 @@ export const useDataStore = defineStore('dataStore', {
 
             resp = await axios.post(`${server}/fetchGroupedBarChart`, data);
             this.bars = resp.data.data;
+
+            resp = await axios.post(`${server}/fetchPolicyClusterCategories`, data);
+            this.categories = resp.data.data;
         }
 
     }

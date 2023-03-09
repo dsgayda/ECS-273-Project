@@ -56,8 +56,9 @@ def fetchGroupedBarChart():
 @app.route("/fetchPolicyClusterCategories", methods=["GET", "POST"])
 @cross_origin()
 def fetchPolicyClusterCategories():
-    points, cluster_names = processPolicyScatterplot()
-    categories = processPolicyClusterCategories(points, 2)
+    data = request.get_json()
+    points = data.get("data", [])
+    categories = processPolicyClusterCategories(points, 2) # TODO: Take input cluster
     resp = jsonify(data=categories)
     return resp
 

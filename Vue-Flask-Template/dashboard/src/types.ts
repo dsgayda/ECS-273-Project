@@ -28,3 +28,8 @@ export interface GroupedBar {
     readonly "cluster 2": number;
     readonly "cluster 3": number;
 }
+
+export interface PolicyCategory {
+    readonly subgroup: string;
+    readonly policies_implemented: number;
+}
