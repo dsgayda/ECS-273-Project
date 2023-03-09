@@ -37,8 +37,7 @@ export default {
         ...mapState(usePolicyScatterplot, []) // Traditional way to map the store state to the local state
     },
     created() {
-        this.store.fetchPolicyScatterplot();
-        this.store.fetchGroupedBarChart();
+        this.store.fetchPolicyScatterplotAndBarChart();
         console.log('after fetch data: ', this.store.points);
     },
     methods: {
@@ -134,9 +133,6 @@ export default {
         },
         'store.points'(newPoints) { // when data changes
             if (!isEmpty(newPoints)) {
-                console.log('newpoints found: ', newPoints)
-
-                 
                 //Call and set the other api based on points, with POST method
                 // set data for bar chart based on results from post
                 this.rerender()

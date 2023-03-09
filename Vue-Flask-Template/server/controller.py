@@ -213,8 +213,8 @@ def processGroupedBarChart(policy_clusters: dict, cluster_names:list):
     filename = os.path.join(dirname, gun_violence_metadata_filepath)
     if not os.path.exists(filename):
         preprocessGunViolenceMetadata()
-
     gun_violence_metadata = pd.read_pickle(gun_violence_metadata_filepath)
+
     policy_clusters = pd.DataFrame(policy_clusters)
     policy_clusters.set_index(['state', 'year'], inplace=True)
     print(policy_clusters.index)

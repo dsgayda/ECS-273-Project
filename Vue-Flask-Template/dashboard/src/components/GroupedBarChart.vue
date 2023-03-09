@@ -18,22 +18,22 @@ export default {
         const { bars } = storeToRefs(store);
         const { size } = storeToRefs(store);
         const { margin } = storeToRefs(store);
+        const { clusters } = storeToRefs(store);
 
         return {
             store, // Return store as the local state, but when you update the property value, the store is also updated.
             resize,
             bars,
             size,
-            margin
+            margin,
+            clusters
         }
     },
     computed: {
         ...mapState(usePolicyScatterplot, []) // Traditional way to map the store state to the local state
     },
     created() {
-        this.store.fetchPolicyScatterplot();
-        this.store.fetchGroupedBarChart();
-        console.log('after fetch data: ', this.store.points);
+        this.store.fetchPolicyScatterplotAndBarChart();
     },
     data() {
         // Here we define the local states of this component. If you think the component as a class, then these are like its private variables.
@@ -54,13 +54,10 @@ export default {
         initChart() {
             // append the svg object to the body of the page
             var svg = d3.select("#grouped-bar-svg")
-
             // List of groups = gun violence stats
-
             var groups = this.bars.map(d => d.group)
             // List of clusters
             var subgroups = JSON.parse(JSON.stringify(this.clusters))
-
             // Add X axis
             const x = d3.scaleBand()
                 .domain(groups)
@@ -90,25 +87,22 @@ export default {
                 .call(d3.axisLeft(y)
                 .tickFormat(d3.format(".1e"))
                 );
-
             // Another scale for subgroup position?
             var xSubgroup = d3.scaleBand()
                 .domain(subgroups)
                 .range([0, x.bandwidth()])
                 .padding([0.05])
-
             // color palette = one color per subgroup
             var color = d3.scaleOrdinal()
                 .domain(subgroups)
                 .range(['#e41a1c','#377eb8','#4daf4a'])
-
             // Show the bars
             svg.append("g")
                 .selectAll("g")
                 // Enter in data = loop group per group
                 .data(this.bars)
                 .join("g")
-                .attr("transform", d => `translate(${x(d.group)}, ${this.margin.bottom - 40})`)
+                .attr("transform", d => `translate(${x(d.group)}, ${this.margin.bottom - 80})`)
                 .selectAll("rect")
                 .data(function(d) { return subgroups.map(function(key) { return {key: key, value: d[key]}; }); })
                 .join("rect")
@@ -131,9 +125,6 @@ export default {
         },
         'store.bars'(newBars) { // when data changes
             if (!isEmpty(newBars)) {
-                console.log('newBars found: ', newBars)
-
-                 
                 //Call and set the other api based on points, with POST method
                 // set data for bar chart based on results from post
                 this.rerender()

@@ -22,39 +22,18 @@ export const usePolicyScatterplot = defineStore('policyScatterplot', {
         }
     },
     actions: {
-        async fetchPolicyScatterplot() { // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
-            axios.get(`${server}/fetchPolicyScatterplot`)
-                .then(resp => {
-                    this.points = resp.data.data; 
-                    this.clusters = resp.data.clusters;
-                    return true;
-                    })
-                .catch(error => console.log(error));
-        },
-        async fetchGroupedBarChart() { // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
-            
-            if (this.points && this.clusters) {
-            console.log('in fetch grouped bar chart!')
+        async fetchPolicyScatterplotAndBarChart() { // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
+            let resp = await axios.get(`${server}/fetchPolicyScatterplot`)
+            this.points = resp.data.data; 
+            this.clusters = resp.data.clusters;
             const data = {
-                points: this.points,
-                cluster_names: this.clusters
+                data: this.points,
+                clusters: this.clusters
             };
-            axios.post(`${server}/fetchGroupedBarChart`, data,
-            {
-                withCredentials: true // include cookies with the request! Hooray!
-            })
-            .then(resp => { // check out the app.py in ./server/ to see the format
-                this.bars = resp.data.data;
-                this.clusters = resp.data.clusters;
-                return true;
-            })
-            .catch(error => console.log(error));
-                console.log('finished with fetch bar chart')
+
+            resp = await axios.post(`${server}/fetchGroupedBarChart`, data);
+            this.bars = resp.data.data;
+            this.clusters = resp.data.clusters;
         }
-        else {
-            console.log('Did not run fetchGroupedBarChart()')
-            return true;
-        }
-        },
     }
 })
