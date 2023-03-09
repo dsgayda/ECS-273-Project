@@ -42,9 +42,17 @@ def fetchPolicyScatterplot():
 @app.route("/fetchGroupedBarChart", methods=["GET", "POST"])
 @cross_origin()
 def fetchGroupedBarChart():
-    points, cluster_names = processPolicyScatterplot()
+    print("received bar chart request")
+    if request.method == "POST":
+    # 
+        data = request.get_json()
+        points = data.get("points", [])
+        cluster_names = data.get("cluster_names", [])
+    else:
+        points, cluster_names = processPolicyScatterplot()
     bars = processGroupedBarChart(points, cluster_names)
     resp = jsonify(data=bars, clusters=cluster_names)
+    resp.headers["Access-Control-Allow-Origin"] = "*"
     return resp
 
 @app.route("/fetchPolicyClusterCategories", methods=["GET", "POST"])

@@ -64,11 +64,11 @@ def preprocessGunViolenceData():
                 
                 
     df["suicide"] = suicide
-    df["mass shooting"] = mass_shooting
+    df["mass_shooting"] = mass_shooting
     df["gang"] = gang
     df["wounded"] = wounded
     df["dead"] = dead
-    df["non-suicide"] = non_suicide
+    df["non_suicide"] = non_suicide
     df.to_pickle("../server/data/gunViolenceData.pickle")
 
 
@@ -84,8 +84,8 @@ def preprocessGunViolenceMetadata():
     # create gun violence metadata
     gun_violence_data = pd.read_pickle(gun_violence_data_filepath)
     all_incidents = gun_violence_data[['year', 'state']].groupby(['state', 'year']).size()
-    all_incidents.name = 'all incidents'
-    gun_violence_metadata = gun_violence_data[['year', 'state', 'suicide', 'mass shooting', 'gang', 'non-suicide']].groupby(['state', 'year']).sum().astype(int)
+    all_incidents.name = 'all_incidents'
+    gun_violence_metadata = gun_violence_data[['year', 'state', 'suicide', 'mass_shooting', 'gang', 'non_suicide']].groupby(['state', 'year']).sum().astype(int)
     gun_violence_metadata = gun_violence_metadata.join(all_incidents)
 
     # load and preprocess population data
@@ -151,7 +151,7 @@ def processMap(min_year: int = 2014, max_year: int = 2018):
     map_data = map_data[(map_data.year >= min_year) & (map_data.year <= max_year)].set_index(['state'])
     # get average within range
     map_data = map_data.groupby(by=['state']).mean()
-    map_data =  map_data[['all incidents', 'lawtotal']].reset_index()
+    map_data =  map_data[['all_incidents', 'lawtotal']].reset_index()
     map_data.rename(columns={'lawtotal': 'policies_implemented', 'all_incidents':'incidents_per_capita'})
 
     return map_data.to_dict(orient='records')
@@ -220,15 +220,15 @@ def processGroupedBarChart(policy_clusters: dict, cluster_names:list):
     print(policy_clusters.index)
     all_data = gun_violence_metadata.join(policy_clusters)
     
-    # get average of each incident type for each cluster
     data = []
-    for cluster in range(len(cluster_names)):
-        cluster_data = all_data[all_data.cluster == cluster]
-        cluster_stats = {}
-        for stat in gun_violence_metadata.columns:
-            cluster_stats[stat] = cluster_data[stat].mean()
-        data.append(cluster_stats)
-    
+    for stat in gun_violence_metadata.columns:
+        stat_data = {'group':stat}
+        for cluster in range(len(cluster_names)):
+            stat_data[cluster_names[cluster]] = all_data[all_data.cluster == cluster][stat].mean()
+        data.append(stat_data)
+
+
+
     return data
 
 

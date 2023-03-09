@@ -30,7 +30,7 @@ export default {
         ...mapState(useExampleStore, ['selectedMethod']) // Traditional way to map the store state to the local state
     },
     created() {
-        this.store.fetchExample(this.selectedMethod);
+        this.store.fetchPolicyScatterplot();
     },
     methods: {
         onResize() {

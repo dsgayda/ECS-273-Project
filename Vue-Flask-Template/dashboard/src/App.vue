@@ -4,6 +4,8 @@ import Example from './components/Example.vue'
 import ExampleWithLegend from './components/ExampleWithLegend.vue';
 import ExampleWithInteractions from './components/ExampleWithInteractions.vue';
 import PolicyScatterplot from './components/PolicyScatterplot.vue';
+import GroupedBarChart from './components/GroupedBarChart.vue';
+
 
 export default {
   components: {
@@ -11,7 +13,8 @@ export default {
     Example,
     ExampleWithLegend,
     ExampleWithInteractions,
-    PolicyScatterplot
+    PolicyScatterplot,
+    GroupedBarChart
   }
 }
 </script>
@@ -116,7 +119,7 @@ export default {
             <!-- Bottom-right box -->
             <v-row no-gutters style="height: calc(50% + 1.5rem - 5px); padding-left: 5px; padding-top: 5px; margin-top: -1.5rem;">
               <v-col cols="12" style="background-color: #FFA07A; padding: 10px;">
-                Bottom-right box
+                <GroupedBarChart></GroupedBarChart>
               </v-col>
             </v-row>
 

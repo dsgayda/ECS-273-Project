@@ -12,33 +12,34 @@ interface ScatterPoint extends PolicyPoint {
 
 // Computed property: https://vuejs.org/guide/essentials/computed.html
 // Lifecycle in vue.js: https://vuejs.org/guide/essentials/lifecycle.html#lifecycle-diagram
+// For importing a store. See how it's set up in ./dashboard/stores/ and ./dashboard/main.ts
+import { mapState, storeToRefs } from 'pinia'; 
+import { usePolicyScatterplot } from '../stores/policyClusterStore';
 
 export default {
-    data() {
-        // Here we define the local states of this component. If you think the component as a class, then these are like its private variables.
+    setup() { // Composition API syntax
+        const store = usePolicyScatterplot()
+        // Alternative expression from computed
+        const { resize } = storeToRefs(store);
+        const { points } = storeToRefs(store);
+        const { size } = storeToRefs(store);
+        const { margin } = storeToRefs(store);
+
         return {
-            points: [] as ScatterPoint[], // "as <Type>" is a TypeScript expression to indicate what data structures this variable is supposed to store.
-            clusters: [] as string[],
-            size: { width: 0, height: 0 } as ComponentSize,
-            margin: {left: 20, right: 20, top: 20, bottom: 40} as Margin,
+            store, // Return store as the local state, but when you update the property value, the store is also updated.
+            resize,
+            points,
+            size,
+            margin
         }
     },
     computed: {
-        // Re-render the chart whenever the window is resized or the data changes (and data is non-empty)
-        rerender() {
-            return (!isEmpty(this.points)) && this.size
-        }
+        ...mapState(usePolicyScatterplot, []) // Traditional way to map the store state to the local state
     },
     created() {
-        // fetch the data via API request when we init this component. This will only get called once.
-        // In axios anything we send back in the response are always bound to the "data" property.
-        axios.get(`${server}/fetchPolicyScatterplot`)
-            .then(resp => { // check out the app.py in ./server/ to see the format
-                this.points = resp.data.data; 
-                // this.clusters = resp.data.clusters;
-                return true;
-            })
-            .catch(error => console.log(error));
+        this.store.fetchPolicyScatterplot();
+        this.store.fetchGroupedBarChart();
+        console.log('after fetch data: ', this.store.points);
     },
     methods: {
         onResize() {  // record the updated size of the target element
@@ -119,14 +120,28 @@ export default {
                 .style('font-weight', 'bold')
                 .text('Policy PCA Projection') // text content
         },
+        rerender() {
+            d3.selectAll('#scatter-svg').selectAll('*').remove() // Clean all the elements in the chart
+            this.initChart()
+        }
+
     },
     watch: {
-        rerender(newSize) {
-            if (!isEmpty(newSize)) {
-                d3.select('#scatter-svg').selectAll('*').remove() // Clean all the elements in the chart
-                this.initChart()
+        resize(newSize) { // when window resizes
+            if ((newSize.width !== 0) && (newSize.height !== 0)) {
+                this.rerender()
             }
-        }
+        },
+        'store.points'(newPoints) { // when data changes
+            if (!isEmpty(newPoints)) {
+                console.log('newpoints found: ', newPoints)
+
+                 
+                //Call and set the other api based on points, with POST method
+                // set data for bar chart based on results from post
+                this.rerender()
+            }
+        },
     },
     // The following are general setup for resize events.
     mounted() {

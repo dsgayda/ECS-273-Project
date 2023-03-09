@@ -21,3 +21,10 @@ export interface PolicyPoint {
     readonly dimension1: number;
     readonly dimension2: number;
 }
+
+export interface GroupedBar {
+    readonly group: string;
+    readonly "cluster 1": number;
+    readonly "cluster 2": number;
+    readonly "cluster 3": number;
+}
