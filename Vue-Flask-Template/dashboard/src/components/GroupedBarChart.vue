@@ -21,7 +21,7 @@ export default {
         const { clusters } = storeToRefs(store);
 
         return {
-            store, // Return store as the local state, but when you update the property value, the store is also updated.
+            // store, // Return store as the local state, but when you update the property value, the store is also updated.
             resize,
             bars,
             size,
@@ -33,7 +33,8 @@ export default {
         ...mapState(usePolicyScatterplot, []) // Traditional way to map the store state to the local state
     },
     created() {
-        this.store.fetchPolicyScatterplotAndBarChart();
+        
+        // this.store.fetchPolicyScatterplotAndBarChart();
     },
     data() {
         // Here we define the local states of this component. If you think the component as a class, then these are like its private variables.
@@ -123,7 +124,7 @@ export default {
                 this.rerender()
             }
         },
-        'store.bars'(newBars) { // when data changes
+        'bars'(newBars) { // when data changes
             if (!isEmpty(newBars)) {
                 //Call and set the other api based on points, with POST method
                 // set data for bar chart based on results from post
