@@ -49,7 +49,7 @@ export default {
             // List of groups = gun violence stats
             var groups = this.bars.map(d => d.group)
             // List of clusters
-            var subgroups = JSON.parse(JSON.stringify(this.clusters))
+            var subgroups = this.clusters
             // Add X axis
             const x = d3.scaleBand()
                 .domain(groups)
@@ -86,8 +86,8 @@ export default {
                 .padding([0.05])
             // color palette = one color per subgroup
             var color = d3.scaleOrdinal()
-                .domain(subgroups)
-                .range(['#e41a1c','#377eb8','#4daf4a'])
+                .domain(this.clusters)
+                .range(d3.schemeSet1)
             // Show the bars
             svg.append("g")
                 .selectAll("g")

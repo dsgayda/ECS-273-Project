@@ -33,7 +33,7 @@ export const useDataStore = defineStore('dataStore', {
 
             resp = await axios.post(`${server}/fetchGroupedBarChart`, data);
             this.bars = resp.data.data;
-            this.clusters = resp.data.clusters;
         }
+
     }
 })

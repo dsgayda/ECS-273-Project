@@ -22,6 +22,7 @@ export default {
         // Alternative expression from computed
         const { resize } = storeToRefs(store);
         const { points } = storeToRefs(store);
+        const { clusters } = storeToRefs(store);
         const { size } = storeToRefs(store);
         const { margin } = storeToRefs(store);
 
@@ -29,6 +30,7 @@ export default {
             store, // Return store as the local state, but when you update the property value, the store is also updated.
             resize,
             points,
+            clusters,
             size,
             margin
         }
@@ -96,7 +98,7 @@ export default {
             // Similar to above but now we are creating the color scale with scaleOrdinal.
             // let clusters: string[] = this.clusters.map((cluster: string, idx: number) => String(idx))
             // let clusters: string[] = this.clusters.map(())
-            let colorScale = d3.scaleOrdinal().domain(["cluster1", "cluster2", "cluster3"]).range(d3.schemeTableau10) // d3.schemeTableau10: string[]
+            let colorScale = d3.scaleOrdinal().domain(this.clusters).range(d3.schemeSet1) // d3.schemeTableau10: string[]
 
             // "g" is group element that does nothing but helps avoid DOM looking like a mess
             // We iterate through each <ScatterPoint> element in the array, create a circle for each and indicate the coordinates, the circle size, the color, and the opacity.
