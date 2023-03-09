@@ -8,7 +8,7 @@ interface ScatterPoint extends Point{
     cluster: string;
 }
 
-export const usePolicyScatterplot = defineStore('policyScatterplot', {
+export const useDataStore = defineStore('dataStore', {
     state: () => ({
         points: [] as ScatterPoint[], // "as <Type>" is a TypeScript expression to indicate what data structures this variable is supposed to store.
         bars: [] as GroupedBar[], // "as <Type>" is a TypeScript expression to indicate what data structures this variable is supposed to store.
@@ -22,7 +22,7 @@ export const usePolicyScatterplot = defineStore('policyScatterplot', {
         }
     },
     actions: {
-        async fetchPolicyScatterplotAndBarChart() { // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
+        async fetchData() { // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
             let resp = await axios.get(`${server}/fetchPolicyScatterplot`)
             this.points = resp.data.data; 
             this.clusters = resp.data.clusters;

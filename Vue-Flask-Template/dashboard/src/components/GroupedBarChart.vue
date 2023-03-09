@@ -8,11 +8,11 @@ import { Point, ComponentSize, Margin, PolicyPoint, GroupedBar } from '../types'
 // Computed property: https://vuejs.org/guide/essentials/computed.html
 // Lifecycle in vue.js: https://vuejs.org/guide/essentials/lifecycle.html#lifecycle-diagram
 import { mapState, storeToRefs } from 'pinia'; 
-import { usePolicyScatterplot } from '../stores/policyClusterStore';
+import { useDataStore } from '../stores/dataStore';
 
 export default {
     setup() { // Composition API syntax
-        const store = usePolicyScatterplot()
+        const store = useDataStore()
         // Alternative expression from computed
         const { resize } = storeToRefs(store);
         const { bars } = storeToRefs(store);
@@ -30,7 +30,7 @@ export default {
         }
     },
     computed: {
-        ...mapState(usePolicyScatterplot, []) // Traditional way to map the store state to the local state
+        ...mapState(useDataStore, []) // Traditional way to map the store state to the local state
     },
     created() {
         

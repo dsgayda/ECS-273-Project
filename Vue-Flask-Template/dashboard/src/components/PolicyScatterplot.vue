@@ -14,11 +14,11 @@ interface ScatterPoint extends PolicyPoint {
 // Lifecycle in vue.js: https://vuejs.org/guide/essentials/lifecycle.html#lifecycle-diagram
 // For importing a store. See how it's set up in ./dashboard/stores/ and ./dashboard/main.ts
 import { mapState, storeToRefs } from 'pinia'; 
-import { usePolicyScatterplot } from '../stores/policyClusterStore';
+import { useDataStore } from '../stores/dataStore';
 
 export default {
     setup() { // Composition API syntax
-        const store = usePolicyScatterplot()
+        const store = useDataStore()
         // Alternative expression from computed
         const { resize } = storeToRefs(store);
         const { points } = storeToRefs(store);
@@ -34,10 +34,10 @@ export default {
         }
     },
     computed: {
-        ...mapState(usePolicyScatterplot, []) // Traditional way to map the store state to the local state
+        ...mapState(useDataStore, []) // Traditional way to map the store state to the local state
     },
     created() {
-        this.store.fetchPolicyScatterplotAndBarChart();
+        this.store.fetchData();
         console.log('after fetch data: ', this.store.points);
     },
     methods: {
