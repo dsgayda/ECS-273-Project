@@ -139,7 +139,7 @@ export default {
             svg.append("g")
                 .attr('transform', `translate(${this.margin.left + this.margin.right + 20}, 0)`)
                 .call(d3.axisLeft(y)
-                .tickFormat(d3.format(".1e"))
+                .tickFormat(d3.format(".0%"))
                 
                 );
 
