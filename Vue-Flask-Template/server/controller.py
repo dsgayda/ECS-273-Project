@@ -5,6 +5,7 @@ import os
 from sklearn.cluster import KMeans
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
+from pprint import pprint
 
 from sklearn.datasets import load_wine
 # from resources.hd_processing_template import perform_PCA, perform_TSNE
@@ -218,7 +219,6 @@ def processGroupedBarChart(policy_clusters: dict, cluster_names:list):
 
     policy_clusters = pd.DataFrame(policy_clusters)
     policy_clusters.set_index(['state', 'year'], inplace=True)
-    print(policy_clusters.index)
     all_data = gun_violence_metadata.join(policy_clusters)
     
     data = []
@@ -228,9 +228,12 @@ def processGroupedBarChart(policy_clusters: dict, cluster_names:list):
             stat_data[cluster_names[cluster]] = all_data[all_data.cluster == cluster][stat].mean()
         data.append(stat_data)
 
+    data = pd.DataFrame(data)
+    data.set_index(['group'], inplace=True)
+    data = data.div(data.sum(axis=1), axis=0) # divide each row by the sum of the row
+    data.reset_index(inplace=True)
 
-
-    return data
+    return data.to_dict(orient='records')
 
 
 def processPolicyClusterCategories(policy_clusters: dict, target_cluster: int):
@@ -263,4 +266,5 @@ def processPolicyClusterCategories(policy_clusters: dict, target_cluster: int):
     
 if __name__ == "__main__":
     os.chdir('C:/Users/nammy/Desktop/ECS-273-Project/Vue-Flask-Template/dashboard/')
-    print(processMap())
+    data, clusters = processPolicyScatterplot()
+    processGroupedBarChart(data, clusters)
