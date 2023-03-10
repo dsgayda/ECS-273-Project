@@ -74,11 +74,9 @@ export default {
             
             let y_max = 0
             for(let elem of this.bars){
-                if(elem.group == "all_incidents"){
-                    for(let key of Object.keys(elem).filter(key => key !== "group")){
-                        if(elem[key] > y_max){
-                            y_max = elem[key]
-                        }
+                for(let key of Object.keys(elem).filter(key => key !== "group")){
+                    if(elem[key] > y_max){
+                        y_max = elem[key]
                     }
                 }
             }

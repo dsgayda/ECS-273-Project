@@ -229,10 +229,10 @@ def processGroupedBarChart(policy_clusters: dict, cluster_names:list):
         data.append(stat_data)
 
     data = pd.DataFrame(data)
+    data = data[data.group != 'all_incidents'] # not interesting
     data.set_index(['group'], inplace=True)
     data = data.div(data.sum(axis=1), axis=0) # divide each row by the sum of the row
     data.reset_index(inplace=True)
-
     return data.to_dict(orient='records')
 
 
