@@ -94,8 +94,8 @@ export default {
 
                <!-- Left column of top-right box -->
               <v-row no-gutters style="height: 100%; padding-right: 5px;">
-              <v-col cols="12" style="background-color: #00FA9A; height: calc(100% - 1.5rem); padding-left: 5px; padding: 10px;">
-                Left column of top-right box
+              <v-col cols="12" style=" height: calc(100% - 1.5rem); padding-left: 5px; padding: 10px;">
+
                 <PolicyScatterplot></PolicyScatterplot>
               </v-col>
 
@@ -118,7 +118,7 @@ export default {
 
             <!-- Bottom-right box -->
             <v-row no-gutters style="height: calc(50% + 1.5rem - 5px); padding-left: 5px; padding-top: 5px; margin-top: -1.5rem;">
-              <v-col cols="12" style="background-color: #FFA07A; padding: 10px;">
+              <v-col cols="12" style=" padding: 10px;">
                 <GroupedBarChart></GroupedBarChart>
               </v-col>
             </v-row>
