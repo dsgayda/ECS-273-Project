@@ -4,15 +4,14 @@ import { isEmpty } from 'lodash';
 import { server } from '../helper';
 import * as d3 from "d3";
 
-import { Point, ComponentSize, Margin, GroupedBar, PolicyCategory } from '../types';
-interface ScatterPoint extends Point{
-    cluster: string;
-}
+import { PolicyPoint, ComponentSize, Margin, MapState, TopPolicies, GroupedBar, PolicyCategory } from '../types';
 
 export const useDataStore = defineStore('dataStore', {
     state: () => ({
-        points: [] as ScatterPoint[], // "as <Type>" is a TypeScript expression to indicate what data structures this variable is supposed to store.
-        bars: [] as GroupedBar[], // "as <Type>" is a TypeScript expression to indicate what data structures this variable is supposed to store.
+        points: [] as PolicyPoint[], // "as <Type>" is a TypeScript expression to indicate what data structures this variable is supposed to store.
+        states: [] as MapState[], 
+        top_policies: [] as TopPolicies[],
+        bars: [] as GroupedBar[], 
         clusters: [] as string[],
         categories: [] as PolicyCategory[],
         size: { width: 0, height: 0 } as ComponentSize,
@@ -39,15 +38,19 @@ export const useDataStore = defineStore('dataStore', {
                 clusters: this.clusters
             };
 
+            resp = await axios.get(`${server}/fetchTopPoliciesPerPoint`);
+            this.top_policies = resp.data.data;
+
+            resp = await axios.post(`${server}/fetchMap`, data);
+            this.states = resp.data.data;
 
             resp = await axios.post(`${server}/fetchGroupedBarChart`, data);
             this.bars = resp.data.data;
 
-            resp = await axios.post(`${server}/fetchPolicyClusterCategories`, data);
-            this.categories = resp.data.data;
-
-            
+            // resp = await axios.post(`${server}/fetchPolicyClusterCategories`, data);
+            // this.categories = resp.data.data;
         },
+
 
     }
 })

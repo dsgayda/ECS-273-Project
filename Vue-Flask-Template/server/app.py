@@ -27,9 +27,11 @@ def hello_world():
 @app.route("/fetchMap", methods=["GET", "POST"])
 @cross_origin()
 def fetchMap():
-    points, cluster_names = processPolicyScatterplot()
-    data = processMap(points)
-    resp = jsonify(data=data)
+    data = request.get_json()
+    points = data.get("data", [])
+
+    states = processMap(points)
+    resp = jsonify(data=states)
     return resp
 
 

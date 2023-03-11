@@ -6,9 +6,6 @@ import { server } from '../helper';
 
 import { Point, ComponentSize, Margin, PolicyPoint } from '../types';
 // A "extends" B means A inherits the properties and methods from B.
-interface ScatterPoint extends PolicyPoint {
-    cluster: string;
-}
 
 // Computed property: https://vuejs.org/guide/essentials/computed.html
 // Lifecycle in vue.js: https://vuejs.org/guide/essentials/lifecycle.html#lifecycle-diagram
@@ -83,8 +80,8 @@ export default {
 
 
             // we need compute the [min, max] from the data values of the attributes that will be used to represent x- and y-axis.
-            let xExtents = d3.extent(this.points.map((d: ScatterPoint) => d.dimension1 as number)) as [number, number]
-            let yExtents = d3.extent(this.points.map((d: ScatterPoint) => d.dimension2 as number)) as [number, number]
+            let xExtents = d3.extent(this.points.map((d: PolicyPoint) => d.dimension1 as number)) as [number, number]
+            let yExtents = d3.extent(this.points.map((d: PolicyPoint) => d.dimension2 as number)) as [number, number]
 
             // We need a way to map our data to where it should be rendered within the svg (in pixels) based on the data value, 
             //      so the extents above help us define the limits.
@@ -132,14 +129,14 @@ export default {
             // d3.scaleOrdinal().domain(this.clusters).range(d3.schemeSet1) // d3.schemeTableau10: string[]
 
             // "g" is group element that does nothing but helps avoid DOM looking like a mess
-            // We iterate through each <ScatterPoint> element in the array, create a circle for each and indicate the coordinates, the circle size, the color, and the opacity.
+            // We iterate through each <PolicyPoint> element in the array, create a circle for each and indicate the coordinates, the circle size, the color, and the opacity.
             const points = svg.selectAll('circle') // select all circles
                 .data<ScatterPoint>(this.points) // bind data
                 .join('circle') // join data with elements
-                .attr('cx', (d: ScatterPoint) => xScale(d.dimension1))
-                .attr('cy', (d: ScatterPoint) => yScale(d.dimension2))
+                .attr('cx', (d: PolicyPoint) => xScale(d.dimension1))
+                .attr('cy', (d: PolicyPoint) => yScale(d.dimension2))
                 .attr('r', 5)
-                .style('fill', (d: ScatterPoint) => {
+                .style('fill', (d: PolicyPoint) => {
                     console.log('colorScale: ', d.cluster)
 
                     console.log('colorScale: ', colorScale(String(d.cluster)))

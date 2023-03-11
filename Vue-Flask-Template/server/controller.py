@@ -142,6 +142,9 @@ def preprocessPolicyMetadata():
 
 
 def processMap(cluster_data: dict, min_year: int = 2014, max_year: int = 2018):
+    """
+    output columns: state, incidents_per_capita, policies_implemented, cluster
+    """
     policy_data_filepath = "../server/data/policyDatabase.xlsx"
     gun_violence_metadata_filepath = '../server/data/gunViolenceMetadata.pickle'
     dirname = os.path.dirname(__file__)
@@ -180,6 +183,9 @@ def processMap(cluster_data: dict, min_year: int = 2014, max_year: int = 2018):
 
 
 def processTopPoliciesPerState(n_policies: int = 3):
+    """
+    output columns: state, year, top_policies
+    """
     # load in policy metadata
     policy_metadata_filepath = '../server/data/policyMetadata.pickle'
     dirname = os.path.dirname(__file__)
@@ -312,6 +318,6 @@ def processPolicyClusterCategories(policy_clusters: dict, target_cluster: int):
     
 if __name__ == "__main__":
     os.chdir('C:/Users/nammy/Desktop/ECS-273-Project/Vue-Flask-Template/dashboard/')
-    # cluster_data, policy_data, clusters = processPolicyScatterplot()
+    cluster_data, clusters = processPolicyScatterplot()
     # pprint(processPolicyClusterCategories(cluster_data, 0))
-    # pprint(getTopPoliciesPerState())
+    pprint(processMap(cluster_data))

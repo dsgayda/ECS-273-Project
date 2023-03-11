@@ -20,6 +20,7 @@ export interface Point {
 export interface PolicyPoint {
     readonly dimension1: number;
     readonly dimension2: number;
+    readonly cluster: string;
 }
 
 export interface GroupedBar {
@@ -32,4 +33,17 @@ export interface GroupedBar {
 export interface PolicyCategory {
     readonly subgroup: string;
     readonly policies_implemented: number;
+}
+
+export interface MapState {
+    readonly state: string;
+    readonly incidents_per_capita: number;
+    readonly policies_implemented: number;
+    readonly cluster: number;
+}
+
+export interface TopPolicies {
+    readonly state: string;
+    readonly year: number;
+    readonly top_policies: string[];
 }
