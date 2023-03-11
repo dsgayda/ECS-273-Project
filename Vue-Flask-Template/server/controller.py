@@ -117,7 +117,7 @@ def preprocessPolicyMetadata():
     for category in set(codebook['Sub-Category']):
         sub_categories[category] = list(codebook[codebook['Sub-Category'] == category]['Variable Name'])
 
-    metadata = {'year':[], 'state':[], 'category':[], 'sub_category':[], 'policies_implemented':[]}
+    metadata = {'year':[], 'state':[], 'category':[], 'sub_category':[], 'policies_implemented':[], 'percent_policies_implemented':[]}
     for i in range(len(policies)):
         for j, (sub_category, variables) in enumerate(sub_categories.items()):
             metadata['year'].append(policies.year[i])
@@ -127,7 +127,11 @@ def preprocessPolicyMetadata():
             policies_implemented = 0
             for variable in variables:
                 policies_implemented += policies[variable][i]
+            policies_implemented = policies_implemented
+            percent_policies_implemented = policies_implemented / len(variables)
             metadata['policies_implemented'].append(policies_implemented)
+            metadata['percent_policies_implemented'].append(percent_policies_implemented)
+
 
     metadata_df = pd.DataFrame(metadata)
     metadata_df.sort_values(['year', 'state', 'category'], inplace=True)
@@ -137,7 +141,7 @@ def preprocessPolicyMetadata():
     metadata_df.to_pickle('../server/data/policyMetadata.pickle')  
 
 
-def processMap(min_year: int = 2014, max_year: int = 2018):
+def processMap(cluster_data: dict, min_year: int = 2014, max_year: int = 2018):
     policy_data_filepath = "../server/data/policyDatabase.xlsx"
     gun_violence_metadata_filepath = '../server/data/gunViolenceMetadata.pickle'
     dirname = os.path.dirname(__file__)
@@ -145,21 +149,63 @@ def processMap(min_year: int = 2014, max_year: int = 2018):
     if not os.path.exists(filename):
         print("path doesn't exist")
         preprocessGunViolenceMetadata()
+
+    # load data and join
     gun_violence_metadata = pd.read_pickle(gun_violence_metadata_filepath)
     policy_data = pd.read_excel(policy_data_filepath).set_index(['year', 'state'])
     map_data = gun_violence_metadata.join(policy_data[['lawtotal']])
     map_data = map_data.reset_index()
     # filter by year range
     map_data = map_data[(map_data.year >= min_year) & (map_data.year <= max_year)].set_index(['state'])
-    # get average within range
+    # get average num incidents and policies within range
     map_data = map_data.groupby(by=['state']).mean()
     map_data =  map_data[['all_incidents', 'lawtotal']].reset_index()
-    map_data.rename(columns={'lawtotal': 'policies_implemented', 'all_incidents':'incidents_per_capita'})
-
+    map_data.rename(columns={'lawtotal': 'policies_implemented', 'all_incidents':'incidents_per_capita'}, inplace=True)
+    # now get cluster data
+    cluster_data = pd.DataFrame(cluster_data)
+    # get the state, cluster, and number of instances of the state within that cluster
+    values = cluster_data[['state', 'cluster']].groupby(['state', 'cluster']).size().reset_index()
+    values.rename(columns={0:'values'}, inplace=True)
+    # group by state and find index of row with max value in each cluster
+    # (i.e. find the cluster that the state is in the most)
+    max_idx = values.groupby('state')['values'].idxmax()
+    # select rows corresponding to max value in each group, and retrieve cluster value
+    clusters = values.loc[max_idx, 'cluster']
+    values = values.iloc[clusters.index]
+    # add clusters to map data
+    map_data = map_data.set_index(['state']).join(values.set_index(['state']))
+    map_data.drop(columns=['values'], inplace=True)
+    map_data.reset_index(inplace=True)
     return map_data.to_dict(orient='records')
 
 
+def processTopPoliciesPerState(n_policies: int = 3):
+    # load in policy metadata
+    policy_metadata_filepath = '../server/data/policyMetadata.pickle'
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, policy_metadata_filepath)
+    if not os.path.exists(filename):
+        preprocessPolicyMetadata()
+    policy_metadata = pd.read_pickle(policy_metadata_filepath)
+
+    # get top three policies for each state in each year
+    policy_metadata.sort_values(['year', 'state','percent_policies_implemented', 'policies_implemented'], 
+                                ascending=False, inplace=True)
+    policy_metadata = policy_metadata.groupby(['year', 'state']).head(n_policies)
+    policy_metadata.drop(columns=['category', 'policies_implemented', 'percent_policies_implemented'], inplace=True)
+    policy_metadata.set_index(['year', 'state'], inplace=True)
+
+    # return a list of top policies for each state in each year
+    output_data = []
+    for (year, state) in set(policy_metadata.index):
+        top_policies = list(policy_metadata['sub_category'].loc[(year, state)])
+        output_data.append({'year': year, 'state': state, 'top_policies': top_policies})
+    
+    return output_data
+
+
 def processPolicyScatterplot(num_clusters: int = 3, method: str = 'PCA'):
+    # create cluster labels
     cluster_names = []
     for i in range(num_clusters):
         cluster_names.append(f'cluster {i + 1}')
@@ -266,5 +312,6 @@ def processPolicyClusterCategories(policy_clusters: dict, target_cluster: int):
     
 if __name__ == "__main__":
     os.chdir('C:/Users/nammy/Desktop/ECS-273-Project/Vue-Flask-Template/dashboard/')
-    data, clusters = processPolicyScatterplot()
-    processGroupedBarChart(data, clusters)
+    # cluster_data, policy_data, clusters = processPolicyScatterplot()
+    # pprint(processPolicyClusterCategories(cluster_data, 0))
+    # pprint(getTopPoliciesPerState())

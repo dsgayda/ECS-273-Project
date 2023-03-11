@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
-from controller import processMap, processPolicyScatterplot, processGroupedBarChart, processPolicyClusterCategories #, plotprocessExample
+from controller import processMap, processTopPoliciesPerState, processPolicyScatterplot, processGroupedBarChart, processPolicyClusterCategories
 
 app = Flask(__name__)
 CORS(app)
@@ -27,7 +27,8 @@ def hello_world():
 @app.route("/fetchMap", methods=["GET", "POST"])
 @cross_origin()
 def fetchMap():
-    data = processMap()
+    points, cluster_names = processPolicyScatterplot()
+    data = processMap(points)
     resp = jsonify(data=data)
     return resp
 
@@ -49,18 +50,23 @@ def fetchGroupedBarChart():
 
     bars = processGroupedBarChart(points, cluster_names)
     resp = jsonify(data=bars, clusters=cluster_names)
-    
-
     return resp
 
-@app.route("/fetchPolicyClusterCategories", methods=["GET", "POST"])
+@app.route("/fetchTopPoliciesPerPoint", methods=["GET", "POST"])
 @cross_origin()
-def fetchPolicyClusterCategories():
-    data = request.get_json()
-    points = data.get("data", [])
-    categories = processPolicyClusterCategories(points, 2) # TODO: Take input cluster
-    resp = jsonify(data=categories)
+def fetchTopPoliciesPerPoint():
+    top_policies = processTopPoliciesPerState()
+    resp = jsonify(data=top_policies)
     return resp
+
+# @app.route("/fetchPolicyClusterCategories", methods=["GET", "POST"])
+# @cross_origin()
+# def fetchPolicyClusterCategories():
+#     data = request.get_json()
+#     points = data.get("data", [])
+#     categories = processPolicyClusterCategories(points, 2) # TODO: Take input cluster
+#     resp = jsonify(data=categories)
+#     return resp
 
 
 
