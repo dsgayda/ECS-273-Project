@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
-from controller import processMap, processTopPoliciesPerState, processPolicyScatterplot, processGroupedBarChart, processPolicyClusterCategories
+from controller import processMap, processTopPoliciesPerState, processPolicyScatterplot, processGroupedBarChart, processPolicyCorrelations
 
 app = Flask(__name__)
 CORS(app)
@@ -59,6 +59,18 @@ def fetchGroupedBarChart():
 def fetchTopPoliciesPerPoint():
     top_policies = processTopPoliciesPerState()
     resp = jsonify(data=top_policies)
+    return resp
+
+
+@app.route("/fetchPolicyCorrelationTable", methods=["GET", "POST"])
+@cross_origin()
+def fetchPolicyCorrelationTable():
+    data = request.get_json()
+    points = data.get("data", [])
+    
+    table = processPolicyCorrelations(points)
+    resp = jsonify(data=table)
+    print("created resp")
     return resp
 
 # @app.route("/fetchPolicyClusterCategories", methods=["GET", "POST"])

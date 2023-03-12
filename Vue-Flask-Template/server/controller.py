@@ -288,6 +288,63 @@ def processGroupedBarChart(policy_clusters: dict, cluster_names:list):
     return data.to_dict(orient='records')
 
 
+def processPolicyCorrelations(policy_clusters:dict, incidence_type='all_incidents'):
+    # load in data
+    policy_metadata_filepath = '../server/data/policyMetadata.pickle'
+    gun_violence_metadata_filepath = '../server/data/gunViolenceMetadata.pickle'
+
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, policy_metadata_filepath)
+    if not os.path.exists(filename):
+        preprocessPolicyMetadata()
+    
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, gun_violence_metadata_filepath)
+    if not os.path.exists(filename):
+        preprocessGunViolenceMetadata()
+    
+    policy_metadata = pd.read_pickle(policy_metadata_filepath)
+    gun_violence_metadata = pd.read_pickle(gun_violence_metadata_filepath)
+    policy_clusters = pd.DataFrame(policy_clusters)
+
+    # join policy and incident data to calculate correlations
+    policy_metadata = policy_metadata[['year', 'state', 'sub_category', 'percent_policies_implemented']]
+    policy_metadata = policy_metadata.set_index(['year', 'state']).join(gun_violence_metadata)
+
+    # calculate correlation for each policy subcategory
+    subcategory_corrs = []
+    for subcategory in set(policy_metadata.sub_category):
+        subcategory_data = policy_metadata[policy_metadata.sub_category == subcategory]
+        subcategory_corr = policy_metadata.corr().iloc[0, 1:].reset_index()
+        subcategory_corr['category'] = subcategory
+        subcategory_corrs.append(subcategory_corr)
+    correlation_df = pd.concat(subcategory_corrs)
+    correlation_df.rename(columns={'index': 'incidence_type', 'percent_policies_implemented': 'correlation'}, 
+                          inplace=True)
+    correlation_df = correlation_df[correlation_df.incidence_type == incidence_type]
+    correlation_df.drop(columns=['incidence_type'], inplace=True)
+
+    # join with cluster policy data
+        
+    policy_clusters.set_index(['state', 'year'], inplace=True)
+    cluster_data = policy_metadata.join(policy_clusters)
+    cluster_data = cluster_data[['sub_category', 'percent_policies_implemented', 'cluster']]
+    # rename the clusters to strings for readability
+    mapping = {}
+    for cluster in set(cluster_data.cluster):
+        mapping[cluster] = f"cluster {cluster}"
+    cluster_data['cluster'] = cluster_data['cluster'].apply(lambda x: mapping.get(x, x))
+    cluster_data.rename(columns={'sub_category': 'category'}, inplace=True)
+    cluster_data = cluster_data.groupby(['category', 'cluster']).mean()
+    cluster_data.reset_index(inplace=True)
+    cluster_data = cluster_data.pivot(index='category', columns='cluster', 
+                                      values='percent_policies_implemented')
+    
+    table_data = cluster_data.join(correlation_df.set_index(['category'])[['correlation']])
+    return table_data.reset_index().to_dict(orient='records')
+
+
+
 def processPolicyClusterCategories(policy_clusters: dict, target_cluster: int):
     """
     I'm expecting clusters to be the same data that is outputted 
@@ -320,4 +377,4 @@ if __name__ == "__main__":
     os.chdir('C:/Users/nammy/Desktop/ECS-273-Project/Vue-Flask-Template/dashboard/')
     cluster_data, clusters = processPolicyScatterplot()
     # pprint(processPolicyClusterCategories(cluster_data, 0))
-    pprint(processMap(cluster_data))
+    pprint(processPolicyCorrelations(cluster_data))

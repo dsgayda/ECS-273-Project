@@ -14,6 +14,7 @@ export const useDataStore = defineStore('dataStore', {
         bars: [] as GroupedBar[], 
         clusters: [] as string[],
         categories: [] as PolicyCategory[],
+        table: [] as any[],
         size: { width: 0, height: 0 } as ComponentSize,
         margin: {left: 70, right: 20, top: 20, bottom: 40} as Margin,
         color: d3.scaleOrdinal()
@@ -46,6 +47,9 @@ export const useDataStore = defineStore('dataStore', {
 
             resp = await axios.post(`${server}/fetchGroupedBarChart`, data);
             this.bars = resp.data.data;
+
+            resp = await axios.post(`${server}/fetchPolicyCorrelationTable`, data);
+            this.table = resp.data.data;
 
             // resp = await axios.post(`${server}/fetchPolicyClusterCategories`, data);
             // this.categories = resp.data.data;
