@@ -138,10 +138,16 @@ export default {
                 .attr('transform', `translate(${this.margin.left + this.margin.right + 20}, 0)`)
                 .call(d3.axisLeft(y)
                 .tickFormat(d3.format(".0%"))
-                
                 );
 
-            
+            // Add Title
+            svg.append('g').append('text') // adding the text
+                .attr('transform', `translate(${parentRect.width / 1.75}, ${parentRect.height})`)
+                .attr('dy', '0.5rem') // relative distance from the indicated coordinates.
+                .style('text-anchor', 'middle')
+                .style('font-weight', 'bold')
+                .style('font-size', '20px') // set the font size to 24 pixels
+                .text('Average Incidents In Policy Clusters') // text content
         },
         rerender() {
             d3.selectAll('.chart-container').selectAll('*').remove() // Clean all the elements in the chart

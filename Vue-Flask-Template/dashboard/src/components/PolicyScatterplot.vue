@@ -40,14 +40,12 @@ export default {
     created() {
         this.store.fetchData();
         // this.store.initializeColorScale();
-        console.log('after fetch data: ', this.store.points);
     },
     methods: {
         onResize() {  // record the updated size of the target element
             let target = this.$refs.scatterContainer as HTMLElement
             if (target === undefined) return;
             this.size = { width: target.clientWidth, height: target.clientHeight };
-            console.log('resize height: ', this.size.height);
         },
         initChart() {
             // select the svg tag so that we can insert(render) elements, i.e., draw the chart, within it.
@@ -62,9 +60,7 @@ export default {
             // // get the size of the parent container
             // const parentRect = sc.getBoundingClientRect();
             const parentRect = { width: sc.clientWidth, height: sc.clientHeight };
-            
-            console.log('height: ', this.size.height)
-            console.log('parentRect: ', parentRect);
+        
             // update the viewBox attribute based on the size of the parent container
             svg.attr('viewBox', `${this.margin.left} ${this.margin.top} ${parentRect.width} ${parentRect.height }`);
 
@@ -137,9 +133,6 @@ export default {
                 .attr('cy', (d: PolicyPoint) => yScale(d.dimension2))
                 .attr('r', 5)
                 .style('fill', (d: PolicyPoint) => {
-                    console.log('colorScale: ', d.cluster)
-
-                    console.log('colorScale: ', colorScale(String(d.cluster)))
                     return colorScale((d.cluster).toString())
                 })
                 .style('opacity', .7)
@@ -152,7 +145,7 @@ export default {
                 .attr('dy', '0.5rem') // relative distance from the indicated coordinates.
                 .style('text-anchor', 'middle')
                 .style('font-weight', 'bold')
-                .text('Policy PCA Projection') // text content
+                .text('Clustering State Policies') // text content
         },
         rerender() {
             d3.selectAll('.scatter-chart-container').selectAll('*').remove() // Clean all the elements in the chart
@@ -163,7 +156,6 @@ export default {
     watch: {
         resize(newSize) { // when window resizes
             if ((newSize.width !== 0) && (newSize.height !== 0)) {
-                console.log('resize in plot')
                 this.rerender()
             }
         },
