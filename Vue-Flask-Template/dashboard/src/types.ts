@@ -47,3 +47,10 @@ export interface TopPolicies {
     readonly year: number;
     readonly top_policies: string[];
 }
+
+
+export interface MapDatum {
+    readonly allIncidents: number;
+    readonly lawTotal: number;
+    readonly state: String;
+}

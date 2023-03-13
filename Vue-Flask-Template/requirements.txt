@@ -5,7 +5,7 @@ pandas
 scikit-learn
 networkx
 nltk
-wordcloud
+# wordcloud
 matplotlib
 seaborn
 statsmodels

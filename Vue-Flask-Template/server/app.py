@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
 from controller import processMap, processTopPoliciesPerState, processPolicyScatterplot, processGroupedBarChart, processPolicyCorrelations
+import os
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -27,6 +29,7 @@ def hello_world():
 @app.route("/fetchMap", methods=["GET", "POST"])
 @cross_origin()
 def fetchMap():
+    print('map fetch')
     data = request.get_json()
     points = data.get("data", [])
 
@@ -82,7 +85,21 @@ def fetchPolicyCorrelationTable():
 #     resp = jsonify(data=categories)
 #     return resp
 
+# @app.route("/fetchMap", methods=["GET", "POST"])
+# @cross_origin()
+# def fetchMap():
+#     data = processMap()
+#     resp = jsonify(data=data)
+#     return resp
 
+@app.route("/fetchGeoMap", methods=["GET", "POST"])
+@cross_origin()
+def fetchGeoMap():
+    SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+    json_url = os.path.join(SITE_ROOT, "data/map/states-albers-10m.json")
+    with open(json_url) as json_file:
+        data = json.load(json_file)
+    return jsonify(data)
 
 if __name__ == "__main__":
     app.run(port=3100, debug=True)

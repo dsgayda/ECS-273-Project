@@ -49,8 +49,8 @@ export default {
             let svg = d3.select(gbc)
                 .append('svg')
                 .attr('id', 'grouped-bar-svg')
-                // .attr('width', '100%')
-                // .attr('height', '100%')
+                .attr('width', '100%')
+                .attr('height', '100%')
                 // .style('display', 'block');
 
             const parentRect = gbc.getBoundingClientRect();
@@ -81,7 +81,6 @@ export default {
                 }
             }
 
-            console.log('y max: ', y_max)
             
             var y = d3.scaleLinear()
                 .domain([0, y_max])
@@ -111,18 +110,12 @@ export default {
                 .join("rect")
                 .attr("x", d => xSubgroup(d.key))
                 .attr("y", d => {
-                    console.log('data: ', d.value)
-
-                    console.log('y_max: ', y(y_max))
                     return y(d.value)
                 })
                 .attr("width", xSubgroup.bandwidth())
                 .attr("height", (d) => {return parentRect.height - y(d.value) - this.margin.bottom})
                 .attr("fill", d => {
 
-                    console.log('color key: ', parseInt(d.key.substring(d.key.length - 1, d.key.length)) - 1)
-
-                    console.log('color key: ', color(d.key))
                     return color((parseInt(d.key.substring(d.key.length - 1, d.key.length)) - 1).toString())
                 })
                 .attr("transform", `translate(${this.margin.left + this.margin.right+ 20}, 0)`)

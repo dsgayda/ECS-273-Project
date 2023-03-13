@@ -54,8 +54,8 @@ export default {
             let svg = d3.select(sc)
                 .append('svg')
                 .attr('id', 'scatter-svg')
-                // .attr('width', '100%')
-                // .attr('height', '100%')
+                .attr('width', '100%')
+                .attr('height', '100%')
                 // .style('display', 'block');
             // // get the size of the parent container
             // const parentRect = sc.getBoundingClientRect();
@@ -92,39 +92,9 @@ export default {
             let yScale = d3.scaleLinear()
                 .range([parentRect.height - (this.margin.bottom + this.margin.top), this.margin.top]) //bottom side to the top side on the screen
                 .domain(yExtents)
-            // There are other scales such as scaleOrdinal and scaleBand, 
-            // whichever is appropriate depends on the data types and the kind of visualizations you're creating.
-
-            /*
-            // This following part visualizes the axes. We did not do it because the x- and y- axis in DR projections usually mean nothing for interpretation.
-            // Check out https://observablehq.com/@d3/margin-convention?collection=@d3/d3-axis
-            // Note that for axis labels, this is just a demostration, their positions are not perfect.
-            const xAxis = chartContainer.append('g')
-                .attr('transform', `translate(0, ${this.size.height - this.margin.bottom})`)
-                .call(d3.axisBottom(xScale))
-
-            const yAxis = chartContainer.append('g')
-                .attr('transform', `translate(${this.margin.left}, 0)`)
-                .call(d3.axisLeft(yScale))
-
-            const yLabel = chartContainer.append('g')
-                .attr('transform', `translate(${this.margin.left}, ${this.size.height / 2 + this.margin.top}) rotate(-90)`)
-                .append('text')
-                .text('PC2')
-
-            const xLabel = chartContainer.append('g')
-                .attr('transform', `translate(${this.size.width / 2}, ${this.size.height - this.margin.top})`)
-                .append('text')
-                .text('PC1')
-            */
-
-            // Similar to above but now we are creating the color scale with scaleOrdinal.
-            // let clusters: string[] = this.clusters.map((cluster: string, idx: number) => String(idx))
-            // let clusters: string[] = this.clusters.map(())
+           
             let colorScale = this.color; 
-            // d3.scaleOrdinal().domain(this.clusters).range(d3.schemeSet1) // d3.schemeTableau10: string[]
-
-            // "g" is group element that does nothing but helps avoid DOM looking like a mess
+           
             // We iterate through each <PolicyPoint> element in the array, create a circle for each and indicate the coordinates, the circle size, the color, and the opacity.
             const points = svg.selectAll('circle') // select all circles
                 .data<ScatterPoint>(this.points) // bind data
@@ -141,7 +111,7 @@ export default {
             // sc.append
 
             const title = chartContainer.append('g').append('text') // adding the text
-                .attr('transform', `translate(${parentRect.width / 2}, ${parentRect.height})`)
+                .attr('transform', `translate(${this.size.width / 2}, ${this.size.height})`)
                 .attr('dy', '0.5rem') // relative distance from the indicated coordinates.
                 .style('text-anchor', 'middle')
                 .style('font-weight', 'bold')

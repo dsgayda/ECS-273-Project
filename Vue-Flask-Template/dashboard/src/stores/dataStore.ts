@@ -4,7 +4,7 @@ import { isEmpty } from 'lodash';
 import { server } from '../helper';
 import * as d3 from "d3";
 
-import { PolicyPoint, ComponentSize, Margin, MapState, TopPolicies, GroupedBar, PolicyCategory } from '../types';
+import { PolicyPoint, ComponentSize, Margin, MapState, TopPolicies, GroupedBar, PolicyCategory, MapDatum} from '../types';
 
 export const useDataStore = defineStore('dataStore', {
     state: () => ({
@@ -19,7 +19,9 @@ export const useDataStore = defineStore('dataStore', {
         margin: {left: 70, right: 20, top: 20, bottom: 40} as Margin,
         color: d3.scaleOrdinal()
             .domain(['0', '1', '2', '3', '4',])
-            .range(d3.schemeSet1.slice(0, 5))
+            .range(d3.schemeTableau10),
+        mapData: [] as MapDatum[],
+        geoMapData: {},
 }),
     getters: {
         resize: (state) => {
@@ -28,8 +30,7 @@ export const useDataStore = defineStore('dataStore', {
         }
     },
     actions: {
-        async fetchData() { // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
-            
+        async fetchData(options?: {}) { // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
             let resp = await axios.get(`${server}/fetchPolicyScatterplot`)
             this.points = resp.data.data; 
             this.clusters = resp.data.clusters;
@@ -39,6 +40,16 @@ export const useDataStore = defineStore('dataStore', {
                 clusters: this.clusters
             };
 
+
+
+            const getMap = { ...options };
+            if (getMap) {
+                // resp = await axios.get(`${server}/fetchMap`);
+                // this.mapData = resp.data.data;
+
+                resp = await axios.get(`${server}/fetchGeoMap`);
+                this.geoMapData = resp.data;
+            }
             resp = await axios.get(`${server}/fetchTopPoliciesPerPoint`);
             this.top_policies = resp.data.data;
 
@@ -54,6 +65,17 @@ export const useDataStore = defineStore('dataStore', {
             // resp = await axios.post(`${server}/fetchPolicyClusterCategories`, data);
             // this.categories = resp.data.data;
         },
+        // async fetchMap() { // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
+        //     axios.get(`${server}/fetchMap`)
+        //         .then(resp => {
+        //             this.mapData = resp.data.data;
+        //             return true;
+        //         })
+        //         .catch(error => console.log(error));
+        // },
+        // async fetchGeoMap() { // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
+            
+        // }
 
 
     }
