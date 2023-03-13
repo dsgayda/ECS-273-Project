@@ -113,11 +113,11 @@ export default {
                 .style('opacity', .25)
                 .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
                 .on('mouseover', (event, d) => {
-                    console.log(this)
+                    console.log('mouseover event', event, d);
                     tooltip.transition()
                         .duration(200)
                         .style('opacity', .9);
-                    tooltip.html(`Details: ${d.state}, ${d.year}, Cluster: ${d.cluster}`)
+                    tooltip.html(`Details: ${d.state}, ${d.year}`)
                         .style('left', (event.pageX) + 'px')
                         .style('top', (event.pageY - 28) + 'px');
                 })

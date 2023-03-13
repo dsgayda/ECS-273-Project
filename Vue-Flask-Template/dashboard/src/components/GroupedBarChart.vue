@@ -112,7 +112,7 @@ export default {
                 })
                 .attr("width", xSubgroup.bandwidth())
                 .attr("height", (d) => {return parentRect.height - y(d.value) - this.margin.bottom})
-                .attr("fill", d => {
+                .style("fill", d => {
 
                     return color((parseInt(d.key.substring(d.key.length - 1, d.key.length)) - 1).toString())
                 })
@@ -122,13 +122,13 @@ export default {
             // Add mouseover to highlight bars of same color as bar under mouse
             // TODO: Do this for each visualization
             bars.on("mouseover", function(d) {
-                    const color = d3.select(this).attr("fill");
+                    const color = d3.select(this).style("fill");
                     bars.filter(function(d) {
-                        return d3.select(this).attr("fill") !== color;
-                    }).attr("opacity", 0.5);
+                        return d3.select(this).style("fill") !== color;
+                    }).style("opacity", 0.5);
                 })
                 .on("mouseout", function() {
-                    bars.attr("opacity", 1);
+                    bars.style("opacity", 1);
                 });
 
             // Add X axis
