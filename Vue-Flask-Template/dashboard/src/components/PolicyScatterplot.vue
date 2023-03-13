@@ -96,9 +96,17 @@ export default {
             let colorScale = this.color; 
 
             // Add a tooltip
-            const tooltip = d3.select("svg").append("div")
-                .attr("class", "tooltip")
-                .style("opacity", 0);
+                let tooltip = d3
+                .select('body')
+                .append('div')
+                .attr('class', 'd3-tooltip')
+                .style('position', 'absolute')
+                .style('z-index', '10')
+                .style('padding', '1px')
+                .style('background', 'rgba(0,0,0,0.6)')
+                .style('border-radius', '4px')
+                .style('color', '#fff')
+                .text('a simple tooltip');
            
             // We iterate through each <PolicyPoint> element in the array, create a circle for each and indicate the coordinates, the circle size, the color, and the opacity.
             const points = svg.selectAll('circle') // select all circles
@@ -115,29 +123,29 @@ export default {
                 })
                 .style('opacity', .25)
                 .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
-                .on('mouseover', (event, d) => {
-                    console.log('mouseover event', event, d);
-                    tooltip.transition()
-                        .duration(200)
-                        .style('opacity', .9);
-                    tooltip.html(`Details: ${d.state}, ${d.year}`)
-                        .style('left', (event.pageX) + 'px')
-                        .style('top', (event.pageY - 28) + 'px');
-                })
-                .on('mouseout', (d) => {
-                    tooltip.transition()
-                        .duration(500)
-                        .style('opacity', 0);
-                });
+               
+                
 
-            
+                // .on("mouseover", function (event, d) {
+                //     highlight(d.replaceAll(' ', ''))
+
+                // })
             // Add mouseover to highlight bars of same color as bar under mouse
             // TODO: Do this for each visualization
-            points.on("mouseover", function(d) {
+            points.on("mouseover", function(e, d) {
                     const color = d3.select(this).style("fill");
                     points.filter(function(d) {
                         return d3.select(this).style("fill") === color;
                     }).style("opacity", 1);
+
+                    console.log("e.pageX: ", e.pageX);
+                    tooltip.transition()
+                        .duration(200)
+                        .style('opacity', .9);
+                    tooltip.html(`Details: ${d.state}, ${d.year}`)
+                        .style('left', (e.pageX) + 'px')
+                        .style('top', (e.pageY - 28) + 'px');
+               
                 })
                 .on("mouseout", function() {
                     points.style("opacity", 0.25);
