@@ -18,6 +18,8 @@ export interface Point {
 
 
 export interface PolicyPoint {
+    readonly state: string;
+    readonly year: number;
     readonly dimension1: number;
     readonly dimension2: number;
     readonly cluster: string;
