@@ -163,6 +163,7 @@ export default {
     },
     // The following are general setup for resize events.
     mounted() {
+        this.initChart()
         window.addEventListener('resize', debounce(this.onResize, 100)) 
         this.onResize()
     },
