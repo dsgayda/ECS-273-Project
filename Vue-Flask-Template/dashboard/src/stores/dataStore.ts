@@ -20,7 +20,6 @@ export const useDataStore = defineStore('dataStore', {
         color: d3.scaleOrdinal()
             .domain(['0', '1', '2', '3', '4',])
             .range(d3.schemeTableau10),
-        mapData: [] as MapDatum[],
         geoMapData: {},
 }),
     getters: {
@@ -40,27 +39,26 @@ export const useDataStore = defineStore('dataStore', {
                 clusters: this.clusters
             };
 
-
-
-            const getMap = { ...options };
-            if (getMap) {
-                // resp = await axios.get(`${server}/fetchMap`);
-                // this.mapData = resp.data.data;
-
-                resp = await axios.get(`${server}/fetchGeoMap`);
-                this.geoMapData = resp.data;
-            }
             resp = await axios.get(`${server}/fetchTopPoliciesPerPoint`);
             this.top_policies = resp.data.data;
 
-            resp = await axios.post(`${server}/fetchMap`, data);
-            this.states = resp.data.data;
 
             resp = await axios.post(`${server}/fetchGroupedBarChart`, data);
             this.bars = resp.data.data;
 
             resp = await axios.post(`${server}/fetchPolicyCorrelationTable`, data);
             this.table = resp.data.data;
+
+
+            const getMap = { ...options };
+            if (getMap) {
+                resp = await axios.post(`${server}/fetchMap`, data);
+                this.states = resp.data.data;
+
+                resp = await axios.post(`${server}/fetchGeoMap`);
+                this.geoMapData = resp.data;
+            }
+            
 
             // resp = await axios.post(`${server}/fetchPolicyClusterCategories`, data);
             // this.categories = resp.data.data;

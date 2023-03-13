@@ -22,14 +22,14 @@ export default {
         const exampleStore = useExampleStore();
 
         // Alternative expression from computed
-        const { mapData, geoMapData, size, margin } = storeToRefs(store);
+        const { geoMapData, size, margin, states } = storeToRefs(store);
         const { resize } = storeToRefs(exampleStore);
 
         return {
             exampleStore,
             store, // Return store as the local state, but when you update the property value, the store is also updated.
             resize,
-            mapData,
+            states,
             geoMapData,
             size,
             margin
@@ -53,6 +53,8 @@ export default {
             this.size = { width: target.clientWidth, height: target.clientHeight }; // How you update the store
         },
         async initChart() {
+
+            console.log('mapData:', this.states)
             if (this.store.geoMapData?.objects?.states) {
                 // const obData = csvParse(obDataCsv, ({ id, obesity2008, obesity2018 }) => [id, [+obesity2008, +obesity2018]]);
 
