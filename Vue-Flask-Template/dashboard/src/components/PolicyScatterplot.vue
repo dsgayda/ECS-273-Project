@@ -104,6 +104,9 @@ export default {
             const points = svg.selectAll('circle') // select all circles
                 .data<ScatterPoint>(this.points) // bind data
                 .join('circle') // join data with elements
+                .attr("id", d => {
+                    return `cluster${parseInt(d.cluster) + 1}`;
+                })
                 .attr('cx', (d: PolicyPoint) => xScale(d.dimension1))
                 .attr('cy', (d: PolicyPoint) => yScale(d.dimension2))
                 .attr('r', 5)

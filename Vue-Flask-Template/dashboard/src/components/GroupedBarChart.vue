@@ -102,6 +102,7 @@ export default {
                 // Enter in data = loop group per group
                 .data(this.bars)
                 .join("g") 
+                
                 .attr("transform", d => `translate(${x(d.group)}, ${0})`)
                 .selectAll("rect")
                 .data(function(d) { return subgroups.map(function(key) { return {key: key, value: d[key]}; }); })
@@ -116,16 +117,34 @@ export default {
 
                     return color((parseInt(d.key.substring(d.key.length - 1, d.key.length)) - 1).toString())
                 })
+                
+                .attr("id", d => {
+                    return d.key.replaceAll(' ', '');
+                    return `circle-with-cluster-${d.key}`
+                })
                 .attr("transform", `translate(${this.margin.left + this.margin.right+ 20}, 0)`)
                 ;
 
             // Add mouseover to highlight bars of same color as bar under mouse
             // TODO: Do this for each visualization
-            bars.on("mouseover", function(d) {
-                    const color = d3.select(this).style("fill");
-                    bars.filter(function(d) {
-                        return d3.select(this).style("fill") !== color;
-                    }).style("opacity", 0.5);
+            bars.on("mouseover", function(e, d) {
+                    const cluster = d.key;
+                    const id = `#${cluster}`
+                    console.log('id: ', id)
+                    console.log('cluster: ', cluster)
+                    d3.selectAll(`#${d.key}`).style("opacity", 0.0);
+                    d3.selectAll('circles').filter(id)
+
+                    // For bar vs. point opacities
+                    // .filter( d => {
+                    //     return d3.select(cluster);
+                    // }
+                        
+                    
+                    // const color = d3.select(this).style("fill");
+                    // bars.filter(function(d) {
+                    //     return d3.select(this).style("fill") !== color;
+                    // }).style("opacity", 0.5);
                 })
                 .on("mouseout", function() {
                     bars.style("opacity", 1);
