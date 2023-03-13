@@ -54,7 +54,6 @@ export default {
                 // .style('display', 'block');
 
             const parentRect = gbc.getBoundingClientRect();
-            // svg.attr('viewBox', `${this.margin.left} ${this.margin.top} ${parentRect.width} ${parentRect.height }`);
 
             svg.attr('viewBox', `${this.margin.left} ${this.margin.top} ${parentRect.width} ${parentRect.height }`);
 
@@ -99,8 +98,7 @@ export default {
             //     .domain(this.clusters)
             //     .range(d3.schemeSet1)
             // Show the bars
-            svg
-                .selectAll("rect")
+            const bars = svg.selectAll("rect")
                 // Enter in data = loop group per group
                 .data(this.bars)
                 .join("g") 
@@ -120,6 +118,18 @@ export default {
                 })
                 .attr("transform", `translate(${this.margin.left + this.margin.right+ 20}, 0)`)
                 ;
+
+            // Add mouseover to highlight bars of same color as bar under mouse
+            // TODO: Do this for each visualization
+            bars.on("mouseover", function(d) {
+                    const color = d3.select(this).attr("fill");
+                    bars.filter(function(d) {
+                        return d3.select(this).attr("fill") !== color;
+                    }).attr("opacity", 0.5);
+                })
+                .on("mouseout", function() {
+                    bars.attr("opacity", 1);
+                });
 
             // Add X axis
             svg.append("g")

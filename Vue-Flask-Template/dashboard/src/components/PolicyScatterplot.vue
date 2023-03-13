@@ -94,6 +94,11 @@ export default {
                 .domain(yExtents)
            
             let colorScale = this.color; 
+
+            // Add a tooltip
+            const tooltip = d3.select("svg").append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0);
            
             // We iterate through each <PolicyPoint> element in the array, create a circle for each and indicate the coordinates, the circle size, the color, and the opacity.
             const points = svg.selectAll('circle') // select all circles
@@ -105,10 +110,35 @@ export default {
                 .style('fill', (d: PolicyPoint) => {
                     return colorScale((d.cluster).toString())
                 })
-                .style('opacity', .7)
+                .style('opacity', .25)
                 .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
+                .on('mouseover', (event, d) => {
+                    console.log(this)
+                    tooltip.transition()
+                        .duration(200)
+                        .style('opacity', .9);
+                    tooltip.html(`Details: ${d.state}, ${d.year}, Cluster: ${d.cluster}`)
+                        .style('left', (event.pageX) + 'px')
+                        .style('top', (event.pageY - 28) + 'px');
+                })
+                .on('mouseout', (d) => {
+                    tooltip.transition()
+                        .duration(500)
+                        .style('opacity', 0);
+                });
 
-            // sc.append
+            
+            // Add mouseover to highlight bars of same color as bar under mouse
+            // TODO: Do this for each visualization
+            points.on("mouseover", function(d) {
+                    const color = d3.select(this).style("fill");
+                    points.filter(function(d) {
+                        return d3.select(this).style("fill") === color;
+                    }).style("opacity", 1);
+                })
+                .on("mouseout", function() {
+                    points.style("opacity", 0.25);
+                });
 
             const title = chartContainer.append('g').append('text') // adding the text
                 .attr('transform', `translate(${this.size.width / 2}, ${this.size.height})`)
