@@ -70,6 +70,7 @@ export default {
                 .domain(groups)
                 .range([0, parentRect.width - (this.margin.right + this.margin.left)])
                 .padding([0.2])
+                
             
             let y_max = 0
             for(let elem of this.bars){
@@ -84,7 +85,7 @@ export default {
             var y = d3.scaleLinear()
                 .domain([0, y_max])
                 // .domain([40, 0])
-                .range([ parentRect.height - this.margin.bottom, this.margin.top]);
+                .range([ parentRect.height - this.margin.bottom, this.margin.top + 20]);
             
                 
             // Another scale for subgroup position?
@@ -116,14 +117,13 @@ export default {
                 
                 .attr("id", d => {
                     return d.key.replaceAll(' ', '');
-                    return `circle-with-cluster-${d.key}`
                 })
-                .attr("transform", `translate(${this.margin.left + this.margin.right+ 20}, 0)`)
+                .attr("transform", `translate(${this.margin.left + this.margin.right+ 20}, ${this.margin.bottom})`)
                 ;
 
             // Add mouseover to highlight same cluster as bar under mouse
-            const points = d3.selectAll("circle");
             bars.on("mouseover", function(e, d) {
+                    const points = d3.selectAll("circle");
                     const color = d3.select(this).style("fill");
                     bars.filter(function(d) {
                         return d3.select(this).style("fill") !== color;
@@ -136,29 +136,46 @@ export default {
                     }).style("opacity", 0.05);
                 })
                 .on("mouseout", function() {
+                    const points = d3.selectAll("circle");
                     bars.style("opacity", 1);
                     points.style("opacity", 0.5);
                 });
 
             // Add X axis
             svg.append("g")
-                .attr("transform", `translate(${this.margin.left + this.margin.right+ 20}, ${parentRect.height - this.margin.bottom})`)
+                .attr("transform", `translate(${this.margin.left + this.margin.right+ 20}, ${parentRect.height})`)
                 .call(d3.axisBottom(x).tickSize(0));
-                
+            
+            // X axis label
+            svg.append("text")
+                .attr("class", "x label")
+                .attr('transform', `translate(${parentRect.width / 1.75}, ${parentRect.height + 20})`)
+                .attr("text-anchor", "middle")
+                .style('font-size', '12px') 
+                .text("Incidence Type");
+
+                        
             // Add Y axis
             svg.append("g")
-                .attr('transform', `translate(${this.margin.left + this.margin.right + 20}, 0)`)
+                .attr('transform', `translate(${this.margin.left + this.margin.right + 20}, ${this.margin.bottom})`)
                 .call(d3.axisLeft(y)
                 .tickFormat(d3.format(".0%"))
                 );
-
+            
+            // Add Y axis label
+            svg.append('g')
+                .attr('transform', `translate(${this.margin.left + this.margin.right -5}, ${this.size.height / 2 + this.margin.top}) rotate(-90)`)
+                .append('text')
+                .attr("text-anchor", "middle")
+                .style('font-size', '12px')
+                .text('Percent of Total Incidents in All Clusters')   
+                         
             // Add Title
             svg.append('g').append('text') // adding the text
-                .attr('transform', `translate(${parentRect.width / 1.75}, ${parentRect.height})`)
-                .attr('dy', '0.5rem') // relative distance from the indicated coordinates.
+                .attr('transform', `translate(${parentRect.width / 1.75}, ${this.margin.top + this.margin.bottom - 20})`)
                 .style('text-anchor', 'middle')
                 .style('font-weight', 'bold')
-                .style('font-size', '20px') // set the font size to 24 pixels
+                .style('font-size', '20px') 
                 .text('Average Incidents In Policy Clusters') // text content
         },
         rerender() {

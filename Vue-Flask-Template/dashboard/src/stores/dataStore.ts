@@ -16,7 +16,7 @@ export const useDataStore = defineStore('dataStore', {
         categories: [] as PolicyCategory[],
         table: [] as any[],
         size: { width: 0, height: 0 } as ComponentSize,
-        margin: {left: 70, right: 20, top: 20, bottom: 40} as Margin,
+        margin: {left: 70, right: 20, top: 20, bottom: 100} as Margin,
         color: d3.scaleOrdinal()
             .domain(['0', '1', '2', '3', '4',])
             .range(d3.schemeDark2),

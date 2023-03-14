@@ -286,6 +286,10 @@ def processGroupedBarChart(policy_clusters: dict, cluster_names:list):
 
 
 def processPolicyCorrelations(policy_clusters:dict, incidence_type='all_incidents'):
+    """
+    output columns:
+    policy category, correlation, cluster 1, cluster 2, ....
+    """
     # load in data
     policy_metadata_filepath = '../server/data/policyMetadata.pickle'
     gun_violence_metadata_filepath = '../server/data/gunViolenceMetadata.pickle'

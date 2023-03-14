@@ -67,12 +67,12 @@ export default {
 
             let chartContainer = svg;
 
-            chartContainer.append('rect')
-                .attr('width', parentRect.width)
-                .attr('height', parentRect.height)
-                .attr('fill', 'lightgray')
-                .attr('opacity', 0.3)
-            .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
+            // chartContainer.append('rect')
+            //     .attr('width', parentRect.width)
+            //     .attr('height', parentRect.height)
+            //     .attr('fill', 'lightgray')
+            //     .attr('opacity', 0.3)
+            // .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
 
 
             // we need compute the [min, max] from the data values of the attributes that will be used to represent x- and y-axis.
@@ -127,8 +127,8 @@ export default {
                 
 
             // Add mouseover to highlight cluster of same color as point under mouse            
-            const bars = d3.selectAll("rect");
             points.on("mouseover", function(e, d) {
+                    const bars = d3.selectAll("rect")
                     const color = d3.select(this).style("fill");
                     bars.filter(function(d) {
                         return d3.select(this).style("fill") !== color;
@@ -148,8 +148,9 @@ export default {
                         .style('top', (e.pageY - 28) + 'px');
                 })
                 .on("mouseout", function() {
-                    bars.style("opacity", 1);
+                    const bars = d3.selectAll("rect")
                     points.style("opacity", 0.5);
+                    bars.style("opacity", 1);
                     tooltip.style("opacity", 0)
                             .style("left", "-9999px") // move the tooltip off screen
                             .style("top", "-9999px");
