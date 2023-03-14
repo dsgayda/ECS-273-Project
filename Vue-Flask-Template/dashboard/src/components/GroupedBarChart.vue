@@ -1,10 +1,7 @@
 <script lang="ts">
 import * as d3 from "d3";
-import axios from 'axios';
 import { isEmpty, debounce } from 'lodash';
-import { server } from '../helper';
 
-import { Point, ComponentSize, Margin, PolicyPoint, GroupedBar } from '../types';
 // Computed property: https://vuejs.org/guide/essentials/computed.html
 // Lifecycle in vue.js: https://vuejs.org/guide/essentials/lifecycle.html#lifecycle-diagram
 import { mapState, storeToRefs } from 'pinia'; 

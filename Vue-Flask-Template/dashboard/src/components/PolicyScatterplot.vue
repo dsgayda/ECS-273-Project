@@ -1,11 +1,6 @@
 <script lang="ts">
 import * as d3 from "d3";
-import axios from 'axios';
 import { isEmpty, debounce } from 'lodash';
-import { server } from '../helper';
-
-import { Point, ComponentSize, Margin, PolicyPoint } from '../types';
-// A "extends" B means A inherits the properties and methods from B.
 
 // Computed property: https://vuejs.org/guide/essentials/computed.html
 // Lifecycle in vue.js: https://vuejs.org/guide/essentials/lifecycle.html#lifecycle-diagram
@@ -63,16 +58,6 @@ export default {
         
             // update the viewBox attribute based on the size of the parent container
             svg.attr('viewBox', `${this.margin.left} ${this.margin.top} ${parentRect.width} ${parentRect.height }`);
-
-
-            let chartContainer = svg;
-
-            // chartContainer.append('rect')
-            //     .attr('width', parentRect.width)
-            //     .attr('height', parentRect.height)
-            //     .attr('fill', 'lightgray')
-            //     .attr('opacity', 0.3)
-            // .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
 
 
             // we need compute the [min, max] from the data values of the attributes that will be used to represent x- and y-axis.
@@ -176,7 +161,7 @@ export default {
                         .style('filter', 'none');
                 });
 
-            const title = chartContainer.append('g').append('text') // adding the text
+            const title = svg.append('g').append('text') // adding the text
                 .attr('transform', `translate(${this.size.width / 2}, ${this.size.height})`)
                 .attr('dy', '0.5rem') // relative distance from the indicated coordinates.
                 .style('text-anchor', 'middle')
