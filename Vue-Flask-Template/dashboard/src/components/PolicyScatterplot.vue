@@ -131,7 +131,6 @@ export default {
             points.on("mouseover", function(e, d) {
                     const color = d3.select(this).style("fill");
                     bars.filter(function(d) {
-                        console.log("bars:", bars)
                         return d3.select(this).style("fill") !== color;
                     }).style("opacity", 0.5);
                     points.filter(function(d) {

@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import umap
 import os
 from sklearn.cluster import KMeans
 from sklearn.manifold import TSNE
@@ -238,8 +237,6 @@ def processPolicyScatterplot(num_clusters: int = 3, method: str = 'PCA'):
             reducer = PCA(n_components=2)
         elif method == 't-SNE':
             reducer = TSNE(n_components=2, verbose=1)
-        elif method == 'UMAP':
-            reducer = umap.UMAP()
         else:
             raise ValueError("Requested a method that is not supported")
         

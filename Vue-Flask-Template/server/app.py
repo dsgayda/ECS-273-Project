@@ -40,7 +40,7 @@ def fetchMap():
 @app.route("/fetchPolicyScatterplot", methods=["GET", "POST"])
 @cross_origin()
 def fetchPolicyScatterplot():
-    points, cluster_names = processPolicyScatterplot()
+    points, cluster_names = processPolicyScatterplot(5, 't-SNE')
     resp = jsonify(data=points, clusters=cluster_names)
     return resp
 
