@@ -146,6 +146,20 @@ export default {
                     tooltip.html(`${d.state}, ${d.year}`)
                         .style('left', (e.pageX) + 'px')
                         .style('top', (e.pageY - 28) + 'px');
+
+                        d3.selectAll('#usstates').filter(function(d) {
+                        return d3.select(this).style("fill") !== color;
+                        })
+                        .style('opacity', '0.2')
+                        .style('filter', 'blur(3px)');
+                    d3.selectAll('#usstates').filter(function(d) {
+                        return d3.select(this).style("fill") === color;
+                    })//.style('filter', 'drop-shadow(2px 2px 0px rgba(0,0,0,0.5))')
+                        ;
+                        console.log('d.key.replaceAll(): ', d)
+                        d3.selectAll(`.ministate:not(#cluster${d.cluster})`)
+                        .style('opacity', '0.2')
+                        .style('filter', 'blur(3px)');
                 })
                 .on("mouseout", function() {
                     const bars = d3.selectAll("rect")
@@ -154,6 +168,16 @@ export default {
                     tooltip.style("opacity", 0)
                             .style("left", "-9999px") // move the tooltip off screen
                             .style("top", "-9999px");
+                    
+                    d3.selectAll('#usstates')
+                        .style("opacity", 0.6)
+                        .style("stroke", '#ccc')
+                        .style('stroke-width', '1px')
+                        .style('filter', 'none');
+
+                        d3.selectAll(`.ministate`)
+                        .style('opacity', '1')
+                        .style('filter', 'none');
                 });
 
             const title = chartContainer.append('g').append('text') // adding the text

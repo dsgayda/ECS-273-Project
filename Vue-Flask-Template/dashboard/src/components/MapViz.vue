@@ -22,7 +22,7 @@ export default {
         const exampleStore = useExampleStore();
 
         // Alternative expression from computed
-        const { geoMapData, size, margin, states } = storeToRefs(store);
+        const { geoMapData, size, margin, states, color } = storeToRefs(store);
         const { resize } = storeToRefs(exampleStore);
 
         return {
@@ -32,7 +32,8 @@ export default {
             states,
             geoMapData,
             size,
-            margin
+            margin,
+            color
         }
     },
     computed: {
@@ -54,10 +55,9 @@ export default {
         },
         async initChart() {
 
-            console.log('mapData:', this.states)
+            console.log('mapData:', JSON.parse(JSON.stringify(this.states)))
             if (this.store.geoMapData?.objects?.states) {
                 // const obData = csvParse(obDataCsv, ({ id, obesity2008, obesity2018 }) => [id, [+obesity2008, +obesity2018]]);
-
 
                 const obDataCsv = `id,obesity2008,obesity2018
 01,0.187,0.362
@@ -113,7 +113,10 @@ export default {
 `
 
                 const ob_data = new Map(csvParse(obDataCsv, ({ id, obesity2008, obesity2018 }) => [id, [+obesity2008, +obesity2018]]));
-                console.log('ob_data: ', ob_data)
+                
+
+                const mappydata = new Map(Object.entries(this.states));
+                console.log('mappydata: ', mappydata)
 // Do something with the obData Map
                 
                 let sc = this.$refs.mapContainer as HTMLElement;
@@ -172,33 +175,134 @@ export default {
                 // apply the transform function to the path generator
                 path = d3.geoPath().projection(transformer);
 
-                svg.append("path")
-                    .datum(topojson.mesh(data, data.objects.states))
-                    .attr("fill", "none")
-                    .attr("stroke", "#ccc")
-                    .attr("d", path)
-                    .attr('transform', `translate(${this.margin.left}, 0)`)
+                // svg.append("path")
+                //     .datum(topojson.mesh(data, data.objects.states))
+                //     .attr("stroke", "#ccc")
+                //     .attr("d", path)
+                //     .attr('transform', `translate(${this.margin.left}, 0)`)
+
+                    svg.append("g")
+                        .selectAll("path")
+                        .data(states.features)
+                        .enter().append("path")
+                            .attr("fill", d => {
+                                // console.log('not sure: ', this.states.filter(s => s.state === d.properties.name)[0]?.cluster)
+                                if (!this.states.filter(s => s.state === d.properties.name)[0]?.cluster && this.states.filter(s => s.state === d.properties.name)[0]?.cluster !== 0) {
+
+                                    console.log('no cluster?: ', this.states.filter(s => s.state === d.properties.name)[0])
+                                    return "white";
+                                    // console.log('states.filter(s => s.state === d.properties.name)[0].cluster: ', this.states.filter(s => s.state === d.properties.name)[0].cluster)
+                                
+                                }
+                                else {
+                                    return this.color(this.states.filter(s => s.state === d.properties.name)[0].cluster.toString())
+                                }
+                               return "white";
+                            }
+                            )
+                            .attr('id', 'usstates')
+                            .attr("stroke", "#ccc")
+                            .attr('opacity', '.6')
+                            .attr("d", path)
+                            .attr('transform', `translate(${this.margin.left}, 0)`);
 
 
-                    function transform(d, year) {
+
+
+                            // Find the minimum and maximum policies_implemented values
+                        const policiesImplementedExtent = d3.extent(this.states, d => d.policies_implemented);
+
+                        // Create a linear scale for circle size based on policies_implemented
+                        const sizeScale = d3.scaleLinear()
+                            .domain(policiesImplementedExtent)
+                            .range([0.25, .9]);
+
+                            // Use the size scale in the transform function
+                    function transform(d, states) {
                         const [x, y] = path.centroid(d);
+                        // console.log('hey: ', states.filter(s => s.state === d.properties.name)[0])
+                        if (states.filter(s => s.state === d.properties.name)[0]?.policies_implemented) {
+                            const policiesImplemented = states.filter(s => s.state === d.properties.name)[0].policies_implemented;
+                        const size = sizeScale(policiesImplemented);
+                        console.log('policiesImplemented: ', policiesImplemented)
+
                         return `
                             translate(${x + 70},${y})
-                            scale(${Math.sqrt(ob_data.get(d.id)[year])})
+                            scale(${size})
                             translate(${-x},${-y})
                         `;
                         }
 
-                        let color = d3.scaleSequential(d3.extent(Array.from(ob_data.values()).flat()), d3.interpolateReds).nice()
+                        return `
+                            translate(${x + 70},${y})
+                            translate(${-x},${-y})
+                        `;
+                    }
+                    // function transform(d, states) {
+                    //     const [x, y] = path.centroid(d);
+
+                    //     // console.log('mapper: ', states.filter(s => s.state === d.properties.name)[0].policies_implemented)
+
+                    //     // scale(${Math.sqrt(ob_data.get(d.id)[year])})
+                    //     return `
+                    //         translate(${x + 70},${y})
+                    //         scale(${Math.sqrt(states.filter(s => s.state === d.properties.name)[0].policies_implemented)/12})
+                    //         translate(${-x},${-y})
+                    //     `;
+                    //     }
+
+                        // Little States
+                        // let redcolor = d3.scaleSequential(d3.extent(Array.from(this.states.map(s => s.incidents_per_capita).values()).flat()), d3.interpolateReds).nice()
+                        let colorRange = ["green", "yellow", "red"];
+
+                        // Define the domain of the quantize scale using the extent of the incidents_per_capita values
+                        let colorDomain = d3.extent(Array.from(this.states.map(s => s.incidents_per_capita).values()).flat());
+
+                        // Define the number of bins for the quantize scale
+                        let numBins = colorRange.length;
+
+                        // Create the quantize scale using d3.scaleQuantize()
+                        let RYG_color = d3.scaleQuantize()
+                            .domain(colorDomain)
+                            .range(colorRange);
+
+                        console.log('mappy: ', this.states.map(s => s.incidents_per_capita))
                         const state = svg.append("g")
                             .attr("stroke", "#000")
                             .selectAll("path")
-                            .data(topojson.feature(data, data.objects.states).features.filter(d => ob_data.has(d.id)))
+                            .data(topojson.feature(data, data.objects.states).features.filter(d => {
+                                // console.log('ob_data.has(d.id): ', parseInt(d.id))
+                                // console.log('d: ', d)
+
+                                if (this.states.filter(s => s.state === d.properties.name) && this.states.filter(s => s.state === d.properties.name)[0]?.incidents_per_capita !== undefined) {
+                                    // console.log('this.states.filter(s => s.state === d.properties.name): ', this.states.filter(s => s.state === d.properties.name))
+                                    return true
+                                }
+                                else {
+                                    // console.log('here: ', this.states.filter(s => s.state === d.properties.name))
+                                    // console.log('after: ',  d.properties.name)
+                                    return false;
+                                }
+                                
+                                // return ob_data.has(d.id)
+                            }))
                             .join("path")
                             .attr("vector-effect", "non-scaling-stroke")
                             .attr("d", path)
-                            .attr("fill", d => color(ob_data.get(d.id)[0]))
-                            .attr("transform", d => transform(d, 0));
+                            .attr("id", d => {
+                                return `cluster${this.states.filter(s => s.state === d.properties.name)[0]?.cluster}`
+                            })
+                            .attr('class', 'ministate')
+                            .attr("fill", d => {
+                                // console.log('color: ', color(this.states.filter(s => s.state === d.properties.name).incidents_per_capita))
+                                // console.log('d: ', d.properties.name)
+                                // console.log('maybe: ', this.states.filter(s => s.state === d.properties.name)[0].incidents_per_capita)
+                                return RYG_color(this.states.filter(s => s.state === d.properties.name)[0].incidents_per_capita)
+                            })
+                            .attr("transform", d => transform(d, this.states));
+
+
+
 
                 //     console.log('data: ', data)
                 //     let path = d3.geoPath().projection(d3.geoIdentity().reflectY(true) // flip the y-axis to match SVG convention

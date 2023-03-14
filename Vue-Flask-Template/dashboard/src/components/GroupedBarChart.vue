@@ -134,11 +134,37 @@ export default {
                     points.filter(function(d) {
                         return d3.select(this).style("fill") !== color;
                     }).style("opacity", 0.05);
+                    
+                    d3.selectAll('#usstates').filter(function(d) {
+                        return d3.select(this).style("fill") !== color;
+                        })
+                        .style('opacity', '0.2')
+                        .style('filter', 'blur(3px)');
+                    d3.selectAll('#usstates').filter(function(d) {
+                        return d3.select(this).style("fill") === color;
+                    })//.style('filter', 'drop-shadow(2px 2px 0px rgba(0,0,0,0.5))')
+                        ;
+                        console.log('d.key.replaceAll(): ', (parseInt(d.key.substring(d.key.length - 1, d.key.length)) - 1).toString())
+                        d3.selectAll(`.ministate:not(#cluster${(parseInt(d.key.substring(d.key.length - 1, d.key.length)) - 1).toString()})`)
+                        .style('opacity', '0.2')
+                        .style('filter', 'blur(3px)');
+                    
+                    
                 })
                 .on("mouseout", function() {
                     const points = d3.selectAll("circle");
                     bars.style("opacity", 1);
                     points.style("opacity", 0.5);
+                    d3.selectAll('#usstates').filter(function(d) {
+                        return d3.select(this).style("fill") !== color;
+                    }).style("opacity", 0.6)
+                        .style("stroke", '#ccc')
+                        .style('stroke-width', '1px')
+                        .style('filter', 'none');
+
+                        d3.selectAll(`.ministate`)
+                        .style('opacity', '1')
+                        .style('filter', 'none');
                 });
 
             // Add X axis
