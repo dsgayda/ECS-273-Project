@@ -147,24 +147,20 @@ export default {
                         .style('left', (e.pageX) + 'px')
                         .style('top', (e.pageY - 28) + 'px');
 
-                        d3.selectAll('#usstates').filter(function(d) {
+                    d3.selectAll('#usstates').filter(function(d) {
                         return d3.select(this).style("fill") !== color;
                         })
                         .style('opacity', '0.2')
-                        .style('filter', 'blur(3px)');
-                    d3.selectAll('#usstates').filter(function(d) {
-                        return d3.select(this).style("fill") === color;
-                    })//.style('filter', 'drop-shadow(2px 2px 0px rgba(0,0,0,0.5))')
+                        // .style('filter', 'blur(3px)')
                         ;
-                        console.log('d.key.replaceAll(): ', d)
-                        d3.selectAll(`.ministate:not(#cluster${d.cluster})`)
+                    d3.selectAll(`.ministate:not(#cluster${d.cluster})`)
                         .style('opacity', '0.2')
-                        .style('filter', 'blur(3px)');
+                        // .style('filter', 'blur(3px)')
+                        ;
                 })
                 .on("mouseout", function() {
-                    const bars = d3.selectAll("rect")
                     points.style("opacity", 0.5);
-                    bars.style("opacity", 1);
+                    d3.selectAll("rect").style("opacity", 1);
                     tooltip.style("opacity", 0)
                             .style("left", "-9999px") // move the tooltip off screen
                             .style("top", "-9999px");
