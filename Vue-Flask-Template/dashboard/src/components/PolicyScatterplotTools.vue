@@ -1,5 +1,6 @@
 <script lang="ts">
 import * as d3 from "d3";
+import {sliderVertical} from 'd3-simple-slider';
 import { isEmpty, debounce } from 'lodash';
 
 // Computed property: https://vuejs.org/guide/essentials/computed.html
@@ -44,14 +45,28 @@ export default {
                 .attr('id', 'scatter-tools-svg')
                 .attr('width', '100%')
                 .attr('height', '100%')
-                // .style('display', 'block');
-            // // get the size of the parent container
-            // const parentRect = sc.getBoundingClientRect();
+
+            // get the size of the parent container
             const parentRect = { width: sc.clientWidth, height: sc.clientHeight };
         
             // update the viewBox attribute based on the size of the parent container
             svg.attr('viewBox', `${this.margin.left} ${this.margin.top} ${parentRect.width} ${parentRect.height }`);
 
+            // trying to copy https://github.com/johnwalley/d3-simple-slider
+            var slider = sliderVertical()
+                .min(2)
+                .max(6)
+                .attr('width', this.size.width/20)
+                ;
+            
+            const sliderContainer = d3.select(sc)
+                .append('svg')
+                .attr('width', this.size.width)
+                .attr('height', this.size.height)
+                .append('g')
+                .attr('transform', `translate(${30}, ${30})`)
+            
+            sliderContainer.call(slider)
         },
         rerender() {
             d3.selectAll('.scatter-chart-container').selectAll('*').remove() // Clean all the elements in the chart

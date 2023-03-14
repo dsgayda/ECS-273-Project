@@ -162,10 +162,11 @@ export default {
                 });
 
             const title = svg.append('g').append('text') // adding the text
-                .attr('transform', `translate(${this.size.width / 2}, ${this.size.height})`)
+                .attr('transform', `translate(${this.size.width / 2}, ${this.size.height + 10})`)
                 .attr('dy', '0.5rem') // relative distance from the indicated coordinates.
                 .style('text-anchor', 'middle')
                 .style('font-weight', 'bold')
+                .style('font-size', '20px') 
                 .text('Clustering State Policies') // text content
         },
         rerender() {
