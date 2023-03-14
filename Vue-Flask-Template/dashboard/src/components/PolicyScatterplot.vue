@@ -121,34 +121,39 @@ export default {
                 .style('fill', (d: PolicyPoint) => {
                     return colorScale((d.cluster).toString())
                 })
-                .style('opacity', .25)
+                .style('opacity', .5)
                 .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
                
                 
 
-                // .on("mouseover", function (event, d) {
-                //     highlight(d.replaceAll(' ', ''))
-
-                // })
-            // Add mouseover to highlight bars of same color as bar under mouse
-            // TODO: Do this for each visualization
+            // Add mouseover to highlight cluster of same color as point under mouse            
+            const bars = d3.selectAll("rect");
             points.on("mouseover", function(e, d) {
                     const color = d3.select(this).style("fill");
+                    bars.filter(function(d) {
+                        console.log("bars:", bars)
+                        return d3.select(this).style("fill") !== color;
+                    }).style("opacity", 0.5);
                     points.filter(function(d) {
                         return d3.select(this).style("fill") === color;
                     }).style("opacity", 1);
-
-                    console.log("e.pageX: ", e.pageX);
+                    points.filter(function(d) {
+                        return d3.select(this).style("fill") !== color;
+                    }).style("opacity", 0.05);
+                    // tooltip appears
                     tooltip.transition()
                         .duration(200)
                         .style('opacity', .9);
-                    tooltip.html(`Details: ${d.state}, ${d.year}`)
+                    tooltip.html(`${d.state}, ${d.year}`)
                         .style('left', (e.pageX) + 'px')
                         .style('top', (e.pageY - 28) + 'px');
-               
                 })
                 .on("mouseout", function() {
-                    points.style("opacity", 0.25);
+                    bars.style("opacity", 1);
+                    points.style("opacity", 0.5);
+                    tooltip.style("opacity", 0)
+                            .style("left", "-9999px") // move the tooltip off screen
+                            .style("top", "-9999px");
                 });
 
             const title = chartContainer.append('g').append('text') // adding the text

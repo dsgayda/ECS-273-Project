@@ -29,7 +29,6 @@ def hello_world():
 @app.route("/fetchMap", methods=["GET", "POST"])
 @cross_origin()
 def fetchMap():
-    print('map fetch')
     data = request.get_json()
     points = data.get("data", [])
 
@@ -83,13 +82,6 @@ def fetchPolicyCorrelationTable():
 #     points = data.get("data", [])
 #     categories = processPolicyClusterCategories(points, 2) # TODO: Take input cluster
 #     resp = jsonify(data=categories)
-#     return resp
-
-# @app.route("/fetchMap", methods=["GET", "POST"])
-# @cross_origin()
-# def fetchMap():
-#     data = processMap()
-#     resp = jsonify(data=data)
 #     return resp
 
 @app.route("/fetchGeoMap", methods=["GET", "POST"])

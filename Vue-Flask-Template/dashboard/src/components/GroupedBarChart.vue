@@ -94,9 +94,6 @@ export default {
                 .padding([0.05])
             // color palette = one color per subgroup
             var color = this.color;
-            // d3.scaleOrdinal()
-            //     .domain(this.clusters)
-            //     .range(d3.schemeSet1)
             // Show the bars
             const bars = svg.selectAll("rect")
                 // Enter in data = loop group per group
@@ -114,7 +111,6 @@ export default {
                 .attr("width", xSubgroup.bandwidth())
                 .attr("height", (d) => {return parentRect.height - y(d.value) - this.margin.bottom})
                 .style("fill", d => {
-
                     return color((parseInt(d.key.substring(d.key.length - 1, d.key.length)) - 1).toString())
                 })
                 
@@ -125,29 +121,23 @@ export default {
                 .attr("transform", `translate(${this.margin.left + this.margin.right+ 20}, 0)`)
                 ;
 
-            // Add mouseover to highlight bars of same color as bar under mouse
-            // TODO: Do this for each visualization
+            // Add mouseover to highlight same cluster as bar under mouse
+            const points = d3.selectAll("circle");
             bars.on("mouseover", function(e, d) {
-                    const cluster = d.key;
-                    const id = `#${cluster}`
-                    console.log('id: ', id)
-                    console.log('cluster: ', cluster)
-                    d3.selectAll(`#${d.key}`).style("opacity", 0.0);
-                    d3.selectAll('circles').filter(id)
-
-                    // For bar vs. point opacities
-                    // .filter( d => {
-                    //     return d3.select(cluster);
-                    // }
-                        
-                    
-                    // const color = d3.select(this).style("fill");
-                    // bars.filter(function(d) {
-                    //     return d3.select(this).style("fill") !== color;
-                    // }).style("opacity", 0.5);
+                    const color = d3.select(this).style("fill");
+                    bars.filter(function(d) {
+                        return d3.select(this).style("fill") !== color;
+                    }).style("opacity", 0.5);
+                    points.filter(function(d) {
+                        return d3.select(this).style("fill") === color;
+                    }).style("opacity", 1);
+                    points.filter(function(d) {
+                        return d3.select(this).style("fill") !== color;
+                    }).style("opacity", 0.05);
                 })
                 .on("mouseout", function() {
                     bars.style("opacity", 1);
+                    points.style("opacity", 0.5);
                 });
 
             // Add X axis
