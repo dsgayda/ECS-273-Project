@@ -348,7 +348,8 @@ def processPolicyCorrelations(policy_clusters:dict, incidence_type='all_incident
                                       values='percent_policies_implemented')
     
     table_data = cluster_data.join(correlation_df.set_index(['category'])[['correlation']])
-    table_data = table_data.sort_values(by=['correlation']).reset_index()
+    # sort table and round values
+    table_data = table_data.sort_values(by=['correlation']).reset_index().round(3)
     return table_data.to_dict(orient='records')
 
 

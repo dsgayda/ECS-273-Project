@@ -21,35 +21,45 @@ export default {
     },
     data() {
         return {
+            headers6: [
+                { title: 'category', align: 'start', sortable: true, key: 'category' },
+                { title: 'correlation', align: 'end', key: 'correlation' },
+                { title: 'cluster 1', align: 'end', key: 'cluster 0' },
+                { title: 'cluster 2', align: 'end', key: 'cluster 1' },
+                { title: 'cluster 3', align: 'end', key: 'cluster 2' },
+                { title: 'cluster 4', align: 'end', key: 'cluster 3' },
+                { title: 'cluster 5', align: 'end', key: 'cluster 4' },
+                { title: 'cluster 6', align: 'end', key: 'cluster 5' },
+            ],
             headers5: [
                 { title: 'category', align: 'start', sortable: true, key: 'category' },
-                { title: 'cluster 0', align: 'end', key: 'cluster 0' },
-                { title: 'cluster 1', align: 'end', key: 'cluster 1' },
-                { title: 'cluster 2', align: 'end', key: 'cluster 2' },
-                { title: 'cluster 3', align: 'end', key: 'cluster 3' },
-                { title: 'cluster 4', align: 'end', key: 'cluster 4' },
                 { title: 'correlation', align: 'end', key: 'correlation' },
+                { title: 'cluster 1', align: 'end', key: 'cluster 0' },
+                { title: 'cluster 2', align: 'end', key: 'cluster 1' },
+                { title: 'cluster 3', align: 'end', key: 'cluster 2' },
+                { title: 'cluster 4', align: 'end', key: 'cluster 3' },
+                { title: 'cluster 5', align: 'end', key: 'cluster 4' },
             ],
             headers4: [
                 { title: 'category', align: 'start', sortable: true, key: 'category' },
-                { title: 'cluster 0', align: 'end', key: 'cluster 0' },
-                { title: 'cluster 1', align: 'end', key: 'cluster 1' },
-                { title: 'cluster 2', align: 'end', key: 'cluster 2' },
-                { title: 'cluster 3', align: 'end', key: 'cluster 3' },
                 { title: 'correlation', align: 'end', key: 'correlation' },
+                { title: 'cluster 1', align: 'end', key: 'cluster 0' },
+                { title: 'cluster 2', align: 'end', key: 'cluster 1' },
+                { title: 'cluster 3', align: 'end', key: 'cluster 2' },
+                { title: 'cluster 4', align: 'end', key: 'cluster 3' },
             ],
             headers3: [
                 { title: 'category', align: 'start', sortable: true, key: 'category' },
-                { title: 'cluster 0', align: 'end', key: 'cluster 0' },
-                { title: 'cluster 1', align: 'end', key: 'cluster 1' },
-                { title: 'cluster 2', align: 'end', key: 'cluster 2' },
                 { title: 'correlation', align: 'end', key: 'correlation' },
+                { title: 'cluster 1', align: 'end', key: 'cluster 0' },
+                { title: 'cluster 2', align: 'end', key: 'cluster 1' },
+                { title: 'cluster 3', align: 'end', key: 'cluster 2' },
             ],
             headers2: [
                 { title: 'category', align: 'start', sortable: true, key: 'category' },
-                { title: 'cluster 0', align: 'end', key: 'cluster 0' },
-                { title: 'cluster 1', align: 'end', key: 'cluster 1' },
                 { title: 'correlation', align: 'end', key: 'correlation' },
+                { title: 'cluster 1', align: 'end', key: 'cluster 0' },
+                { title: 'cluster 2', align: 'end', key: 'cluster 1' },
             ]
         }
     },
@@ -71,6 +81,14 @@ export default {
         const isDataReady = computed(() => {
             console.log('computed headers: ', tableHeaders.value);
             return tableItems.value.length > 0 && tableHeaders.value.length > 0;
+        });
+
+        const sixHeaders = computed(() => {
+            console.log('computed headers: ', tableHeaders.value)
+            if (tableHeaders.value.length === 8) {
+                return true;
+            }
+            return false;
         });
 
         const fiveHeaders = computed(() => {
@@ -103,6 +121,7 @@ export default {
         let isDataLoaded = false;
         return {
             isDataReady,
+            sixHeaders,
             fiveHeaders,
             fourHeaders,
             threeHeaders,
@@ -136,13 +155,6 @@ export default {
             this.initChart()
         },
         async fetchData() {
-            // console.log('fetching data')
-            // const store = useDataStore();
-            // // await store.fetchData();
-            // this.tableItems = store.tableItems;
-            // this.tableHeaders = store.tableHeaders;
-            // this.isDataLoaded = true;
-            // console.log('data fetched')
         },
 
     },
@@ -214,6 +226,10 @@ export default {
 <template>
     <div v-if="isDataReady" style="max-height: 50% overflow-y: hidden" class="scatter-chart-container d-flex"
         ref="tableContainer">
+        <div v-if="sixHeaders">
+            <v-data-table :headers="headers6" :items="tableItems" density="compact" items-per-page="50"
+                :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table>
+        </div>
         <div v-if="fiveHeaders">
             <v-data-table :headers="headers5" :items="tableItems" density="compact" items-per-page="50"
                 :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table>
