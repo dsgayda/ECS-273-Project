@@ -18,7 +18,7 @@ export const useDataStore = defineStore('dataStore', {
         size: { width: 0, height: 0 } as ComponentSize,
         margin: {left: 70, right: 20, top: 20, bottom: 20} as Margin,
         color: d3.scaleOrdinal()
-            .domain(['0', '1', '2', '3', '4',])
+            .domain(['0', '1', '2', '3', '4', '5', '6'])
             .range(d3.schemeDark2),
         geoMapData: {},
 }),
