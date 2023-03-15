@@ -316,7 +316,7 @@ def processPolicyCorrelations(policy_clusters:dict, incidence_type='all_incident
     subcategory_corrs = []
     for subcategory in set(policy_metadata.sub_category):
         subcategory_data = policy_metadata[policy_metadata.sub_category == subcategory]
-        subcategory_corr = policy_metadata.corr().iloc[0, 1:].reset_index()
+        subcategory_corr = subcategory_data.corr().iloc[0, 1:].reset_index()
         subcategory_corr['category'] = subcategory
         subcategory_corrs.append(subcategory_corr)
     correlation_df = pd.concat(subcategory_corrs)
