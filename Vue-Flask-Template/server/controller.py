@@ -330,6 +330,7 @@ def processPolicyCorrelations(policy_clusters:dict, incidence_type='all_incident
     policy_clusters.set_index(['state', 'year'], inplace=True)
     cluster_data = policy_metadata.join(policy_clusters)
     cluster_data = cluster_data[['sub_category', 'percent_policies_implemented', 'cluster']]
+
     # rename the clusters to strings for readability
     mapping = {}
     for cluster in set(cluster_data.cluster):
@@ -342,40 +343,42 @@ def processPolicyCorrelations(policy_clusters:dict, incidence_type='all_incident
                                       values='percent_policies_implemented')
     
     table_data = cluster_data.join(correlation_df.set_index(['category'])[['correlation']])
-    return table_data.reset_index().to_dict(orient='records')
+    table_data = table_data.sort_values(by=['correlation']).reset_index()
+    return table_data.to_dict(orient='records')
 
 
 
-def processPolicyClusterCategories(policy_clusters: dict, target_cluster: int):
-    """
-    I'm expecting clusters to be the same data that is outputted 
-    by processPolicyScatterplot
-    """
-    policy_metadata_filepath = '../server/data/policyMetadata.pickle'
-    dirname = os.path.dirname(__file__)
-    filename = os.path.join(dirname, policy_metadata_filepath)
-    if not os.path.exists(filename):
-        preprocessPolicyMetadata()
+# def processPolicyClusterCategories(policy_clusters: dict, target_cluster: int):
+#     """
+#     function to get the top policy categories for a cluster
+
+#     I'm expecting clusters to be the same data that is outputted 
+#     by processPolicyScatterplot
+#     """
+#     policy_metadata_filepath = '../server/data/policyMetadata.pickle'
+#     dirname = os.path.dirname(__file__)
+#     filename = os.path.join(dirname, policy_metadata_filepath)
+#     if not os.path.exists(filename):
+#         preprocessPolicyMetadata()
     
-    policy_metadata = pd.read_pickle(policy_metadata_filepath)
-    policy_metadata.set_index(['year', 'state'], inplace=True) # for grouping purposes
-    policy_clusters = pd.DataFrame(policy_clusters)
+#     policy_metadata = pd.read_pickle(policy_metadata_filepath)
+#     policy_metadata.set_index(['year', 'state'], inplace=True) # for grouping purposes
+#     policy_clusters = pd.DataFrame(policy_clusters)
 
-    target_cluster_data = policy_clusters[policy_clusters.cluster == target_cluster]
-    target_cluster_data.set_index(['year', 'state'], inplace=True) # for grouping purposes
+#     target_cluster_data = policy_clusters[policy_clusters.cluster == target_cluster]
+#     target_cluster_data.set_index(['year', 'state'], inplace=True) # for grouping purposes
 
-    all_data = target_cluster_data.join(policy_metadata, on=['year', 'state'])
-    all_data.reset_index(inplace=True)
-    all_data = all_data[['sub_category', 'policies_implemented']]
-    all_data = all_data.groupby('sub_category').mean()
-    all_data.sort_values('policies_implemented', ascending=False, inplace=True)
-    all_data.reset_index(inplace=True)
+#     all_data = target_cluster_data.join(policy_metadata, on=['year', 'state'])
+#     all_data.reset_index(inplace=True)
+#     all_data = all_data[['sub_category', 'policies_implemented']]
+#     all_data = all_data.groupby('sub_category').mean()
+#     all_data.sort_values('policies_implemented', ascending=False, inplace=True)
+#     all_data.reset_index(inplace=True)
 
-    return all_data.to_dict(orient='records')
+#     return all_data.to_dict(orient='records')
 
     
 if __name__ == "__main__":
     os.chdir('C:/Users/nammy/Desktop/ECS-273-Project/Vue-Flask-Template/dashboard/')
     cluster_data, clusters = processPolicyScatterplot()
-    # pprint(processPolicyClusterCategories(cluster_data, 0))
     pprint(processPolicyCorrelations(cluster_data))
