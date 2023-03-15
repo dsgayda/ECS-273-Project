@@ -44,7 +44,7 @@ export default {
     },
     methods: {
         onResize() {
-            
+
             let target = this.$refs.mapContainer as HTMLElement
             if (target === undefined || target === null) return;
             this.size = { width: target.clientWidth, height: target.clientHeight }; // How you update the store
@@ -192,18 +192,30 @@ export default {
 
                         // Little States
                         // let redcolor = d3.scaleSequential(d3.extent(Array.from(this.states.map(s => s.incidents_per_capita).values()).flat()), d3.interpolateReds).nice()
+                        
+                        // Color gradient green -> yellow -> red
                         let colorRange = ["green", "yellow", "red"];
 
-                        // Define the domain of the quantize scale using the extent of the incidents_per_capita values
+                        // Define the domain of the linear scale using the extent of the incidents_per_capita values
                         let colorDomain = d3.extent(Array.from(this.states.map(s => s.incidents_per_capita).values()).flat());
 
-                        // Define the number of bins for the quantize scale
-                        let numBins = colorRange.length;
+                        // Create the linear scale using d3.scaleLinear() and interpolate between the colors
+                        let RYG_color = d3.scaleLinear()
+                            .domain([colorDomain[0], (colorDomain[0] + colorDomain[1]) / 2, colorDomain[1]])
+                            .range(colorRange)
+                            .interpolate(d3.interpolateRgb);
 
-                        // Create the quantize scale using d3.scaleQuantize()
-                        let RYG_color = d3.scaleQuantize()
-                            .domain(colorDomain)
-                            .range(colorRange);
+                        // let colorRange = ["white", "black"];
+
+                        // // Define the domain of the linear scale using the extent of the incidents_per_capita values
+                        // let colorDomain = d3.extent(Array.from(this.states.map(s => s.incidents_per_capita).values()).flat());
+
+                        // // Create the linear scale using d3.scaleLinear() and interpolate between the colors
+                        // let RYG_color = d3.scaleLinear()
+                        //     .domain(colorDomain)
+                        //     .range(colorRange)
+                        //     .interpolate(d3.interpolateRgb);
+
 
                         // console.log('mappy: ', this.states.map(s => s.incidents_per_capita))
                         const state = svg.append("g")
