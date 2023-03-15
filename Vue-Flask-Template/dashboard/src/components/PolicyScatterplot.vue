@@ -39,7 +39,7 @@ export default {
     methods: {
         onResize() {  // record the updated size of the target element
             let target = this.$refs.scatterContainer as HTMLElement
-            if (target === undefined) return;
+            if (!target) return;
             this.size = { width: target.clientWidth, height: target.clientHeight };
         },
         initChart() {
@@ -194,7 +194,9 @@ export default {
     // The following are general setup for resize events.
     mounted() {
         window.addEventListener('resize', debounce(this.onResize, 100))
+        this.$nextTick(() => {
         this.onResize()
+    })
     },
     beforeDestroy() {
         window.removeEventListener('resize', this.onResize)

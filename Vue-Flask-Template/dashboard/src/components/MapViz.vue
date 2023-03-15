@@ -37,14 +37,14 @@ export default {
     },
     computed: {
         ...mapState(useDataStore, []), // Traditional way to map the store state to the local state
-        ...mapState(useExampleStore, [])
+        ...mapState(useExampleStore, []),
+        
     },
     created() {
-        this.store.fetchData({ map: true });
-        // this.store.fetchGeoMap();
     },
     methods: {
         onResize() {
+            
             let target = this.$refs.mapContainer as HTMLElement
             if (target === undefined || target === null) return;
             this.size = { width: target.clientWidth, height: target.clientHeight }; // How you update the store
@@ -54,61 +54,6 @@ export default {
             if (this.store.geoMapData?.objects?.states) {
                 // const obData = csvParse(obDataCsv, ({ id, obesity2008, obesity2018 }) => [id, [+obesity2008, +obesity2018]]);
 
-                const obDataCsv = `id,obesity2008,obesity2018
-01,0.187,0.362
-02,0.198,0.295
-04,0.133,0.295
-05,0.175,0.371
-06,0.151,0.258
-08,0.1,0.23
-09,0.125,0.274
-10,0.171,0.335
-12,0.172,0.307
-13,0.133,0.325
-15,0.108,0.249
-16,0.142,0.284
-17,0.167,0.318
-18,0.201,0.341
-19,0.175,0.353
-20,0.159,0.344
-21,0.169,0.366
-22,0.177,0.368
-23,0.141,0.304
-24,0.163,0.309
-25,0.117,0.257
-26,0.182,0.33
-27,0.153,0.301
-28,0.195,0.395
-29,0.189,0.35
-30,0.134,0.269
-31,0.163,0.341
-32,0.133,0.295
-33,0.151,0.296
-34,0.145,0.257
-35,0.13,0.323
-36,0.139,0.276
-37,0.169,0.33
-38,0.164,0.351
-39,0.175,0.34
-40,0.135,0.348
-41,0.152,0.299
-42,0.169,0.309
-44,0.132,0.277
-45,0.167,0.343
-46,0.139,0.301
-47,0.184,0.344
-48,0.159,0.348
-49,0.14,0.278
-50,0.146,0.275
-51,0.157,0.304
-53,0.139,0.287
-54,0.183,0.395
-55,0.16,0.32
-56,0.143,0.29
-`
-
-                const ob_data = new Map(csvParse(obDataCsv, ({ id, obesity2008, obesity2018 }) => [id, [+obesity2008, +obesity2018]]));
-                
 
                 const mappydata = new Map(Object.entries(this.states));
                 // console.log('mappydata: ', mappydata)
@@ -351,13 +296,26 @@ export default {
                 this.rerender()
             }
         },
-        'store.points'(newPoints) { // when data changes
+        'store.points': {
+        async handler(newPoints) {
             if (!isEmpty(newPoints)) {
+                console.log('newPoints: ', newPoints)
+                console.log('fetching map')
+                const data = {
+                    data: this.store.points,
+                    clusters: this.store.clusters,
+                };
+                let resp = await this.store.fetchGeoMap(data);
+                console.log('store resp: ', resp)
+                this.store.geoMapData = resp?.geoMapData;
+                this.store.mapData = resp?.mapData;
                 //Call and set the other api based on points, with POST method
                 // set data for bar chart based on results from post
                 this.rerender()
             }
-        }
+        },
+        immediate: true,
+    },
     },
     mounted() {
         window.addEventListener('resize', debounce(this.onResize, 100))

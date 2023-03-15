@@ -12,7 +12,6 @@ import {
   TopPolicies,
   GroupedBar,
   PolicyCategory,
-  MapDatum,
   DataTableHeader,
   TableItem,
 } from "../types";
@@ -60,52 +59,43 @@ export const useDataStore = defineStore("dataStore", {
       resp = await axios.post(`${server}/fetchGroupedBarChart`, data);
       this.bars = resp.data.data;
 
-      resp = await axios.post(`${server}/fetchPolicyCorrelationTable`, data);
-      this.table = resp.data.data;
-
-      this.tableHeaders = [];
-      for (let i = 0; i < Object.keys(this.table[0]).length; i++) {
-        if (i === 0) {
-          this.tableHeaders.push({
-            text: Object.keys(this.table[0])[i],
-            align: "start",
-            sortable: true,
-            key: Object.keys(this.table[0])[i],
-          });
-        } else {
-          this.tableHeaders.push({
-            text: Object.keys(this.table[0])[i],
-            align: "end",
-            sortable: false,
-            key: Object.keys(this.table[0])[i],
-          });
-        }
-      }
-
-      this.tableItems = this.table ;
-
-      const getMap = { ...options };
-      if (getMap) {
-        resp = await axios.post(`${server}/fetchMap`, data);
-        this.states = resp.data.data;
-
-        resp = await axios.post(`${server}/fetchGeoMap`);
-        this.geoMapData = resp.data;
-      }
-
       // resp = await axios.post(`${server}/fetchPolicyClusterCategories`, data);
       // this.categories = resp.data.data;
     },
-    // async fetchMap() { // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
-    //     axios.get(`${server}/fetchMap`)
-    //         .then(resp => {
-    //             this.mapData = resp.data.data;
-    //             return true;
-    //         })
-    //         .catch(error => console.log(error));
-    // },
-    // async fetchGeoMap() { // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
+    async fetchGeoMap(data) {
+      // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
+      try {
+        const geoMapResponse = await axios.post(`${server}/fetchGeoMap`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        console.log('geoMapResponse: ', geoMapResponse)
+        this.geoMapData = geoMapResponse.data;
 
-    // }
+        const geoMapData = geoMapResponse.data;
+        console.log('geo data: ', geoMapData)
+        const mapResponse = await axios.post(`${server}/fetchMap`, data);
+        this.states = mapResponse.data.data;
+        let states = mapResponse.data.data;
+
+        return { geoMapData, states };
+      } catch (error) {
+        console.log("Error fetching geo map data:", error);
+      }
+      return;
+    },
+    async fetchTableData(data) {
+        // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
+        try {
+            const resp = await axios.post(`${server}/fetchPolicyCorrelationTable`, data);
+            const table = resp.data.data;
+          return table;
+        } catch (error) {
+          console.log("Error fetching table data:", error);
+        }
+        return;
+      },
+
   },
 });

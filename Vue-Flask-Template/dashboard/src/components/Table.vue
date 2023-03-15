@@ -136,13 +136,13 @@ export default {
             this.initChart()
         },
         async fetchData() {
-            console.log('fetching data')
-            const store = useDataStore();
-            await store.fetchData();
-            this.tableItems = store.tableItems;
-            this.tableHeaders = store.tableHeaders;
-            this.isDataLoaded = true;
-            console.log('data fetched')
+            // console.log('fetching data')
+            // const store = useDataStore();
+            // // await store.fetchData();
+            // this.tableItems = store.tableItems;
+            // this.tableHeaders = store.tableHeaders;
+            // this.isDataLoaded = true;
+            // console.log('data fetched')
         },
 
     },
@@ -152,13 +152,44 @@ export default {
                 this.rerender()
             }
         },
-        'store.table'(newTable) { // when data changes
-            if (!isEmpty(newTable)) {
-                //Call and set the other api based on points, with POST method
-                // set data for bar chart based on results from post
-                this.rerender()
-            }
-        
+        'store.points': {
+            async handler(newPoints) {
+                if (!isEmpty(newPoints)) {// when data changes
+
+                    const data = {
+                        data: this.store.points,
+                        clusters: this.store.clusters,
+                    };
+
+                    let table = await this.store.fetchTableData(data);
+
+                    this.tableHeaders = [];
+                    for (let i = 0; i < Object.keys(table[0]).length; i++) {
+                        if (i === 0) {
+                            this.tableHeaders.push({
+                                text: Object.keys(table[0])[i],
+                                align: "start",
+                                sortable: true,
+                                key: Object.keys(table[0])[i],
+                            });
+                        } else {
+                            this.tableHeaders.push({
+                                text: Object.keys(table[0])[i],
+                                align: "end",
+                                sortable: false,
+                                key: Object.keys(table[0])[i],
+                            });
+                        }
+                    }
+
+                    this.tableItems = table;
+                    //Call and set the other api based on points, with POST method
+                    // set data for bar chart based on results from post
+                    this.rerender()
+
+                }
+            },
+            immediate: true,
         },
         'store.tableHeaders'(newHeaders) {
             this.rerender();
@@ -181,7 +212,8 @@ export default {
 </script>
 
 <template>
-    <div v-if="isDataReady"  style="max-height: 50% overflow-y: hidden" class="scatter-chart-container d-flex" ref="tableContainer">
+    <div v-if="isDataReady" style="max-height: 50% overflow-y: hidden" class="scatter-chart-container d-flex"
+        ref="tableContainer">
         <div v-if="fiveHeaders">
             <v-data-table :headers="headers5" :items="tableItems" density="compact" items-per-page="50"
                 :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table>
@@ -208,10 +240,10 @@ export default {
 
 <style>
 .vdiv {
-  overflow-y: auto;
+    overflow-y: auto;
 }
 
-.elevation-1 { 
+.elevation-1 {
     max-height: 100px;
 }
 
