@@ -28,7 +28,7 @@ export default {
         ...mapState(useDataStore, []) // Traditional way to map the store state to the local state
     },
     created() {
-        this.store.fetchData();
+        // this.store.fetchData();
         // this.store.initializeColorScale();
     },
     methods: {
