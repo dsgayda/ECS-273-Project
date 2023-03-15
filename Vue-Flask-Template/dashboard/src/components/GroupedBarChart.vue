@@ -8,13 +8,18 @@ import { mapState, storeToRefs } from 'pinia';
 import { useDataStore } from '../stores/dataStore';
 
 export default {
+    data() {
+        return {
+            margin: {left: 20, right: 40, top: 30, bottom: 40} as Margin,
+        }
+    },
     setup() { // Composition API syntax
         const store = useDataStore()
         // Alternative expression from computed
         const { resize } = storeToRefs(store);
         const { bars } = storeToRefs(store);
         const { size } = storeToRefs(store);
-        const { margin } = storeToRefs(store);
+        // const { margin } = storeToRefs(store);
         const { clusters } = storeToRefs(store);
         const { color }    = storeToRefs(store);
         return {
@@ -23,7 +28,7 @@ export default {
             color,
             bars,
             size,
-            margin,
+            // margin,
             clusters
         }
     },
@@ -164,7 +169,7 @@ export default {
             // X axis label
             svg.append("text")
                 .attr("class", "x label")
-                .attr('transform', `translate(${parentRect.width / 1.75}, ${parentRect.height + 20})`)
+                .attr('transform', `translate(${parentRect.width / 2}, ${parentRect.height + 25})`)
                 .attr("text-anchor", "middle")
                 .style('font-size', '12px') 
                 .text("Incidence Type");
@@ -179,7 +184,7 @@ export default {
             
             // Add Y axis label
             svg.append('g')
-                .attr('transform', `translate(${this.margin.left + this.margin.right -5}, ${this.size.height / 2 + this.margin.top}) rotate(-90)`)
+                .attr('transform', `translate(${this.margin.right}, ${this.size.height / 2 + this.margin.bottom}) rotate(-90)`)
                 .append('text')
                 .attr("text-anchor", "middle")
                 .style('font-size', '12px')
