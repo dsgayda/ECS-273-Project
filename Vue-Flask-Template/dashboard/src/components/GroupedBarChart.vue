@@ -1,10 +1,7 @@
 <script lang="ts">
 import * as d3 from "d3";
-import axios from 'axios';
 import { isEmpty, debounce } from 'lodash';
-import { server } from '../helper';
 
-import { Point, ComponentSize, Margin, PolicyPoint, GroupedBar } from '../types';
 // Computed property: https://vuejs.org/guide/essentials/computed.html
 // Lifecycle in vue.js: https://vuejs.org/guide/essentials/lifecycle.html#lifecycle-diagram
 import { mapState, storeToRefs } from 'pinia'; 
@@ -57,15 +54,13 @@ export default {
 
             svg.attr('viewBox', `${this.margin.left} ${this.margin.top} ${parentRect.width} ${parentRect.height }`);
 
-
-            // let chartContainer = svg;
-
             // append the svg object to the body of the page
             // List of groups = gun violence stats
             var groups = this.bars.map(d => d.group)
             // List of clusters
             var subgroups = this.clusters
-            
+
+            // ADD AXE
             const x = d3.scaleBand()
                 .domain(groups)
                 .range([0, parentRect.width - (this.margin.right + this.margin.left)])
@@ -139,30 +134,24 @@ export default {
                         return d3.select(this).style("fill") !== color;
                         })
                         .style('opacity', '0.2')
-                        .style('filter', 'blur(3px)');
-                    d3.selectAll('#usstates').filter(function(d) {
-                        return d3.select(this).style("fill") === color;
-                    })//.style('filter', 'drop-shadow(2px 2px 0px rgba(0,0,0,0.5))')
+                        // .style('filter', 'blur(3px)')
                         ;
-                        console.log('d.key.replaceAll(): ', (parseInt(d.key.substring(d.key.length - 1, d.key.length)) - 1).toString())
-                        d3.selectAll(`.ministate:not(#cluster${(parseInt(d.key.substring(d.key.length - 1, d.key.length)) - 1).toString()})`)
+                    d3.selectAll(`.ministate:not(#cluster${(parseInt(d.key.substring(d.key.length - 1, d.key.length)) - 1).toString()})`)
                         .style('opacity', '0.2')
-                        .style('filter', 'blur(3px)');
+                        // .style('filter', 'blur(3px)')
+                        ;
                     
                     
                 })
                 .on("mouseout", function() {
-                    const points = d3.selectAll("circle");
                     bars.style("opacity", 1);
-                    points.style("opacity", 0.5);
-                    d3.selectAll('#usstates').filter(function(d) {
-                        return d3.select(this).style("fill") !== color;
-                    }).style("opacity", 0.6)
+                    d3.selectAll("circle").style("opacity", 0.5);
+                    d3.selectAll('#usstates')
+                        .style("opacity", 0.6)
                         .style("stroke", '#ccc')
                         .style('stroke-width', '1px')
                         .style('filter', 'none');
-
-                        d3.selectAll(`.ministate`)
+                    d3.selectAll(`.ministate`)
                         .style('opacity', '1')
                         .style('filter', 'none');
                 });

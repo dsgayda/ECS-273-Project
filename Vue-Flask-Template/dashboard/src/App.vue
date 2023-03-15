@@ -4,9 +4,11 @@ import Example from './components/Example.vue'
 import ExampleWithLegend from './components/ExampleWithLegend.vue';
 import ExampleWithInteractions from './components/ExampleWithInteractions.vue';
 import PolicyScatterplot from './components/PolicyScatterplot.vue';
+import PolicyScatterplotTools from './components/PolicyScatterplotTools.vue';
 import GroupedBarChart from './components/GroupedBarChart.vue';
 import MapViz from './components/MapViz.vue';
 import Table from './components/Table.vue';
+
 
 export default {
   components: {
@@ -15,6 +17,7 @@ export default {
     ExampleWithLegend,
     ExampleWithInteractions,
     PolicyScatterplot,
+    PolicyScatterplotTools,
     GroupedBarChart,
     MapViz,
     Table
@@ -60,8 +63,7 @@ export default {
 
               <!-- Right column of top-right box -->
               <v-col cols="2" style="border: 1px solid #BBBBBB; overflow-y: auto;">
-                
-                  Right column of top-right box
+                <PolicyScatterplotTools></PolicyScatterplotTools>
               </v-col>
             </v-row>
 

@@ -1,11 +1,6 @@
 <script lang="ts">
 import * as d3 from "d3";
-import axios from 'axios';
 import { isEmpty, debounce } from 'lodash';
-import { server } from '../helper';
-
-import { Point, ComponentSize, Margin, PolicyPoint } from '../types';
-// A "extends" B means A inherits the properties and methods from B.
 
 // Computed property: https://vuejs.org/guide/essentials/computed.html
 // Lifecycle in vue.js: https://vuejs.org/guide/essentials/lifecycle.html#lifecycle-diagram
@@ -63,16 +58,6 @@ export default {
         
             // update the viewBox attribute based on the size of the parent container
             svg.attr('viewBox', `${this.margin.left} ${this.margin.top} ${parentRect.width} ${parentRect.height }`);
-
-
-            let chartContainer = svg;
-
-            // chartContainer.append('rect')
-            //     .attr('width', parentRect.width)
-            //     .attr('height', parentRect.height)
-            //     .attr('fill', 'lightgray')
-            //     .attr('opacity', 0.3)
-            // .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
 
 
             // we need compute the [min, max] from the data values of the attributes that will be used to represent x- and y-axis.
@@ -150,24 +135,20 @@ export default {
                         
                         .style('visibility', 'visible');
 
-                        d3.selectAll('#usstates').filter(function(d) {
+                    d3.selectAll('#usstates').filter(function(d) {
                         return d3.select(this).style("fill") !== color;
                         })
                         .style('opacity', '0.2')
-                        .style('filter', 'blur(3px)');
-                    d3.selectAll('#usstates').filter(function(d) {
-                        return d3.select(this).style("fill") === color;
-                    })//.style('filter', 'drop-shadow(2px 2px 0px rgba(0,0,0,0.5))')
+                        // .style('filter', 'blur(3px)')
                         ;
-                        console.log('d.key.replaceAll(): ', d)
-                        d3.selectAll(`.ministate:not(#cluster${d.cluster})`)
+                    d3.selectAll(`.ministate:not(#cluster${d.cluster})`)
                         .style('opacity', '0.2')
-                        .style('filter', 'blur(3px)');
+                        // .style('filter', 'blur(3px)')
+                        ;
                 })
                 .on("mouseout", function() {
-                    const bars = d3.selectAll("rect")
                     points.style("opacity", 0.5);
-                    bars.style("opacity", 1);
+                    d3.selectAll("rect").style("opacity", 1);
                     tooltip.style("opacity", 0)
                         .style('visibility', 'hidden')
                     
@@ -182,11 +163,12 @@ export default {
                         .style('filter', 'none');
                 });
 
-            const title = chartContainer.append('g').append('text') // adding the text
-                .attr('transform', `translate(${this.size.width / 2}, ${this.size.height})`)
+            const title = svg.append('g').append('text') // adding the text
+                .attr('transform', `translate(${this.size.width / 2}, ${this.size.height + 10})`)
                 .attr('dy', '0.5rem') // relative distance from the indicated coordinates.
                 .style('text-anchor', 'middle')
                 .style('font-weight', 'bold')
+                .style('font-size', '20px') 
                 .text('Clustering State Policies') // text content
         },
         rerender() {
