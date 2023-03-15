@@ -37,7 +37,6 @@ export const useDataStore = defineStore("dataStore", {
   }),
   getters: {
     resize: (state) => {
-      console.log("resize in store");
       return !isEmpty(state.points) && state.size;
     },
   },
@@ -70,11 +69,9 @@ export const useDataStore = defineStore("dataStore", {
             "Content-Type": "application/json",
           },
         });
-        console.log('geoMapResponse: ', geoMapResponse)
         this.geoMapData = geoMapResponse.data;
 
         const geoMapData = geoMapResponse.data;
-        console.log('geo data: ', geoMapData)
         const mapResponse = await axios.post(`${server}/fetchMap`, data);
         this.states = mapResponse.data.data;
         let states = mapResponse.data.data;

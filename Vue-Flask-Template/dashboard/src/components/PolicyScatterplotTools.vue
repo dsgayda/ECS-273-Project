@@ -1,7 +1,7 @@
 <script lang="ts">
 import * as d3 from "d3";
-import {sliderVertical} from 'd3-simple-slider';
 import { isEmpty, debounce } from 'lodash';
+import * as d3Slider from 'd3-simple-slider';
 
 // Computed property: https://vuejs.org/guide/essentials/computed.html
 // Lifecycle in vue.js: https://vuejs.org/guide/essentials/lifecycle.html#lifecycle-diagram
@@ -19,7 +19,7 @@ export default {
 
         return {
             store, // Return store as the local state, but when you update the property value, the store is also updated.
-            // resize,
+            resize,
             size,
             margin
         }
@@ -31,14 +31,16 @@ export default {
     },
     methods: {
         onResize() {  // record the updated size of the target element
+            console.log('resize')
             let target = this.$refs.scatterToolsContainer as HTMLElement
-            if (target === undefined) return;
+            if (!target) return;
             this.size = { width: target.clientWidth, height: target.clientHeight };
         },
         initChart() {
             // select the svg tag so that we can insert(render) elements, i.e., draw the chart, within it.
             let sc = this.$refs.scatterToolsContainer as HTMLElement;
-            let svg = d3.select(sc)
+
+            let svg = d3.select('.scatter-tools-container')
                 .append('svg')
                 .attr('id', 'scatter-tools-svg')
                 .attr('width', '100%')
@@ -46,34 +48,58 @@ export default {
 
             // get the size of the parent container
             const parentRect = { width: sc.clientWidth, height: sc.clientHeight };
-        
-            // update the viewBox attribute based on the size of the parent container
-            svg.attr('viewBox', `${this.margin.left} ${this.margin.top} ${parentRect.width} ${parentRect.height }`);
 
-            // trying to copy https://github.com/johnwalley/d3-simple-slider
-            var slider = sliderVertical()
+            // update the viewBox attribute based on the size of the parent container
+            // svg.attr('viewBox', `${this.margin.left} ${this.margin.top} ${parentRect.width} ${parentRect.height }`);
+
+            
+            const slider = d3Slider
+                .sliderRight()
                 .min(2)
                 .max(6)
-                .attr('width', this.size.width/20)
+                .width(parentRect.height) // Adjust the height based on the parent container
+                .ticks(5)
+                .tickFormat(d3.format(',.0f'))
+                .step(1)
+                .default(3)
+                // .fill('#2196f3')
+                .on('end', val => {
+                    console.log('Slider value:', val);
+                })
                 ;
-            
-            const sliderContainer = d3.select(sc)
-                .append('svg')
-                .attr('width', this.size.width)
-                .attr('height', this.size.height)
-                .append('g')
-                .attr('transform', `translate(${30}, ${30})`)
-            
-            sliderContainer.call(slider)
+
+
+                const centerX = (parentRect.width / 2) - this.margin.right;
+                const centerY = parentRect.height - parentRect.height + this.margin.top + this.margin.bottom;
+
+
+
+
+                const sliderGroup = svg
+                    .append('g')
+                    .attr('transform', `translate(${centerX}, ${centerY})`)
+                    .call(slider);
+
+
+
+            svg.append('g').append('text') // adding the text
+                .attr('transform', `translate(${centerX}, ${centerY - this.margin.top})`)
+                .style('text-anchor', 'middle')
+                .style('font-weight', 'bold')
+                .style('font-size', '12px') 
+                .text('Clusters') // text content
+
+
         },
         rerender() {
-            d3.selectAll('.scatter-chart-container').selectAll('*').remove() // Clean all the elements in the chart
+            d3.selectAll('.scatter-tools-container').selectAll('*').remove() // Clean all the elements in the chart
             this.initChart()
         }
 
     },
     watch: {
         resize(newSize) { // when window resizes
+            console.log('watch')
             if ((newSize.width !== 0) && (newSize.height !== 0)) {
                 this.rerender()
             }
@@ -94,10 +120,16 @@ export default {
 <!-- We use flex to arrange the layout-->
 <template>
     <div class="scatter-tools-container d-flex" ref="scatterToolsContainer">
+
     </div>
 </template>
 
 <style scoped>
+.slider-group {
+    transform-origin: top left;
+    transform: rotate(90deg) translateY(-100%);
+}
+
 .scatter-tools-container {
     height: calc(100%);
 }

@@ -31,7 +31,6 @@ export default {
   },
   watch:{ // This is only effective when you load with <ExampleWithInteractionns> component
     size(){
-      console.log(this.size)
     }
   },
   props: {

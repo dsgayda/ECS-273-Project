@@ -79,12 +79,12 @@ export default {
         const showDataTable = 5;
 
         const isDataReady = computed(() => {
-            console.log('computed headers: ', tableHeaders.value);
+            
             return tableItems.value.length > 0 && tableHeaders.value.length > 0;
         });
 
         const sixHeaders = computed(() => {
-            console.log('computed headers: ', tableHeaders.value)
+            
             if (tableHeaders.value.length === 8) {
                 return true;
             }
@@ -92,7 +92,7 @@ export default {
         });
 
         const fiveHeaders = computed(() => {
-            console.log('computed headers: ', tableHeaders.value)
+            
             if (tableHeaders.value.length === 7) {
                 return true;
             }

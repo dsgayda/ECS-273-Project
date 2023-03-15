@@ -66,9 +66,6 @@ export default {
                 //     .attr('width', '100%')
                 //     .attr('height', '100%')
 
-
-
-
                 const parentRect = { width: sc.clientWidth, height: sc.clientHeight };
 
                 // console.log('parentRect: ', parentRect)
@@ -80,8 +77,8 @@ export default {
                     .attr('fill', 'lightgray')
                     .append('svg')
                     .attr("viewBox", [0, 0, this.size.width, this.size.height])
-                    .attr('width', '100%')
-                    .attr('height', '100%')
+                    .attr('width', parentRect.width)
+                    .attr('height', parentRect.height)
 
                 // svg.attr('viewBox', `${this.margin.left} ${this.margin.top} ${this.size.width} ${this.size.height}`);
 
@@ -143,7 +140,7 @@ export default {
                             .attr("stroke", "#ccc")
                             .attr('opacity', '.6')
                             .attr("d", path)
-                            .attr('transform', `translate(${ 0}, 0)`);
+                            .attr('transform', `translate(${0}, 0)`);
 
 
 
@@ -292,13 +289,11 @@ export default {
     },
     watch: {
         resize(newSize) { // when window resizes
-            console.log('resize!')
             if ((newSize.width !== 0) && (newSize.height !== 0)) {
                 this.rerender()
             }
         },
         'store.mapData'(mapData) { // when data changes
-            console.log('store.mapData!')
             if (!isEmpty(mapData)) {
                 this.rerender()
             }
@@ -311,14 +306,11 @@ export default {
         'store.points': {
         async handler(newPoints) {
             if (!isEmpty(newPoints)) {
-                console.log('newPoints: ', newPoints)
-                console.log('fetching map')
                 const data = {
                     data: this.store.points,
                     clusters: this.store.clusters,
                 };
                 let resp = await this.store.fetchGeoMap(data);
-                console.log('store resp: ', resp)
                 this.store.geoMapData = resp?.geoMapData;
                 this.store.mapData = resp?.mapData;
                 //Call and set the other api based on points, with POST method
