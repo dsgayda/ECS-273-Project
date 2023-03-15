@@ -72,7 +72,6 @@ def fetchPolicyCorrelationTable():
     
     table = processPolicyCorrelations(points)
     resp = jsonify(data=table)
-    print("created resp")
     return resp
 
 # @app.route("/fetchPolicyClusterCategories", methods=["GET", "POST"])

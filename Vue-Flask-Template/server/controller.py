@@ -270,6 +270,8 @@ def processGroupedBarChart(policy_clusters: dict, cluster_names:list):
     if not os.path.exists(filename):
         preprocessGunViolenceMetadata()
     gun_violence_metadata = pd.read_pickle(gun_violence_metadata_filepath)
+    # rename columns to give cleaner names for chart
+    gun_violence_metadata.rename(columns={'mass_shooting': 'mass shooting', 'non_suicide': 'non-suicide'}, inplace=True)
 
     policy_clusters = pd.DataFrame(policy_clusters)
     policy_clusters.set_index(['state', 'year'], inplace=True)
@@ -287,6 +289,7 @@ def processGroupedBarChart(policy_clusters: dict, cluster_names:list):
     data.set_index(['group'], inplace=True)
     data = data.div(data.sum(axis=1), axis=0) # divide each row by the sum of the row
     data.reset_index(inplace=True)
+
     return data.to_dict(orient='records')
 
 
@@ -387,4 +390,4 @@ def processPolicyCorrelations(policy_clusters:dict, incidence_type='all_incident
 if __name__ == "__main__":
     os.chdir('C:/Users/nammy/Desktop/ECS-273-Project/Vue-Flask-Template/dashboard/')
     cluster_data, clusters = processPolicyScatterplot()
-    pprint(processPolicyCorrelations(cluster_data))
+    processGroupedBarChart(cluster_data, clusters)
