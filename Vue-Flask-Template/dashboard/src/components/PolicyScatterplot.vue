@@ -39,12 +39,12 @@ export default {
     methods: {
         onResize() {  // record the updated size of the target element
             let target = this.$refs.scatterContainer as HTMLElement
-            if (target === undefined) return;
+            if (!target) return;
             this.size = { width: target.clientWidth, height: target.clientHeight };
         },
         initChart() {
             // select the svg tag so that we can insert(render) elements, i.e., draw the chart, within it.
-            console.log('this.size: ', this.size);
+            
             let sc = this.$refs.scatterContainer as HTMLElement;
             let svg = d3.select(sc)
                 .append('svg')
@@ -91,7 +91,8 @@ export default {
                 .style('background', 'rgba(0,0,0,0.6)')
                 .style('border-radius', '4px')
                 .style('color', '#fff')
-                .text('a simple tooltip');
+                .text('a simple tooltip')
+                .style('visibility', 'hidden');
            
             // We iterate through each <PolicyPoint> element in the array, create a circle for each and indicate the coordinates, the circle size, the color, and the opacity.
             const points = svg.selectAll('circle') // select all circles
@@ -130,7 +131,9 @@ export default {
                         .style('opacity', .9);
                     tooltip.html(`${d.state}, ${d.year}`)
                         .style('left', (e.pageX) + 'px')
-                        .style('top', (e.pageY - 28) + 'px');
+                        .style('top', (e.pageY - 28) + 'px')
+                        
+                        .style('visibility', 'visible');
 
                     d3.selectAll('#usstates').filter(function(d) {
                         return d3.select(this).style("fill") !== color;
@@ -147,8 +150,7 @@ export default {
                     points.style("opacity", 0.5);
                     d3.selectAll("rect").style("opacity", 1);
                     tooltip.style("opacity", 0)
-                            .style("left", "-9999px") // move the tooltip off screen
-                            .style("top", "-9999px");
+                        .style('visibility', 'hidden')
                     
                     d3.selectAll('#usstates')
                         .style("opacity", 0.6)
@@ -192,7 +194,9 @@ export default {
     // The following are general setup for resize events.
     mounted() {
         window.addEventListener('resize', debounce(this.onResize, 100))
+        this.$nextTick(() => {
         this.onResize()
+    })
     },
     beforeDestroy() {
         window.removeEventListener('resize', this.onResize)

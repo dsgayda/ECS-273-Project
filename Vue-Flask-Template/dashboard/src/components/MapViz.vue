@@ -17,7 +17,6 @@ import { useDataStore } from '../stores/dataStore';
 import { useExampleStore } from "../stores/exampleStore";
 export default {
     setup() { // Composition API syntax
-        console.log('setup')
         const store = useDataStore();
         const exampleStore = useExampleStore();
 
@@ -38,85 +37,26 @@ export default {
     },
     computed: {
         ...mapState(useDataStore, []), // Traditional way to map the store state to the local state
-        ...mapState(useExampleStore, [])
+        ...mapState(useExampleStore, []),
+        
     },
     created() {
-        this.store.fetchData({ map: true });
-        // this.store.fetchGeoMap();
     },
     methods: {
         onResize() {
+
             let target = this.$refs.mapContainer as HTMLElement
             if (target === undefined || target === null) return;
-            console.log('updating size')
-            console.log('target.clientWidth: ', target.clientWidth)
-            console.log('target.clientHeight: ', target.clientHeight)
             this.size = { width: target.clientWidth, height: target.clientHeight }; // How you update the store
         },
         async initChart() {
 
-            console.log('mapData:', JSON.parse(JSON.stringify(this.states)))
             if (this.store.geoMapData?.objects?.states) {
                 // const obData = csvParse(obDataCsv, ({ id, obesity2008, obesity2018 }) => [id, [+obesity2008, +obesity2018]]);
 
-                const obDataCsv = `id,obesity2008,obesity2018
-01,0.187,0.362
-02,0.198,0.295
-04,0.133,0.295
-05,0.175,0.371
-06,0.151,0.258
-08,0.1,0.23
-09,0.125,0.274
-10,0.171,0.335
-12,0.172,0.307
-13,0.133,0.325
-15,0.108,0.249
-16,0.142,0.284
-17,0.167,0.318
-18,0.201,0.341
-19,0.175,0.353
-20,0.159,0.344
-21,0.169,0.366
-22,0.177,0.368
-23,0.141,0.304
-24,0.163,0.309
-25,0.117,0.257
-26,0.182,0.33
-27,0.153,0.301
-28,0.195,0.395
-29,0.189,0.35
-30,0.134,0.269
-31,0.163,0.341
-32,0.133,0.295
-33,0.151,0.296
-34,0.145,0.257
-35,0.13,0.323
-36,0.139,0.276
-37,0.169,0.33
-38,0.164,0.351
-39,0.175,0.34
-40,0.135,0.348
-41,0.152,0.299
-42,0.169,0.309
-44,0.132,0.277
-45,0.167,0.343
-46,0.139,0.301
-47,0.184,0.344
-48,0.159,0.348
-49,0.14,0.278
-50,0.146,0.275
-51,0.157,0.304
-53,0.139,0.287
-54,0.183,0.395
-55,0.16,0.32
-56,0.143,0.29
-`
-
-                const ob_data = new Map(csvParse(obDataCsv, ({ id, obesity2008, obesity2018 }) => [id, [+obesity2008, +obesity2018]]));
-                
 
                 const mappydata = new Map(Object.entries(this.states));
-                console.log('mappydata: ', mappydata)
+                // console.log('mappydata: ', mappydata)
 // Do something with the obData Map
                 
                 let sc = this.$refs.mapContainer as HTMLElement;
@@ -159,10 +99,9 @@ export default {
                 let path = d3.geoPath();
                 let bounds = path.bounds(states);
                 // get the bounds of the path data
-                console.log('boudns: ', bounds)
                 // calculate the scaling factor needed to fit the path inside the container
                 const widthScale = this.size.width / (bounds[1][0] - bounds[0][0]);
-                const heightScale = (this.size.height - (this.margin.bottom + this.margin.top) - 20) / (bounds[1][1] - bounds[0][1]);
+                const heightScale = (this.size.height - (this.margin.bottom + this.margin.top) - parentRect.height/ 10) / (bounds[1][1] - bounds[0][1]);
                 const scaleFactor = Math.min(widthScale, heightScale);
 
                 // create a transform function that scales and translates the path
@@ -189,7 +128,7 @@ export default {
                                 // console.log('not sure: ', this.states.filter(s => s.state === d.properties.name)[0]?.cluster)
                                 if (!this.states.filter(s => s.state === d.properties.name)[0]?.cluster && this.states.filter(s => s.state === d.properties.name)[0]?.cluster !== 0) {
 
-                                    console.log('no cluster?: ', this.states.filter(s => s.state === d.properties.name)[0])
+                                    // console.log('no cluster?: ', this.states.filter(s => s.state === d.properties.name)[0])
                                     return "white";
                                     // console.log('states.filter(s => s.state === d.properties.name)[0].cluster: ', this.states.filter(s => s.state === d.properties.name)[0].cluster)
                                 
@@ -204,7 +143,7 @@ export default {
                             .attr("stroke", "#ccc")
                             .attr('opacity', '.6')
                             .attr("d", path)
-                            .attr('transform', `translate(${this.margin.left}, 0)`);
+                            .attr('transform', `translate(${ 0}, 0)`);
 
 
 
@@ -224,17 +163,17 @@ export default {
                         if (states.filter(s => s.state === d.properties.name)[0]?.policies_implemented) {
                             const policiesImplemented = states.filter(s => s.state === d.properties.name)[0].policies_implemented;
                         const size = sizeScale(policiesImplemented);
-                        console.log('policiesImplemented: ', policiesImplemented)
+                        // console.log('policiesImplemented: ', policiesImplemented)
 
                         return `
-                            translate(${x + 70},${y})
+                            translate(${x},${y})
                             scale(${size})
                             translate(${-x},${-y})
                         `;
                         }
 
                         return `
-                            translate(${x + 70},${y})
+                            translate(${x},${y})
                             translate(${-x},${-y})
                         `;
                     }
@@ -253,20 +192,32 @@ export default {
 
                         // Little States
                         // let redcolor = d3.scaleSequential(d3.extent(Array.from(this.states.map(s => s.incidents_per_capita).values()).flat()), d3.interpolateReds).nice()
+                        
+                        // Color gradient green -> yellow -> red
                         let colorRange = ["green", "yellow", "red"];
 
-                        // Define the domain of the quantize scale using the extent of the incidents_per_capita values
+                        // Define the domain of the linear scale using the extent of the incidents_per_capita values
                         let colorDomain = d3.extent(Array.from(this.states.map(s => s.incidents_per_capita).values()).flat());
 
-                        // Define the number of bins for the quantize scale
-                        let numBins = colorRange.length;
+                        // Create the linear scale using d3.scaleLinear() and interpolate between the colors
+                        let RYG_color = d3.scaleLinear()
+                            .domain([colorDomain[0], (colorDomain[0] + colorDomain[1]) / 2, colorDomain[1]])
+                            .range(colorRange)
+                            .interpolate(d3.interpolateRgb);
 
-                        // Create the quantize scale using d3.scaleQuantize()
-                        let RYG_color = d3.scaleQuantize()
-                            .domain(colorDomain)
-                            .range(colorRange);
+                        // let colorRange = ["white", "black"];
 
-                        console.log('mappy: ', this.states.map(s => s.incidents_per_capita))
+                        // // Define the domain of the linear scale using the extent of the incidents_per_capita values
+                        // let colorDomain = d3.extent(Array.from(this.states.map(s => s.incidents_per_capita).values()).flat());
+
+                        // // Create the linear scale using d3.scaleLinear() and interpolate between the colors
+                        // let RYG_color = d3.scaleLinear()
+                        //     .domain(colorDomain)
+                        //     .range(colorRange)
+                        //     .interpolate(d3.interpolateRgb);
+
+
+                        // console.log('mappy: ', this.states.map(s => s.incidents_per_capita))
                         const state = svg.append("g")
                             .attr("stroke", "#000")
                             .selectAll("path")
@@ -333,7 +284,6 @@ export default {
         rerender() {
             d3.selectAll('.map-container').selectAll('*').remove() // Clean all the elements in the chart
             this.initChart()
-            console.log('rerenderer')
             // d3.selectAll('#map-svg').selectAll('*').remove() // Clean all the elements in the chart
             // d3.selectAll('#map-legend-svg').selectAll('*').remove()
             // this.initChart()
@@ -354,18 +304,30 @@ export default {
             }
         },
         'store.geoMapData'(geoMapData) { // when data changes
-            console.log('store.geoMapData!')
             if (!isEmpty(geoMapData)) {
                 this.rerender()
             }
         },
-        'store.points'(newPoints) { // when data changes
+        'store.points': {
+        async handler(newPoints) {
             if (!isEmpty(newPoints)) {
+                console.log('newPoints: ', newPoints)
+                console.log('fetching map')
+                const data = {
+                    data: this.store.points,
+                    clusters: this.store.clusters,
+                };
+                let resp = await this.store.fetchGeoMap(data);
+                console.log('store resp: ', resp)
+                this.store.geoMapData = resp?.geoMapData;
+                this.store.mapData = resp?.mapData;
                 //Call and set the other api based on points, with POST method
                 // set data for bar chart based on results from post
                 this.rerender()
             }
-        }
+        },
+        immediate: true,
+    },
     },
     mounted() {
         window.addEventListener('resize', debounce(this.onResize, 100))

@@ -5,6 +5,11 @@ from sklearn.cluster import KMeans
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
 from pprint import pprint
+import warnings
+from pandas.errors import PerformanceWarning
+
+warnings.filterwarnings("ignore", category=PerformanceWarning)
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 from sklearn.datasets import load_wine
 # from resources.hd_processing_template import perform_PCA, perform_TSNE

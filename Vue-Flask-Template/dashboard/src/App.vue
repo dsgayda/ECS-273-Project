@@ -7,6 +7,7 @@ import PolicyScatterplot from './components/PolicyScatterplot.vue';
 import PolicyScatterplotTools from './components/PolicyScatterplotTools.vue';
 import GroupedBarChart from './components/GroupedBarChart.vue';
 import MapViz from './components/MapViz.vue';
+import Table from './components/Table.vue';
 
 
 export default {
@@ -18,7 +19,8 @@ export default {
     PolicyScatterplot,
     PolicyScatterplotTools,
     GroupedBarChart,
-    MapViz
+    MapViz,
+    Table
   }
 }
 </script>
@@ -43,13 +45,8 @@ export default {
             <!-- Bottom-left box -->
             <v-row style="height: 50%; ">
               <!-- Bottom-left box -->
-              <v-col cols="12" style="border: 1px solid #BBBBBB;">
-                Bottom-left box
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at sagittis justo. Aliquam blandit
-                nibh non dolor placerat viverra. Aenean euismod erat quis sem elementum pharetra. Donec molestie a
-                nulla ut bibendum. Proin sit amet aliquet eros, ut pretium lorem. Fusce id ipsum at ante elementum
-                pulvinar. In hac habitasse platea dictumst. Duis accumsan elit enim, vel pharetra magna finibus quis.
-                Maecenas vel volutpat libero. Donec ultrices lorem quis nisl gravida, sed scelerisque enim euismod.
+              <v-col cols="12" style="border: 1px solid #BBBBBB; overflow-y: auto;">
+                <Table></Table>
               </v-col>
             </v-row>
           </v-col>
