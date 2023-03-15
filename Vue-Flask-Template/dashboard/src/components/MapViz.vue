@@ -17,7 +17,6 @@ import { useDataStore } from '../stores/dataStore';
 import { useExampleStore } from "../stores/exampleStore";
 export default {
     setup() { // Composition API syntax
-        console.log('setup')
         const store = useDataStore();
         const exampleStore = useExampleStore();
 
@@ -48,14 +47,10 @@ export default {
         onResize() {
             let target = this.$refs.mapContainer as HTMLElement
             if (target === undefined || target === null) return;
-            console.log('updating size')
-            console.log('target.clientWidth: ', target.clientWidth)
-            console.log('target.clientHeight: ', target.clientHeight)
             this.size = { width: target.clientWidth, height: target.clientHeight }; // How you update the store
         },
         async initChart() {
 
-            console.log('mapData:', JSON.parse(JSON.stringify(this.states)))
             if (this.store.geoMapData?.objects?.states) {
                 // const obData = csvParse(obDataCsv, ({ id, obesity2008, obesity2018 }) => [id, [+obesity2008, +obesity2018]]);
 
@@ -116,7 +111,7 @@ export default {
                 
 
                 const mappydata = new Map(Object.entries(this.states));
-                console.log('mappydata: ', mappydata)
+                // console.log('mappydata: ', mappydata)
 // Do something with the obData Map
                 
                 let sc = this.$refs.mapContainer as HTMLElement;
@@ -159,7 +154,6 @@ export default {
                 let path = d3.geoPath();
                 let bounds = path.bounds(states);
                 // get the bounds of the path data
-                console.log('boudns: ', bounds)
                 // calculate the scaling factor needed to fit the path inside the container
                 const widthScale = this.size.width / (bounds[1][0] - bounds[0][0]);
                 const heightScale = (this.size.height - (this.margin.bottom + this.margin.top) - 20) / (bounds[1][1] - bounds[0][1]);
@@ -189,7 +183,7 @@ export default {
                                 // console.log('not sure: ', this.states.filter(s => s.state === d.properties.name)[0]?.cluster)
                                 if (!this.states.filter(s => s.state === d.properties.name)[0]?.cluster && this.states.filter(s => s.state === d.properties.name)[0]?.cluster !== 0) {
 
-                                    console.log('no cluster?: ', this.states.filter(s => s.state === d.properties.name)[0])
+                                    // console.log('no cluster?: ', this.states.filter(s => s.state === d.properties.name)[0])
                                     return "white";
                                     // console.log('states.filter(s => s.state === d.properties.name)[0].cluster: ', this.states.filter(s => s.state === d.properties.name)[0].cluster)
                                 
@@ -224,7 +218,7 @@ export default {
                         if (states.filter(s => s.state === d.properties.name)[0]?.policies_implemented) {
                             const policiesImplemented = states.filter(s => s.state === d.properties.name)[0].policies_implemented;
                         const size = sizeScale(policiesImplemented);
-                        console.log('policiesImplemented: ', policiesImplemented)
+                        // console.log('policiesImplemented: ', policiesImplemented)
 
                         return `
                             translate(${x + 70},${y})
@@ -266,7 +260,7 @@ export default {
                             .domain(colorDomain)
                             .range(colorRange);
 
-                        console.log('mappy: ', this.states.map(s => s.incidents_per_capita))
+                        // console.log('mappy: ', this.states.map(s => s.incidents_per_capita))
                         const state = svg.append("g")
                             .attr("stroke", "#000")
                             .selectAll("path")
@@ -333,7 +327,6 @@ export default {
         rerender() {
             d3.selectAll('.map-container').selectAll('*').remove() // Clean all the elements in the chart
             this.initChart()
-            console.log('rerenderer')
             // d3.selectAll('#map-svg').selectAll('*').remove() // Clean all the elements in the chart
             // d3.selectAll('#map-legend-svg').selectAll('*').remove()
             // this.initChart()
@@ -354,7 +347,6 @@ export default {
             }
         },
         'store.geoMapData'(geoMapData) { // when data changes
-            console.log('store.geoMapData!')
             if (!isEmpty(geoMapData)) {
                 this.rerender()
             }

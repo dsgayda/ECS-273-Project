@@ -56,3 +56,13 @@ export interface MapDatum {
     readonly lawTotal: number;
     readonly state: String;
 }
+export interface DataTableHeader {
+    title: string;
+    align: 'start' | 'end';
+    sortable: boolean;
+    key: string;
+  }
+  
+export interface TableItem {
+    [key: string]: any;
+  }
