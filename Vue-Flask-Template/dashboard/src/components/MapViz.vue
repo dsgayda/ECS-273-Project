@@ -101,7 +101,7 @@ export default {
                 // get the bounds of the path data
                 // calculate the scaling factor needed to fit the path inside the container
                 const widthScale = this.size.width / (bounds[1][0] - bounds[0][0]);
-                const heightScale = (this.size.height - (this.margin.bottom + this.margin.top) - 20) / (bounds[1][1] - bounds[0][1]);
+                const heightScale = (this.size.height - (this.margin.bottom + this.margin.top) - parentRect.height/ 10) / (bounds[1][1] - bounds[0][1]);
                 const scaleFactor = Math.min(widthScale, heightScale);
 
                 // create a transform function that scales and translates the path
@@ -143,7 +143,7 @@ export default {
                             .attr("stroke", "#ccc")
                             .attr('opacity', '.6')
                             .attr("d", path)
-                            .attr('transform', `translate(${this.margin.left}, 0)`);
+                            .attr('transform', `translate(${ 0}, 0)`);
 
 
 
@@ -166,14 +166,14 @@ export default {
                         // console.log('policiesImplemented: ', policiesImplemented)
 
                         return `
-                            translate(${x + 70},${y})
+                            translate(${x},${y})
                             scale(${size})
                             translate(${-x},${-y})
                         `;
                         }
 
                         return `
-                            translate(${x + 70},${y})
+                            translate(${x},${y})
                             translate(${-x},${-y})
                         `;
                     }
