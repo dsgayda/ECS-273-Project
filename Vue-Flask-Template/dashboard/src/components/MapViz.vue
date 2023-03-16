@@ -242,7 +242,17 @@ export default {
                 .style('font-weight', 'bold')
                 .style('font-size', '8px') 
                 .attr('transform', `translate(${legendWidth / 2}, -5)`)
-                .text('Gun Incidents Per Capita Per 50k People') // text content
+                .text('Gun Incidents Per 50k People') // text content
+            
+    //             legend.append('g').append('rect')
+    // .attr('width', 250)
+    // .attr('height', 100)
+    // .attr('fill', 'white') // Add the fill color for the box
+    // .attr('stroke', 'black')
+    // .attr('stroke-width', 1)
+    // .attr('transform', `translate(${this.size.width - this.size.width/3}, ${-this.size.height + this.size.height/8})`); // Fix the typo in the attribute name
+
+
         },
 
         rerender() {
@@ -310,7 +320,7 @@ export default {
 
 <style scoped>
 .map-container {
-    height: 100%;
+    height: 95%;
     width: 100%;
 }
 </style>
