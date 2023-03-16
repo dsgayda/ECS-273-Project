@@ -35,20 +35,20 @@ export default {
           <!-- Left column -->
           <v-col cols="6">
             <!-- Left-Top Box -->
-            <v-row style="height: 4%; border-top: 1px solid #BBBBBB;  border-left: 1px solid #BBBBBB; border-right: 1px solid #BBBBBB;" class="middle-box">
+            <v-row style="height: 5%; border-top: 1px solid #BBBBBB;  border-left: 1px solid #BBBBBB; border-right: 1px solid #BBBBBB;" class="middle-box">
               <v-col cols="12" style=" overflow-y: auto; ">
                 <h6>Map (below) overlayed state size represents total amount of gun laws policies implemented.</h6>
               </v-col>
             </v-row>
             <!-- Top-left box -->
-            <v-row style="height: 46%; border: 1px solid #BBBBBB; border-top-color: #FFFFFF;">
+            <v-row style="height: 45%; border: 1px solid #BBBBBB; border-top-color: #FFFFFF;">
 
               <v-col cols="12" style=" overflow-y: auto; ">
                 <MapViz></MapViz>
               </v-col>
             </v-row>
             <!-- Left-Middle Box -->
-            <v-row style="height: 4%; border-left: 1px solid #BBBBBB; border-right: 1px solid #BBBBBB;" class="middle-box">
+            <v-row style="height: 5%; border-left: 1px solid #BBBBBB; border-right: 1px solid #BBBBBB;" class="middle-box">
               <v-col cols="12" style=" overflow-y: auto; ">
                 <h6>Table (below) provides policy types with correlated incidents and avg. percentage of total policies
                   implemented per cluster </h6>
@@ -56,7 +56,7 @@ export default {
             </v-row>
 
             <!-- Bottom-left box -->
-            <v-row style="height: 46%; ">
+            <v-row style="height: 45%; ">
               <!-- Bottom-left box -->
               <v-col cols="12" style="border: 1px solid #BBBBBB; border-top-color: #FFFFFF; overflow-y: auto;">
                 <Table></Table>
