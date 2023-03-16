@@ -8,13 +8,22 @@ import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
-import { md3 } from 'vuetify/blueprints'
-
-
+import { aliases, mdi } from 'vuetify/iconsets/mdi'
+import { fa } from "vuetify/iconsets/fa";
+import "@mdi/font/css/materialdesignicons.css"; 
+import "@fortawesome/fontawesome-free/css/all.css";
 const vuetify = createVuetify({
+    
     components,
     directives,
-    blueprint: md3,
+    icons: {
+        defaultSet: 'mdi',
+        aliases,
+        sets: {
+            mdi,
+            fa,
+        }
+      },
 })
   
 const app = createApp(App);

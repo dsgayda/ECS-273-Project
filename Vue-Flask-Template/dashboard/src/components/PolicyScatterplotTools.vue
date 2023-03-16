@@ -7,21 +7,23 @@ import * as d3Slider from 'd3-simple-slider';
 // Lifecycle in vue.js: https://vuejs.org/guide/essentials/lifecycle.html#lifecycle-diagram
 // For importing a store. See how it's set up in ./dashboard/stores/ and ./dashboard/main.ts
 import { mapState, storeToRefs } from 'pinia';
+import { ref } from 'vue';
 import { useDataStore } from '../stores/dataStore';
 
 export default {
     setup() { // Composition API syntax
-        const store = useDataStore()
+        const store = useDataStore();
         // Alternative expression from computed
         const { resize } = storeToRefs(store);
         const { size } = storeToRefs(store);
         const { margin } = storeToRefs(store);
-
+        const { numClusters } = storeToRefs(store);
         return {
             store, // Return store as the local state, but when you update the property value, the store is also updated.
             resize,
             size,
-            margin
+            margin,
+            numClusters,
         }
     },
     computed: {
@@ -61,10 +63,11 @@ export default {
                 .ticks(5)
                 .tickFormat(d3.format(',.0f'))
                 .step(1)
-                .default(3)
+                .default(this.numClusters)
                 // .fill('#2196f3')
                 .on('end', val => {
-                    console.log('Slider value:', val);
+                    this.numClusters = val;
+                    console.log('Slider value:', this.numClusters);
                 })
                 ;
 
@@ -103,6 +106,12 @@ export default {
             if ((newSize.width !== 0) && (newSize.height !== 0)) {
                 this.rerender()
             }
+        },
+        'store.numClusters'(newNumClusters) {
+            console.log('new num!', newNumClusters);
+            // Trying to update by fetching new data but it's not working yet...
+            // this.store.fetchData(newNumClusters);
+            this.rerender();
         },
     },
     // The following are general setup for resize events.

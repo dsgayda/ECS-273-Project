@@ -40,7 +40,9 @@ def fetchMap():
 @app.route("/fetchPolicyScatterplot", methods=["GET", "POST"])
 @cross_origin()
 def fetchPolicyScatterplot():
-    points, cluster_names = processPolicyScatterplot(3, 'PCA')
+    data = request.get_json()
+    num_clusters = data.get("numClusters", [])
+    points, cluster_names = processPolicyScatterplot(num_clusters, 'PCA')
     resp = jsonify(data=points, clusters=cluster_names)
     return resp
 
@@ -69,8 +71,8 @@ def fetchTopPoliciesPerPoint():
 def fetchPolicyCorrelationTable():
     data = request.get_json()
     points = data.get("data", [])
-    
-    table = processPolicyCorrelations(points)
+    incident_type = data.get("incidentType", [])
+    table = processPolicyCorrelations(points, incidence_type=incident_type)
     resp = jsonify(data=table)
     return resp
 
