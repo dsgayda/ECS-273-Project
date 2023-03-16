@@ -34,18 +34,31 @@ export default {
 
           <!-- Left column -->
           <v-col cols="6">
-
+            <!-- Left-Top Box -->
+            <v-row style="height: 4%; border-top: 1px solid #BBBBBB;  border-left: 1px solid #BBBBBB; border-right: 1px solid #BBBBBB;" class="middle-box">
+              <v-col cols="12" style=" overflow-y: auto; ">
+                <h6>Map (below) overlayed state size represents total amount of gun laws policies implemented.</h6>
+              </v-col>
+            </v-row>
             <!-- Top-left box -->
-            <v-row style="height: 50%; border: 1px solid #BBBBBB;">
+            <v-row style="height: 46%; border: 1px solid #BBBBBB; border-top-color: #FFFFFF;">
+
               <v-col cols="12" style=" overflow-y: auto; ">
                 <MapViz></MapViz>
               </v-col>
             </v-row>
+            <!-- Left-Middle Box -->
+            <v-row style="height: 4%; border-left: 1px solid #BBBBBB; border-right: 1px solid #BBBBBB;" class="middle-box">
+              <v-col cols="12" style=" overflow-y: auto; ">
+                <h6>Table (below) provides policy types with correlated incidents and avg. percentage of total policies
+                  implemented per cluster </h6>
+              </v-col>
+            </v-row>
 
             <!-- Bottom-left box -->
-            <v-row style="height: 50%; ">
+            <v-row style="height: 46%; ">
               <!-- Bottom-left box -->
-              <v-col cols="12" style="border: 1px solid #BBBBBB; overflow-y: auto;">
+              <v-col cols="12" style="border: 1px solid #BBBBBB; border-top-color: #FFFFFF; overflow-y: auto;">
                 <Table></Table>
               </v-col>
             </v-row>
@@ -73,9 +86,9 @@ export default {
                 <GroupedBarChart></GroupedBarChart>
               </v-col>
 
-              <!-- Right column of bottom-right box -->  
+              <!-- Right column of bottom-right box -->
               <v-col cols="2" style="border: 1px solid #BBBBBB; overflow-y: auto;">
-                  Right column of bottom-right box
+                Right column of bottom-right box
               </v-col>
             </v-row>
 
@@ -106,4 +119,19 @@ export default {
   /* Set the width of the content to be larger than the container to enable horizontal scrolling */
   height: 100%;
 }
-</style>
+
+.middle-box {
+  font-size: 1rem;
+  /* Adjust the font size to fit within the container */
+  line-height: 1rem;
+  /* Control the space between lines of text */
+  /* padding: 0rem; */
+  /* Add padding inside the container */
+
+  white-space: nowrap;
+  /* Prevent text from wrapping to the next line */
+  overflow: hidden;
+  /* Hide any overflowing text */
+  text-overflow: ellipsis;
+  /* Add ellipsis (...) to the end of the overflowing text */
+}</style>
