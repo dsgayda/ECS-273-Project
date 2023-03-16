@@ -111,9 +111,8 @@ export default {
                     return colorScale((d.cluster).toString())
                 })
                 .style('opacity', .5)
-                .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
-
-
+                .attr('transform', `translate(${this.margin.left - 20}, ${this.margin.top})`)
+               
 
             // Add mouseover to highlight cluster of same color as point under mouse            
             points.on("mouseover", function (e, d) {
@@ -165,6 +164,29 @@ export default {
                         .style('opacity', '1')
                         .style('filter', 'none');
                 });
+            
+            // Add legend
+            let legend = svg.append('g')
+                .attr('id', 'legend')
+                .attr('transform', `translate(${parentRect.width - this.margin.right}, ${this.margin.top + this.margin.bottom})`);
+
+            // Add a circle and text element for each cluster in the legend
+            legend.selectAll('circle')
+                .data(this.clusters)
+                .join('circle')
+                .attr('cx', 0)
+                .attr('cy', (d, i) => i * 25)
+                .attr('r', 7)
+                .style('fill', (d, i) => colorScale(i.toString()))
+                .style('opacity', 0.7);
+                
+            legend.selectAll('text')
+                .data(this.clusters)
+                .join('text')
+                .attr('x', 15)
+                .attr('y', (d, i) => i * 25 + 5)
+                .text(d => `${d}`)
+                .style('font-size', '12px')
 
             const title = svg.append('g').append('text') // adding the text
                 .attr('transform', `translate(${this.size.width / 2}, ${this.size.height + 10})`)

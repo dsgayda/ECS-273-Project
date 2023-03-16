@@ -228,7 +228,6 @@ export default {
 
                 const data = {
                         data: this.store.points,
-                        clusters: this.store.clusters,
                         incidentType: incidentMap[newVal]
                     };
                         
