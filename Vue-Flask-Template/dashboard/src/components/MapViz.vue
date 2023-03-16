@@ -38,7 +38,7 @@ export default {
     computed: {
         ...mapState(useDataStore, []), // Traditional way to map the store state to the local state
         ...mapState(useExampleStore, []),
-        
+
     },
     created() {
     },
@@ -46,30 +46,21 @@ export default {
         onResize() {
 
             let target = this.$refs.mapContainer as HTMLElement
-            if (target === undefined || target === null) return;
+            console.log('target: ', target)
+            if (!target) return;
             this.size = { width: target.clientWidth, height: target.clientHeight }; // How you update the store
         },
         async initChart() {
 
             if (this.store.geoMapData?.objects?.states) {
-                // const obData = csvParse(obDataCsv, ({ id, obesity2008, obesity2018 }) => [id, [+obesity2008, +obesity2018]]);
-
-
                 const mappydata = new Map(Object.entries(this.states));
-                // console.log('mappydata: ', mappydata)
-// Do something with the obData Map
-                
+
+
                 let sc = this.$refs.mapContainer as HTMLElement;
-                // let svg = d3.select(sc)
-                //     .append('svg')
-                //     .attr('id', 'map-svg')
-                //     .attr('width', '100%')
-                //     .attr('height', '100%')
+
 
                 const parentRect = { width: sc.clientWidth, height: sc.clientHeight };
 
-                // console.log('parentRect: ', parentRect)
-                // console.log('this.size: ', this.size)
                 const svg = d3.select(sc)
 
                     .attr("stroke-linejoin", "round")
@@ -80,17 +71,6 @@ export default {
                     .attr('width', parentRect.width)
                     .attr('height', parentRect.height)
 
-                // svg.attr('viewBox', `${this.margin.left} ${this.margin.top} ${this.size.width} ${this.size.height}`);
-
-                // const rect = svg.append('rect')
-                //     .attr('width', '100%')
-                //     .attr('height', '100%')
-                //     .attr('fill', 'lightgray')
-                //     .attr('opacity', 0.3)
-                // .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
-
-                // console.log('eh?: ', this.geoMapData)
-
                 let data = this.store.geoMapData;
                 let states = topojson.feature(data, data.objects.states);
                 let path = d3.geoPath();
@@ -98,7 +78,7 @@ export default {
                 // get the bounds of the path data
                 // calculate the scaling factor needed to fit the path inside the container
                 const widthScale = this.size.width / (bounds[1][0] - bounds[0][0]);
-                const heightScale = (this.size.height - (this.margin.bottom + this.margin.top) - parentRect.height/ 10) / (bounds[1][1] - bounds[0][1]);
+                const heightScale = (this.size.height - (this.margin.bottom + this.margin.top) - parentRect.height / 10) / (bounds[1][1] - bounds[0][1]);
                 const scaleFactor = Math.min(widthScale, heightScale);
 
                 // create a transform function that scales and translates the path
@@ -110,174 +90,161 @@ export default {
 
                 // apply the transform function to the path generator
                 path = d3.geoPath().projection(transformer);
+                svg.append("g")
+                    .selectAll("path")
+                    .data(states.features)
+                    .enter().append("path")
+                    .attr("fill", d => {
+                        // console.log('not sure: ', this.states.filter(s => s.state === d.properties.name)[0]?.cluster)
+                        if (!this.states.filter(s => s.state === d.properties.name)[0]?.cluster && this.states.filter(s => s.state === d.properties.name)[0]?.cluster !== 0) {
+                            return "white";
+                        }
+                        else {
+                            return this.color(this.states.filter(s => s.state === d.properties.name)[0].cluster.toString())
+                        }
+                    }
+                    )
+                    .attr('id', 'usstates')
+                    .attr("stroke", "#ccc")
+                    .attr('opacity', '.6')
+                    .attr("d", path)
+                    .attr('transform', `translate(${0}, 0)`);
 
-                // svg.append("path")
-                //     .datum(topojson.mesh(data, data.objects.states))
-                //     .attr("stroke", "#ccc")
-                //     .attr("d", path)
-                //     .attr('transform', `translate(${this.margin.left}, 0)`)
+                // Find the minimum and maximum policies_implemented values
+                const policiesImplementedExtent = d3.extent(this.states, d => d.policies_implemented);
 
-                    svg.append("g")
-                        .selectAll("path")
-                        .data(states.features)
-                        .enter().append("path")
-                            .attr("fill", d => {
-                                // console.log('not sure: ', this.states.filter(s => s.state === d.properties.name)[0]?.cluster)
-                                if (!this.states.filter(s => s.state === d.properties.name)[0]?.cluster && this.states.filter(s => s.state === d.properties.name)[0]?.cluster !== 0) {
+                // Create a linear scale for circle size based on policies_implemented
+                const sizeScale = d3.scaleLinear()
+                    .domain(policiesImplementedExtent)
+                    .range([0.25, .9]);
 
-                                    // console.log('no cluster?: ', this.states.filter(s => s.state === d.properties.name)[0])
-                                    return "white";
-                                    // console.log('states.filter(s => s.state === d.properties.name)[0].cluster: ', this.states.filter(s => s.state === d.properties.name)[0].cluster)
-                                
-                                }
-                                else {
-                                    return this.color(this.states.filter(s => s.state === d.properties.name)[0].cluster.toString())
-                                }
-                               return "white";
-                            }
-                            )
-                            .attr('id', 'usstates')
-                            .attr("stroke", "#ccc")
-                            .attr('opacity', '.6')
-                            .attr("d", path)
-                            .attr('transform', `translate(${0}, 0)`);
-
-
-
-
-                            // Find the minimum and maximum policies_implemented values
-                        const policiesImplementedExtent = d3.extent(this.states, d => d.policies_implemented);
-
-                        // Create a linear scale for circle size based on policies_implemented
-                        const sizeScale = d3.scaleLinear()
-                            .domain(policiesImplementedExtent)
-                            .range([0.25, .9]);
-
-                            // Use the size scale in the transform function
-                    function transform(d, states) {
-                        const [x, y] = path.centroid(d);
-                        // console.log('hey: ', states.filter(s => s.state === d.properties.name)[0])
-                        if (states.filter(s => s.state === d.properties.name)[0]?.policies_implemented) {
-                            const policiesImplemented = states.filter(s => s.state === d.properties.name)[0].policies_implemented;
+                // Use the size scale in the transform function
+                function transform(d, states) {
+                    const [x, y] = path.centroid(d);
+                    if (states.filter(s => s.state === d.properties.name)[0]?.policies_implemented) {
+                        const policiesImplemented = states.filter(s => s.state === d.properties.name)[0].policies_implemented;
                         const size = sizeScale(policiesImplemented);
-                        // console.log('policiesImplemented: ', policiesImplemented)
 
                         return `
                             translate(${x},${y})
                             scale(${size})
                             translate(${-x},${-y})
                         `;
-                        }
+                    }
 
-                        return `
+                    return `
                             translate(${x},${y})
                             translate(${-x},${-y})
                         `;
-                    }
-                    // function transform(d, states) {
-                    //     const [x, y] = path.centroid(d);
+                }
 
-                    //     // console.log('mapper: ', states.filter(s => s.state === d.properties.name)[0].policies_implemented)
+                // Little States
+                // let redcolor = d3.scaleSequential(d3.extent(Array.from(this.states.map(s => s.incidents_per_capita).values()).flat()), d3.interpolateReds).nice()
 
-                    //     // scale(${Math.sqrt(ob_data.get(d.id)[year])})
-                    //     return `
-                    //         translate(${x + 70},${y})
-                    //         scale(${Math.sqrt(states.filter(s => s.state === d.properties.name)[0].policies_implemented)/12})
-                    //         translate(${-x},${-y})
-                    //     `;
-                    //     }
+                // Color gradient green -> yellow -> red
+                let colorRange = ["green", "yellow", "red"];
 
-                        // Little States
-                        // let redcolor = d3.scaleSequential(d3.extent(Array.from(this.states.map(s => s.incidents_per_capita).values()).flat()), d3.interpolateReds).nice()
-                        
-                        // Color gradient green -> yellow -> red
-                        let colorRange = ["green", "yellow", "red"];
+                // Define the domain of the linear scale using the extent of the incidents_per_capita values
+                let colorDomain = d3.extent(Array.from(this.states.map(s => s.incidents_per_capita).values()).flat());
+                console.log('colorDomain', colorDomain)
+                // Create the linear scale using d3.scaleLinear() and interpolate between the colors
+                let RYG_color = d3.scaleLinear()
+                    .domain([colorDomain[0], (colorDomain[0] + colorDomain[1]) / 2, colorDomain[1]])
+                    .range(colorRange)
+                    .interpolate(d3.interpolateRgb);
 
-                        // Define the domain of the linear scale using the extent of the incidents_per_capita values
-                        let colorDomain = d3.extent(Array.from(this.states.map(s => s.incidents_per_capita).values()).flat());
+                const state = svg.append("g")
+                    .attr("stroke", "#000")
+                    .selectAll("path")
+                    .data(topojson.feature(data, data.objects.states).features.filter(d => {
 
-                        // Create the linear scale using d3.scaleLinear() and interpolate between the colors
-                        let RYG_color = d3.scaleLinear()
-                            .domain([colorDomain[0], (colorDomain[0] + colorDomain[1]) / 2, colorDomain[1]])
-                            .range(colorRange)
-                            .interpolate(d3.interpolateRgb);
+                        if (this.states.filter(s => s.state === d.properties.name) && this.states.filter(s => s.state === d.properties.name)[0]?.incidents_per_capita !== undefined) {
+                            return true
+                        }
+                        else {
+                            return false;
+                        }
 
-                        // let colorRange = ["white", "black"];
+                    }))
+                    .join("path")
+                    .attr("vector-effect", "non-scaling-stroke")
+                    .attr("d", path)
+                    .attr("id", d => {
+                        return `cluster${this.states.filter(s => s.state === d.properties.name)[0]?.cluster}`
+                    })
+                    .attr('class', 'ministate')
+                    .attr("fill", d => {
+                        return RYG_color(this.states.filter(s => s.state === d.properties.name)[0].incidents_per_capita)
+                    })
+                    .attr("transform", d => transform(d, this.states));
 
-                        // // Define the domain of the linear scale using the extent of the incidents_per_capita values
-                        // let colorDomain = d3.extent(Array.from(this.states.map(s => s.incidents_per_capita).values()).flat());
-
-                        // // Create the linear scale using d3.scaleLinear() and interpolate between the colors
-                        // let RYG_color = d3.scaleLinear()
-                        //     .domain(colorDomain)
-                        //     .range(colorRange)
-                        //     .interpolate(d3.interpolateRgb);
-
-
-                        // console.log('mappy: ', this.states.map(s => s.incidents_per_capita))
-                        const state = svg.append("g")
-                            .attr("stroke", "#000")
-                            .selectAll("path")
-                            .data(topojson.feature(data, data.objects.states).features.filter(d => {
-                                // console.log('ob_data.has(d.id): ', parseInt(d.id))
-                                // console.log('d: ', d)
-
-                                if (this.states.filter(s => s.state === d.properties.name) && this.states.filter(s => s.state === d.properties.name)[0]?.incidents_per_capita !== undefined) {
-                                    // console.log('this.states.filter(s => s.state === d.properties.name): ', this.states.filter(s => s.state === d.properties.name))
-                                    return true
-                                }
-                                else {
-                                    // console.log('here: ', this.states.filter(s => s.state === d.properties.name))
-                                    // console.log('after: ',  d.properties.name)
-                                    return false;
-                                }
-                                
-                                // return ob_data.has(d.id)
-                            }))
-                            .join("path")
-                            .attr("vector-effect", "non-scaling-stroke")
-                            .attr("d", path)
-                            .attr("id", d => {
-                                return `cluster${this.states.filter(s => s.state === d.properties.name)[0]?.cluster}`
-                            })
-                            .attr('class', 'ministate')
-                            .attr("fill", d => {
-                                // console.log('color: ', color(this.states.filter(s => s.state === d.properties.name).incidents_per_capita))
-                                // console.log('d: ', d.properties.name)
-                                // console.log('maybe: ', this.states.filter(s => s.state === d.properties.name)[0].incidents_per_capita)
-                                return RYG_color(this.states.filter(s => s.state === d.properties.name)[0].incidents_per_capita)
-                            })
-                            .attr("transform", d => transform(d, this.states));
-
-
-
-
-                //     console.log('data: ', data)
-                //     let path = d3.geoPath().projection(d3.geoIdentity().reflectY(true) // flip the y-axis to match SVG convention
-                //         .fitSize([parentRect.width, parentRect.height], data)); // fit the projection to the parentRect dimensions
-
-                //     let scale = Math.min(this.size.height, this.size.width)
-
-
-                //     svg.append("path")
-                //         .attr('width', this.size.width)
-                //         .attr('height', this.size.height)
-                //         .datum(topojson.mesh(data, data.objects.states))
-                //         .attr("fill", "none")
-                //         .attr("stroke", "#000")
-                //         .attr("d", path)
-                //         .attr('transform', `translate(${parentRect.width / 2}, ${parentRect.height / 2}) scale(${scale})`);
-                //         // .attr('transform', `scale(${.5}) translate(${parentRect.width/2},${parentRect.height/2})`)
-                //         // .attr('transform', `translate(${parentRect.width/4}, ${parentRect.height/4})`)
-                //     // .attr("transform", `scale(${scale/1000})`);
-
-                //     console.log('parentHeight: ', parentRect.height)
+                this.createLegend(svg, RYG_color, colorDomain)
+                    ;
             }
 
         },
         initLegend() {
 
         },
+        createLegend(svg, colorScale, colorDomain) {
+            const legendWidth = 250;
+            const legendHeight = 5;
+            const legendMargin = { top: 10, right: 10, bottom: 10, left: 10 };
+
+            const legend = svg.append("g")
+                .attr("transform", `translate(${this.margin.left - 50}, ${this.size.height - this.size.height/10})`);
+
+            const gradient = legend.append("defs")
+                .append("linearGradient")
+                .attr("id", "gradient")
+                .attr("x1", "0%")
+                .attr("y1", "0%")
+                .attr("x2", "100%")
+                .attr("y2", "0%")
+                .attr("spreadMethod", "pad");
+
+            const colorData = [
+                { offset: "0%", color: colorScale(colorDomain[0]) },
+                { offset: "50%", color: colorScale((colorDomain[0] + colorDomain[1]) / 2) },
+                { offset: "100%", color: colorScale(colorDomain[1]) }
+            ];
+
+            gradient.selectAll("stop")
+                .data(colorData)
+                .enter()
+                .append("stop")
+                .attr("offset", d => d.offset)
+                .attr("stop-color", d => d.color)
+                .attr("stop-opacity", 1);
+
+            legend.append("rect")
+                .attr("width", legendWidth)
+                .attr("height", legendHeight)
+                .style("fill", "url(#gradient)");
+
+            console.log('colorDomain: ', colorDomain)
+            const legendScale = d3.scaleLinear()
+                .domain([colorDomain[0] * 50000, colorDomain[1] * 50000])
+                .range([0, legendWidth]);
+
+            const legendAxis = d3.axisBottom(legendScale)
+                .ticks(5)
+                .tickFormat(d3.format("d"));
+
+            legend.append("g")
+                .attr("transform", `translate(0, ${legendHeight})`)
+                .call(legendAxis);
+
+            const title = legend.append('g').append('text') // adding the text
+                // .attr('transform', `translate(${this.size.width / 2}, ${this.size.height + 10})`)
+                // .attr('dy', '0.5rem') // relative distance from the indicated coordinates.
+                .style('text-anchor', 'middle')
+                .style('font-weight', 'bold')
+                .style('font-size', '8px') 
+                .attr('transform', `translate(${legendWidth / 2}, -5)`)
+                .text('Gun Incidents Per Capita Per 50k People') // text content
+        },
+
         rerender() {
             d3.selectAll('.map-container').selectAll('*').remove() // Clean all the elements in the chart
             this.initChart()
@@ -304,26 +271,28 @@ export default {
             }
         },
         'store.points': {
-        async handler(newPoints) {
-            if (!isEmpty(newPoints)) {
-                const data = {
-                    data: this.store.points,
-                    clusters: this.store.clusters,
-                };
-                let resp = await this.store.fetchGeoMap(data);
-                this.store.geoMapData = resp?.geoMapData;
-                this.store.mapData = resp?.mapData;
-                //Call and set the other api based on points, with POST method
-                // set data for bar chart based on results from post
-                this.rerender()
-            }
+            async handler(newPoints) {
+                if (!isEmpty(newPoints)) {
+                    const data = {
+                        data: this.store.points,
+                        clusters: this.store.clusters,
+                    };
+                    let resp = await this.store.fetchGeoMap(data);
+                    this.store.geoMapData = resp?.geoMapData;
+                    this.store.mapData = resp?.mapData;
+                    //Call and set the other api based on points, with POST method
+                    // set data for bar chart based on results from post
+                    this.rerender()
+                }
+            },
+            immediate: true,
         },
-        immediate: true,
-    },
     },
     mounted() {
         window.addEventListener('resize', debounce(this.onResize, 100))
-        this.onResize()
+        this.$nextTick(() => {
+            this.onResize()
+        })
     },
     beforeDestroy() {
         window.removeEventListener('resize', this.onResize)
