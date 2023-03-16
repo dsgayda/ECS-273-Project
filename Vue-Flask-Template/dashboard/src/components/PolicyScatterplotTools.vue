@@ -29,6 +29,11 @@ export default {
             numClusters,
         }
     },
+    data() {
+        return {
+            selectedDimensionReduction: 3,
+        }
+    },
     computed: {
         ...mapState(useDataStore, []) // Traditional way to map the store state to the local state
     },
@@ -86,7 +91,7 @@ export default {
                 .text('Clusters') // text content
             
             // MAKE BUTTON
-            d3.select("#selectButton")
+            d3.select("#dimensionButton")
                 .selectAll('myOptions')
                 .data(this.methods)
                 .enter()
@@ -114,6 +119,18 @@ export default {
             // this.store.fetchData(newNumClusters);
             this.rerender();
         },
+        selectedDimensionReduction: {
+            async handler(newDimensionReductionMethod) {
+                // for when the user chooses a new num clusters
+                // data to pass into backend
+                const data = {
+                    clusters: this.numClusters,
+                    dimension_reduction: newDimensionReductionMethod,
+                }
+                // now what??
+            },
+            immediate: true
+        }
     },
     // The following are general setup for resize events.
     mounted() {
@@ -129,7 +146,10 @@ export default {
 <!-- "ref" registers a reference to the HTML element so that we can access it via the reference in Vue.  -->
 <!-- We use flex to arrange the layout-->
 <template>
-    <select id="selectButton" style="background-color: #66c2a5; color: white; border-radius: 10px; padding: 5px;"></select>
+    <select id="dimensionButton" 
+            label="DimensionReduction"
+            v-model="selectedDimensionReduction">
+    </select>
     <div class="scatter-tools-container d-flex" ref="scatterToolsContainer"></div>
 </template>
 
@@ -141,5 +161,12 @@ export default {
 
 .scatter-tools-container {
     height: calc(100%);
+}
+
+#dimensionButton {
+  background-color: #66c2a5;
+  color: white;
+  border-radius: 10px;
+  padding: 5px;
 }
 </style>
