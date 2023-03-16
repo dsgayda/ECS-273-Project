@@ -73,18 +73,15 @@ export default {
                     this.numClusters = val;
                     console.log('Slider value:', this.numClusters);
                     d3.select('.track-fill') // Select the handle element
-                        
                         .attr('y1', '108')
                 })
                 .on('start', val => {
                     d3.select('.track-fill') // Select the handle element
                         .attr('y1', '108');
-
                 })
                 .on('drag', val => {
                     d3.select('.track-fill') // Select the handle element
                         .attr('y1', '108');
-
                 })
                 ;
 
@@ -129,7 +126,7 @@ export default {
         'store.numClusters'(newNumClusters) {
             console.log('new num!', newNumClusters);
             // Trying to update by fetching new data but it's not working yet...
-            // this.store.fetchData(newNumClusters);
+            this.store.fetchData({numClusters: newNumClusters});
             this.rerender();
         },
         selectedDimensionReduction: {

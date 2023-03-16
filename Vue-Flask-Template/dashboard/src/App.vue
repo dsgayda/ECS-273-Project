@@ -43,7 +43,7 @@ export default {
             <!-- Top-left box -->
             <v-row style="height: 45%; border: 1px solid #BBBBBB; border-top-color: #FFFFFF;">
 
-              <v-col cols="12" style=" overflow-y: auto; ">
+              <v-col cols="12" style=" height: 100%; overflow-y: auto; " class="MapCol">
                 <MapViz></MapViz>
               </v-col>
             </v-row>
@@ -58,7 +58,7 @@ export default {
             <!-- Bottom-left box -->
             <v-row style="height: 45%; ">
               <!-- Bottom-left box -->
-              <v-col cols="12" style="border: 1px solid #BBBBBB; border-top-color: #FFFFFF; overflow-y: auto;">
+              <v-col cols="12" style="border: 1px solid #BBBBBB; border-top-color: #FFFFFF; overflow-y: hidden;">
                 <Table></Table>
               </v-col>
             </v-row>

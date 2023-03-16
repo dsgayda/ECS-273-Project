@@ -42,7 +42,8 @@ def fetchMap():
 def fetchPolicyScatterplot():
     data = request.get_json()
     num_clusters = data.get("numClusters", [])
-    points, cluster_names = processPolicyScatterplot(num_clusters, 'PCA')
+    reduction_type = data.get("reductionType", [])
+    points, cluster_names = processPolicyScatterplot(num_clusters, reduction_type)
     resp = jsonify(data=points, clusters=cluster_names)
     return resp
 

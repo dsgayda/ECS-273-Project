@@ -295,7 +295,7 @@ export default {
                     this.rerender()
                 }
             },
-            immediate: true,
+            // immediate: true,
         },
     },
     mounted() {

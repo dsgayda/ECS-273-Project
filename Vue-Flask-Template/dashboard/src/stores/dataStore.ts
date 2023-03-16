@@ -41,12 +41,13 @@ export const useDataStore = defineStore("dataStore", {
     },
   },
   actions: {
-    async fetchData({numClusters = 3} = {}) {
-      console.log('fetching data!')
+    async fetchData({numClusters = 3} = {}, {reductionType = "PCA"} = {}) {
+      console.log('fetching data!: ', numClusters)
       // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
       let resp = await axios.post(`${server}/fetchPolicyScatterplot`,
       {
-        numClusters: numClusters
+        numClusters: numClusters,
+        reductionType: reductionType
       },
       {
         headers: {
@@ -92,17 +93,23 @@ export const useDataStore = defineStore("dataStore", {
       }
       return;
     },
-    async fetchTableData(data) {
-        // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
-        try {
-            const resp = await axios.post(`${server}/fetchPolicyCorrelationTable`, data);
-            const table = resp.data.data;
-          return table;
-        } catch (error) {
-          console.log("Error fetching table data:", error);
+    async fetchTableData(data, retries = 3, delay = 2000) {
+      try {
+        const resp = await axios.post(`${server}/fetchPolicyCorrelationTable`, data);
+        const table = resp.data.data;
+        return table;
+      } catch (error) {
+        console.log("Error fetching table data:", error);
+    
+        if (retries > 0) {
+          console.log(`Retrying in ${delay / 1000} seconds...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          return this.fetchTableData(data, retries - 1, delay);
+        } else {
+          console.log("No more retries left.");
         }
-        return;
-      },
-
+      }
+      return;
+    },
   },
 });

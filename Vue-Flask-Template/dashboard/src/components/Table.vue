@@ -11,6 +11,8 @@ import { mapState, storeToRefs } from 'pinia';
 import { useDataStore } from '../stores/dataStore';
 import { createVuetify } from 'vuetify'
 import { VDataTable } from 'vuetify/labs/VDataTable'
+
+import { VDataTableVirtual } from 'vuetify/labs/VDataTable'
 import * as labs from 'vuetify/labs/'
 
 // Import Vuetify components
@@ -18,10 +20,13 @@ import * as labs from 'vuetify/labs/'
 
 export default {
     components: {
-        VDataTable
+        VDataTable,
+        VDataTableVirtual
     },
     data() {
         return {
+            tableHeight: '400',
+            tableWidth: '100',
             search: '',
             selectedValue: "All Incidents",
             headers6: [
@@ -118,6 +123,7 @@ export default {
             }
             return false;
         });
+        
 
 
         let isDataLoaded = false;
@@ -145,6 +151,8 @@ export default {
             let target = this.$refs.tableContainer as HTMLElement
             if (target === undefined) return;
             this.size = { width: target.clientWidth, height: target.clientHeight };
+            this.tableHeight = target.clientHeight.toString();
+            // this.tableWidth = target.clientWidth.toString();
         },
         initChart() {
             // let tabbb = d3.selectAll('td')
@@ -203,7 +211,6 @@ export default {
 
                 }
             },
-            immediate: true,
         },
         'store.tableHeaders'(newHeaders) {
             this.rerender();
@@ -234,7 +241,6 @@ export default {
                 
                 // this.store.selectedValue = newVal;
             },
-            immediate: true
         }
     },
     // The following are general setup for resize events.
@@ -251,7 +257,7 @@ export default {
 </script>
 
 <template>
-    <div v-if="isDataReady" style="max-height: 50% overflow-y: hidden" class="table-container d-flex"
+    <div v-if="isDataReady" style="max-height: 50% overflow-y: hidden" class="table-container"
         ref="tableContainer">
         <div v-if="sixHeaders">
             <v-card>
@@ -279,8 +285,8 @@ export default {
             ></v-text-field>
             </v-card-title>
         </v-card>
-            <v-data-table :headers="headers6" :items="tableItems" :search="search" density="compact" items-per-page="50"
-                :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table>
+            <v-data-table-virtual :headers="headers6" :items="tableItems" :search="search" density="compact" :height="tableHeight"
+                :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table-virtual>
         </div>
         <div v-if="fiveHeaders">
             <v-card>
@@ -308,8 +314,8 @@ export default {
             ></v-text-field>
             </v-card-title>
         </v-card>
-            <v-data-table :headers="headers5" :items="tableItems" :search="search" density="compact" items-per-page="50"
-                :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table>
+            <v-data-table-virtual :headers="headers5" :items="tableItems" :search="search" density="compact" :height="tableHeight"
+                :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table-virtual>
         </div>
         <div v-else-if="fourHeaders">
             <v-card>
@@ -337,8 +343,8 @@ export default {
             ></v-text-field>
             </v-card-title>
         </v-card>
-            <v-data-table :headers="headers4" :items="tableItems" :search="search" density="compact" items-per-page="50"
-                :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table>
+            <v-data-table-virtual :headers="headers4" :items="tableItems" :search="search" density="compact" :height="tableHeight"
+                :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table-virtual>
         </div>
         <div v-else-if="threeHeaders">
             <v-card>
@@ -366,8 +372,9 @@ export default {
             ></v-text-field>
             </v-card-title>
         </v-card>
-            <v-data-table :headers="headers3" :items="tableItems" :search="search" density="compact" items-per-page="50"
-                :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table>
+            
+            <v-data-table-virtual :headers="headers3" :items="tableItems" :search="search" density="compact" :height="tableHeight"
+                :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table-virtual>
         </div>
         <div v-else-if="twoHeaders">
             <v-card>
@@ -395,8 +402,8 @@ export default {
             ></v-text-field>
             </v-card-title>
         </v-card>
-            <v-data-table :headers="headers2" :items="tableItems" :search="search" density="compact" items-per-page="50"
-                :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table>
+            <v-data-table-virtual :headers="headers2" :items="tableItems" :search="search" density="compact" :height="tableHeight"
+                :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table-virtual>
         </div>
     </div>
     <div v-else class="vdiv">
