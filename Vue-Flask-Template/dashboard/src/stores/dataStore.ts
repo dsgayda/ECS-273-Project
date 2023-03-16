@@ -12,13 +12,12 @@ import {
   TopPolicies,
   GroupedBar,
   PolicyCategory,
-  DataTableHeader,
-  TableItem,
 } from "../types";
 
 export const useDataStore = defineStore("dataStore", {
   state: () => ({
     points: [] as PolicyPoint[], // "as <Type>" is a TypeScript expression to indicate what data structures this variable is supposed to store.
+    methods: ['PCA', 't-SNE'] as string[],
     states: [] as MapState[],
     top_policies: [] as TopPolicies[],
     bars: [] as GroupedBar[],

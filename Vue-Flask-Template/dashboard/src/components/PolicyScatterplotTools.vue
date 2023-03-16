@@ -17,13 +17,21 @@ export default {
         const { resize } = storeToRefs(store);
         const { size } = storeToRefs(store);
         const { margin } = storeToRefs(store);
+
+        const {methods} = storeToRefs(store);
         const { numClusters } = storeToRefs(store);
         return {
             store, // Return store as the local state, but when you update the property value, the store is also updated.
             resize,
             size,
             margin,
+            methods,
             numClusters,
+        }
+    },
+    data() {
+        return {
+            selectedDimensionReduction: 3,
         }
     },
     computed: {
@@ -33,7 +41,6 @@ export default {
     },
     methods: {
         onResize() {  // record the updated size of the target element
-            console.log('resize')
             let target = this.$refs.scatterToolsContainer as HTMLElement
             if (!target) return;
             this.size = { width: target.clientWidth, height: target.clientHeight };
@@ -50,11 +57,8 @@ export default {
 
             // get the size of the parent container
             const parentRect = { width: sc.clientWidth, height: sc.clientHeight };
-
-            // update the viewBox attribute based on the size of the parent container
-            // svg.attr('viewBox', `${this.margin.left} ${this.margin.top} ${parentRect.width} ${parentRect.height }`);
-
             
+            // MAKE SLIDER
             const slider = d3Slider
                 .sliderRight()
                 .min(2)
@@ -64,7 +68,7 @@ export default {
                 .tickFormat(d3.format(',.0f'))
                 .step(1)
                 .default(this.numClusters)
-                // .fill('#2196f3')
+                .fill('#66c2a5')
                 .on('end', val => {
                     this.numClusters = val;
                     console.log('Slider value:', this.numClusters);
@@ -73,17 +77,11 @@ export default {
 
 
                 const centerX = (parentRect.width / 2) - this.margin.right;
-                const centerY = parentRect.height - parentRect.height + this.margin.top + this.margin.bottom;
-
-
-
-
+                const centerY = parentRect.height - parentRect.height + this.margin.top + this.margin.bottom * 2;
                 const sliderGroup = svg
                     .append('g')
                     .attr('transform', `translate(${centerX}, ${centerY})`)
                     .call(slider);
-
-
 
             svg.append('g').append('text') // adding the text
                 .attr('transform', `translate(${centerX}, ${centerY - this.margin.top})`)
@@ -91,6 +89,15 @@ export default {
                 .style('font-weight', 'bold')
                 .style('font-size', '12px') 
                 .text('Clusters') // text content
+            
+            // MAKE BUTTON
+            d3.select("#dimensionButton")
+                .selectAll('myOptions')
+                .data(this.methods)
+                .enter()
+                .append('option')
+                .text(function (d) { return d; }) // text showed in the menu
+                .attr("value", function (d) { return d; }) // corresponding value returned by the button
 
 
         },
@@ -102,7 +109,6 @@ export default {
     },
     watch: {
         resize(newSize) { // when window resizes
-            console.log('watch')
             if ((newSize.width !== 0) && (newSize.height !== 0)) {
                 this.rerender()
             }
@@ -113,6 +119,18 @@ export default {
             // this.store.fetchData(newNumClusters);
             this.rerender();
         },
+        selectedDimensionReduction: {
+            async handler(newDimensionReductionMethod) {
+                // for when the user chooses a new num clusters
+                // data to pass into backend
+                const data = {
+                    clusters: this.numClusters,
+                    dimension_reduction: newDimensionReductionMethod,
+                }
+                // now what??
+            },
+            immediate: true
+        }
     },
     // The following are general setup for resize events.
     mounted() {
@@ -128,9 +146,11 @@ export default {
 <!-- "ref" registers a reference to the HTML element so that we can access it via the reference in Vue.  -->
 <!-- We use flex to arrange the layout-->
 <template>
-    <div class="scatter-tools-container d-flex" ref="scatterToolsContainer">
-
-    </div>
+    <select id="dimensionButton" 
+            label="DimensionReduction"
+            v-model="selectedDimensionReduction">
+    </select>
+    <div class="scatter-tools-container d-flex" ref="scatterToolsContainer"></div>
 </template>
 
 <style scoped>
@@ -141,5 +161,12 @@ export default {
 
 .scatter-tools-container {
     height: calc(100%);
+}
+
+#dimensionButton {
+  background-color: #66c2a5;
+  color: white;
+  border-radius: 10px;
+  padding: 5px;
 }
 </style>

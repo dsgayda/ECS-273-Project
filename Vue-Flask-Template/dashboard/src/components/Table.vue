@@ -210,7 +210,7 @@ export default {
         },
         selectedValue: {
             async handler(newVal) {
-                // suicide  mass_shooting          gang  non_suicide
+                // for when the user chooses a different incidence type
 
                 const incidentMap = {
                     'All Incidents': 'all_incidents',
