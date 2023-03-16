@@ -177,7 +177,7 @@ export default {
                 .attr('cx', 0)
                 .attr('cy', (d, i) => i * 25)
                 .attr('r', 7)
-                .style('fill', d => colorScale(d))
+                .style('fill', (d, i) => colorScale(i - 1))
                 .style('opacity', 0.7);
                 
             legend.selectAll('text')
