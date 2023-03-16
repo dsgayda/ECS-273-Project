@@ -13,12 +13,15 @@
     "go": "concurrently \"npm run server3\" \"npm run dev\""
   },
   "dependencies": {
+    "@mdi/font": "^7.1.96",
+    "@mdi/js": "^7.1.96",
     "@vueuse/core": "^9.9.0",
     "axios": "^1.2.1",
     "concurrently": "^7.6.0",
     "d3": "^7.8.0",
     "d3-simple-slider": "^1.10.4",
     "lodash": "^4.17.21",
+    "material-design-icons-iconfont": "^6.7.0",
     "pinia": "^2.0.28",
     "topojson": "^3.0.2",
     "vite-plugin-vuetify": "^1.0.1",
@@ -26,6 +29,7 @@
     "vuetify": "^3.1.9"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^6.3.0",
     "@rollup/plugin-dsv": "^3.0.2",
     "@types/d3": "^7.4.0",
     "@types/lodash": "^4.14.191",

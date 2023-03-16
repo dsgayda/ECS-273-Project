@@ -11,6 +11,7 @@ import { mapState, storeToRefs } from 'pinia';
 import { useDataStore } from '../stores/dataStore';
 import { createVuetify } from 'vuetify'
 import { VDataTable } from 'vuetify/labs/VDataTable'
+import * as labs from 'vuetify/labs/'
 
 // Import Vuetify components
 // import { VDataTable } from 'vuetify/lib';
@@ -21,6 +22,7 @@ export default {
     },
     data() {
         return {
+            search: '',
             headers6: [
                 { title: 'category', align: 'start', sortable: true, key: 'category' },
                 { title: 'correlation', align: 'end', key: 'correlation' },
@@ -227,23 +229,88 @@ export default {
     <div v-if="isDataReady" style="max-height: 50% overflow-y: hidden" class="scatter-chart-container d-flex"
         ref="tableContainer">
         <div v-if="sixHeaders">
-            <v-data-table :headers="headers6" :items="tableItems" density="compact" items-per-page="50"
+            <v-card>
+            <v-card-title>
+            Policy Correlations and Clusters
+            <v-spacer></v-spacer>
+            <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+            ></v-text-field>
+            </v-card-title>
+        </v-card>
+            <v-data-table :headers="headers6" :items="tableItems" :search="search" density="compact" items-per-page="50"
                 :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table>
         </div>
         <div v-if="fiveHeaders">
-            <v-data-table :headers="headers5" :items="tableItems" density="compact" items-per-page="50"
+            <v-card>
+            <v-card-title>
+            Policy Correlations and Clusters
+            <v-spacer></v-spacer>
+            <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+            ></v-text-field>
+            </v-card-title>
+        </v-card>
+            <v-data-table :headers="headers5" :items="tableItems" :search="search" density="compact" items-per-page="50"
                 :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table>
         </div>
         <div v-else-if="fourHeaders">
-            <v-data-table :headers="headers4" :items="tableItems" density="compact" items-per-page="50"
+            <v-card>
+            <v-card-title>
+            Policy Correlations and Clusters
+            <v-spacer></v-spacer>
+            <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+            ></v-text-field>
+            </v-card-title>
+        </v-card>
+            <v-data-table :headers="headers4" :items="tableItems" :search="search" density="compact" items-per-page="50"
                 :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table>
         </div>
         <div v-else-if="threeHeaders">
-            <v-data-table :headers="headers3" :items="tableItems" density="compact" items-per-page="50"
+            <v-card>
+            <v-card-title>
+            Policy Correlations and Clusters
+            <v-spacer></v-spacer>
+            <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+            ></v-text-field>
+            </v-card-title>
+        </v-card>
+            <v-data-table :headers="headers3" :items="tableItems" :search="search" density="compact" items-per-page="50"
                 :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table>
         </div>
-        <div v-else>
-            <v-data-table :headers="headers2" :items="tableItems" density="compact" items-per-page="50"
+        <div v-else-if="twoHeaders">
+            <v-card>
+            <v-card-title>
+            Policy Correlations and Clusters
+            <v-spacer></v-spacer>
+            <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+            ></v-text-field>
+            </v-card-title>
+        </v-card>
+            <v-data-table :headers="headers2" :items="tableItems" :search="search" density="compact" items-per-page="50"
                 :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table>
         </div>
     </div>
