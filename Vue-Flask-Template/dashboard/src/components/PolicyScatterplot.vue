@@ -110,9 +110,8 @@ export default {
                     return colorScale((d.cluster).toString())
                 })
                 .style('opacity', .5)
-                .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
+                .attr('transform', `translate(${this.margin.left - 20}, ${this.margin.top})`)
                
-                
 
             // Add mouseover to highlight cluster of same color as point under mouse            
             points.on("mouseover", function(e, d) {
@@ -177,7 +176,7 @@ export default {
                 .attr('cx', 0)
                 .attr('cy', (d, i) => i * 25)
                 .attr('r', 7)
-                .style('fill', (d, i) => colorScale(i - 1))
+                .style('fill', (d, i) => colorScale(i.toString()))
                 .style('opacity', 0.7);
                 
             legend.selectAll('text')
