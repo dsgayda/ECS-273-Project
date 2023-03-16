@@ -23,6 +23,7 @@ export default {
     data() {
         return {
             search: '',
+            selectedValue: "All Incidents",
             headers6: [
                 { title: 'category', align: 'start', sortable: true, key: 'category' },
                 { title: 'correlation', align: 'end', key: 'correlation' },
@@ -81,8 +82,7 @@ export default {
         const showDataTable = 5;
 
         const isDataReady = computed(() => {
-            
-            return tableItems.value.length > 0 && tableHeaders.value.length > 0;
+            return tableItems?.value?.length > 0 && tableHeaders?.value?.length > 0;
         });
 
         const sixHeaders = computed(() => {
@@ -153,10 +153,8 @@ export default {
 
         },
         rerender() {
-            d3.selectAll('.table-container').selectAll('*').remove() // Clean all the elements in the chart
+            // d3.selectAll('.table-container').selectAll('*').remove() // Clean all the elements in the chart
             this.initChart()
-        },
-        async fetchData() {
         },
 
     },
@@ -169,10 +167,12 @@ export default {
         'store.points': {
             async handler(newPoints) {
                 if (!isEmpty(newPoints)) {// when data changes
-
+                    console.log('updating table based on new points')
+                    // suicide  mass_shooting          gang  non_suicide
                     const data = {
                         data: this.store.points,
                         clusters: this.store.clusters,
+                        incidentType: 'non_suicide'
                     };
 
                     let table = await this.store.fetchTableData(data);
@@ -207,13 +207,38 @@ export default {
         },
         'store.tableHeaders'(newHeaders) {
             this.rerender();
+        },
+        selectedValue: {
+            async handler(newVal) {
+                // suicide  mass_shooting          gang  non_suicide
+
+                const incidentMap = {
+                    'All Incidents': 'all_incidents',
+                     'Gang Related': 'gang',
+                    Suicide: 'suicide',
+                    'Non-Suicide': 'non_suicide'
+                };
+
+                const data = {
+                        data: this.store.points,
+                        clusters: this.store.clusters,
+                        incidentType: incidentMap[newVal]
+                    };
+                        
+                    let table = await this.store.fetchTableData(data);
+                    this.tableItems = table;
+                    //Call and set the other api based on points, with POST method
+                    // set data for bar chart based on results from post
+                    this.rerender()
+
+                
+                // this.store.selectedValue = newVal;
+            },
+            immediate: true
         }
     },
     // The following are general setup for resize events.
     async mounted() {
-        await this.fetchData();
-        // this.rerender();
-
         window.addEventListener('resize', debounce(this.onResize, 100));
         this.onResize();
     },
@@ -226,12 +251,24 @@ export default {
 </script>
 
 <template>
-    <div v-if="isDataReady" style="max-height: 50% overflow-y: hidden" class="scatter-chart-container d-flex"
+    <div v-if="isDataReady" style="max-height: 50% overflow-y: hidden" class="table-container d-flex"
         ref="tableContainer">
         <div v-if="sixHeaders">
             <v-card>
             <v-card-title>
+                <v-row>
+                    <v-col cols="8">
             Policy Correlations and Clusters
+                </v-col>
+                <v-col cols="4">
+            <v-select
+            :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide']"
+            label="Correlation"
+            density="compact"
+            v-model="selectedValue"
+            ></v-select>
+            </v-col>
+            </v-row>
             <v-spacer></v-spacer>
             <v-text-field
                 v-model="search"
@@ -248,7 +285,19 @@ export default {
         <div v-if="fiveHeaders">
             <v-card>
             <v-card-title>
+                <v-row>
+                    <v-col cols="8">
             Policy Correlations and Clusters
+                </v-col>
+                <v-col cols="4">
+            <v-select
+            :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide']"
+            label="Correlation"
+            density="compact"
+            v-model="selectedValue"
+            ></v-select>
+            </v-col>
+            </v-row>
             <v-spacer></v-spacer>
             <v-text-field
                 v-model="search"
@@ -265,7 +314,19 @@ export default {
         <div v-else-if="fourHeaders">
             <v-card>
             <v-card-title>
+                <v-row>
+                    <v-col cols="8">
             Policy Correlations and Clusters
+                </v-col>
+                <v-col cols="4">
+            <v-select
+            :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide']"
+            label="Correlation"
+            density="compact"
+            v-model="selectedValue"
+            ></v-select>
+            </v-col>
+            </v-row>
             <v-spacer></v-spacer>
             <v-text-field
                 v-model="search"
@@ -282,7 +343,19 @@ export default {
         <div v-else-if="threeHeaders">
             <v-card>
             <v-card-title>
+                <v-row>
+                    <v-col cols="8">
             Policy Correlations and Clusters
+                </v-col>
+                <v-col cols="4">
+            <v-select
+            :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide']"
+            label="Correlation"
+            density="compact"
+            v-model="selectedValue"
+            ></v-select>
+            </v-col>
+            </v-row>
             <v-spacer></v-spacer>
             <v-text-field
                 v-model="search"
@@ -299,7 +372,19 @@ export default {
         <div v-else-if="twoHeaders">
             <v-card>
             <v-card-title>
+                <v-row>
+                    <v-col cols="8">
             Policy Correlations and Clusters
+                </v-col>
+                <v-col cols="4">
+            <v-select
+            :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide']"
+            label="Correlation"
+            density="compact"
+            v-model="selectedValue"
+            ></v-select>
+            </v-col>
+            </v-row>
             <v-spacer></v-spacer>
             <v-text-field
                 v-model="search"

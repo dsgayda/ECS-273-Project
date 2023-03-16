@@ -24,6 +24,9 @@ export const useDataStore = defineStore("dataStore", {
     clusters: [] as string[],
     categories: [] as PolicyCategory[],
     table: [] as any[],
+    tableHeaders: [] as DataTableHeader[],
+    tableItems: [] as TableItem[],
+    numClusters: 3,
     size: { width: 0, height: 0 } as ComponentSize,
     margin: { left: 70, right: 20, top: 20, bottom: 20 } as Margin,
     color: d3
@@ -38,15 +41,25 @@ export const useDataStore = defineStore("dataStore", {
     },
   },
   actions: {
-    async fetchData(options?: {}) {
+    async fetchData({numClusters = 3} = {}) {
+      console.log('fetching data!')
       // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
-      let resp = await axios.get(`${server}/fetchPolicyScatterplot`);
+      let resp = await axios.post(`${server}/fetchPolicyScatterplot`,
+      {
+        numClusters: numClusters
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        
+      });
       this.points = resp.data.data;
       this.clusters = resp.data.clusters;
 
       const data = {
-        data: this.points,
-        clusters: this.clusters,
+        data: resp.data.data,
+        clusters: resp.data.clusters,
       };
 
       resp = await axios.get(`${server}/fetchTopPoliciesPerPoint`);

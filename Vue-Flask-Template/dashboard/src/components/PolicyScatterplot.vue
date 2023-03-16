@@ -18,6 +18,7 @@ export default {
         const { size } = storeToRefs(store);
         const { margin } = storeToRefs(store);
         const { color }    = storeToRefs(store);
+        const { numClusters } = storeToRefs(store);
 
         return {
             store, // Return store as the local state, but when you update the property value, the store is also updated.
@@ -26,14 +27,15 @@ export default {
             points,
             clusters,
             size,
-            margin
+            margin,
+            numClusters
         }
     },
     computed: {
         ...mapState(useDataStore, []) // Traditional way to map the store state to the local state
     },
     created() {
-        this.store.fetchData();
+        this.store.fetchData(this.numClusters);
         // this.store.initializeColorScale();
     },
     methods: {
@@ -172,7 +174,7 @@ export default {
                 .text('Clustering State Policies') // text content
         },
         rerender() {
-            d3.selectAll('.scatter-chart-container').selectAll('*').remove() // Clean all the elements in the chart
+            d3.select('.scatter-chart-container').selectAll('*').remove() // Clean all the elements in the chart
             this.initChart()
         }
 
@@ -185,11 +187,21 @@ export default {
         },
         'store.points'(newPoints) { // when data changes
             if (!isEmpty(newPoints)) {
+                console.log('rerendering policy scatter: ', this.numClusters)
                 //Call and set the other api based on points, with POST method
                 // set data for bar chart based on results from post
                 this.rerender()
             }
         },
+        'store.numClusters'(newNumClusters) { // when data changes
+            if (!isEmpty(newNumClusters)) {
+                console.log('rerendering policy scatter: ', this.numClusters)
+                this.store.fetchData(newNumClusters);
+                //Call and set the other api based on points, with POST method
+                // set data for bar chart based on results from post
+                this.rerender()
+            }
+        }
     },
     // The following are general setup for resize events.
     mounted() {
