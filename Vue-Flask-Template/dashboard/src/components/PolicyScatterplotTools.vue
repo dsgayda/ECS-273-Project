@@ -72,6 +72,19 @@ export default {
                 .on('end', val => {
                     this.numClusters = val;
                     console.log('Slider value:', this.numClusters);
+                    d3.select('.track-fill') // Select the handle element
+                        
+                        .attr('y1', '108')
+                })
+                .on('start', val => {
+                    d3.select('.track-fill') // Select the handle element
+                        .attr('y1', '108');
+
+                })
+                .on('drag', val => {
+                    d3.select('.track-fill') // Select the handle element
+                        .attr('y1', '108');
+
                 })
                 ;
 
