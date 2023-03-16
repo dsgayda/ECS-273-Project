@@ -146,7 +146,7 @@ export default {
 
                 // Define the domain of the linear scale using the extent of the incidents_per_capita values
                 let colorDomain = d3.extent(Array.from(this.states.map(s => s.incidents_per_capita).values()).flat());
-                console.log('colorDomain', colorDomain)
+
                 // Create the linear scale using d3.scaleLinear() and interpolate between the colors
                 let RYG_color = d3.scaleLinear()
                     .domain([colorDomain[0], (colorDomain[0] + colorDomain[1]) / 2, colorDomain[1]])

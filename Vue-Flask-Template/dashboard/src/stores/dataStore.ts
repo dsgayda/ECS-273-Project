@@ -96,7 +96,6 @@ export const useDataStore = defineStore("dataStore", {
         // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
         try {
             if(this.points.length !== 0) {
-              console.log("points:", this.points)
               const resp = await axios.post(`${server}/fetchPolicyCorrelationTable`, data);
               const table = resp.data.data;
               return table;
