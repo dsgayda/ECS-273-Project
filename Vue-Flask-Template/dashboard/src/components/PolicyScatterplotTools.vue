@@ -60,6 +60,7 @@ export default {
                 .tickFormat(d3.format(',.0f'))
                 .step(1)
                 .default(3)
+                .fill('#66c2a5')
                 ;
 
 
@@ -115,7 +116,7 @@ export default {
 <!-- "ref" registers a reference to the HTML element so that we can access it via the reference in Vue.  -->
 <!-- We use flex to arrange the layout-->
 <template>
-    <select id="selectButton"></select>
+    <select id="selectButton" style="background-color: #66c2a5; color: white; border-radius: 10px; padding: 5px;"></select>
     <div class="scatter-tools-container d-flex" ref="scatterToolsContainer"></div>
 </template>
 
