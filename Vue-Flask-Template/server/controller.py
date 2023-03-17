@@ -214,7 +214,10 @@ def processTopPoliciesPerState(n_policies: int = 3):
     return output_data
 
 
-def processPolicyScatterplot(num_clusters: int = 3, method: str = 'PCA'):
+def processPolicyScatterplot(num_clusters: int = 3, method: str = 'PCA', agg_state=True):
+    """
+    agg_state is true if we want one point per state, otherwise we get one point for each {state, year}
+    """
     # create cluster labels
     cluster_names = []
     for i in range(num_clusters):
@@ -222,17 +225,25 @@ def processPolicyScatterplot(num_clusters: int = 3, method: str = 'PCA'):
 
     # if we have calculated this already, it is much faster to save the result
     # and return it than recalculate it every time 
-    output_filepath = f'../server/data/policyClusters_{num_clusters}_{method}.pickle'
+    output_filepath = f'../server/data/policyClusters_{num_clusters}_{method}_{agg_state}.pickle'
     dirname = os.path.dirname(__file__)
     filename = os.path.join(dirname, output_filepath)
     if os.path.exists(filename):
         df_embeddings = pd.read_pickle(output_filepath)
     else: 
         # load data
-        data_filepath = "../server/data/policyDatabase.xlsx"
-        df = pd.read_excel(data_filepath)
-        df = df[(df.year > 2013) & (df.year < 2019)]
-        X = df.drop(columns=['state', 'year', 'lawtotal'])
+        policy_data_filepath = "../server/data/policyDatabase.xlsx"
+        policy_df = pd.read_excel(policy_data_filepath)
+        policy_df = policy_df[(policy_df.year > 2013) & (policy_df.year < 2019)]
+        if agg_state:
+            agg_df = policy_df.drop(columns=['year', 'lawtotal']).groupby('state').apply(
+                            lambda x: np.concatenate([x[col].values for col in x.columns if col != 'state'])
+                            ).reset_index()
+            X = agg_df[0].to_numpy()
+            X = np.stack(X)
+
+        else:
+            X = policy_df.drop(columns=['state', 'year', 'lawtotal'])
 
         # cluster data
         clusterer = KMeans(n_clusters=num_clusters, init='k-means++')
@@ -248,13 +259,16 @@ def processPolicyScatterplot(num_clusters: int = 3, method: str = 'PCA'):
         data_embedded = reducer.fit_transform(X)
         df_embeddings = pd.DataFrame()
         df_embeddings['cluster'] = predictions
-        df_embeddings['state'] = list(df['state'])
-        df_embeddings['year'] = list(df['year'])
         df_embeddings["dimension1"] = data_embedded[:, 0]
         df_embeddings["dimension2"] = data_embedded[:, 1]
 
+        if agg_state:
+            df_embeddings['state'] = agg_df.state
+            df_embeddings = policy_df.set_index('state')[['year']].join(df_embeddings.set_index('state')).reset_index()
+        else:
+            df_embeddings['state'] = policy_df['state']    
+            df_embeddings['year'] = policy_df['year']
         df_embeddings.to_pickle(output_filepath)
-
     return df_embeddings.to_dict(orient='records'), list(cluster_names)
 
 
