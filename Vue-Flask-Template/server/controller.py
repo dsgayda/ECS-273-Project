@@ -124,7 +124,7 @@ def preprocessPolicyMetadata():
     metadata_df.to_pickle('../server/data/policyMetadata.pickle')  
 
 
-def processMap(cluster_data: dict, min_year: int = 2014, max_year: int = 2018):
+def processMap(cluster_data: dict, incident_type: str = 'all_incidents', min_year: int = 2014, max_year: int = 2018):
     """
     output columns: state, incidents_per_capita, policies_implemented, cluster
     """
@@ -145,8 +145,8 @@ def processMap(cluster_data: dict, min_year: int = 2014, max_year: int = 2018):
     map_data = map_data[(map_data.year >= min_year) & (map_data.year <= max_year)].set_index(['state'])
     # get average num incidents and policies within range
     map_data = map_data.groupby(by=['state']).mean()
-    map_data =  map_data[['all_incidents', 'lawtotal']].reset_index()
-    map_data.rename(columns={'lawtotal': 'policies_implemented', 'all_incidents':'incidents_per_capita'}, inplace=True)
+    map_data =  map_data[[incident_type, 'lawtotal']].reset_index()
+    map_data.rename(columns={'lawtotal': 'policies_implemented', incident_type:'incidents_per_capita'}, inplace=True)
     # now get cluster data
     cluster_data = pd.DataFrame(cluster_data)
     # get the state, cluster, and number of instances of the state within that cluster
