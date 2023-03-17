@@ -91,7 +91,7 @@ export default {
         });
 
         const sixHeaders = computed(() => {
-            
+
             if (tableHeaders.value.length === 8) {
                 return true;
             }
@@ -99,7 +99,7 @@ export default {
         });
 
         const fiveHeaders = computed(() => {
-            
+
             if (tableHeaders.value.length === 7) {
                 return true;
             }
@@ -123,7 +123,7 @@ export default {
             }
             return false;
         });
-        
+
 
 
         let isDataLoaded = false;
@@ -212,9 +212,9 @@ export default {
                                 const percentage = parseFloat(percentageString);
 
                                 if (percentage.toFixed(2).slice(-2) === '00') {
-                                percentageString = percentage.toFixed(0) + '%';
+                                    percentageString = percentage.toFixed(0) + '%';
                                 } else {
-                                percentageString = percentage.toFixed(2) + '%';
+                                    percentageString = percentage.toFixed(2) + '%';
                                 }
                                 table[i][key] = percentageString;
                             }
@@ -241,24 +241,24 @@ export default {
 
                 const incidentMap = {
                     'All Incidents': 'all_incidents',
-                     'Gang Related': 'gang',
+                    'Gang Related': 'gang',
                     Suicide: 'suicide',
                     'Non-Suicide': 'non_suicide',
                     'Mass Shooting': 'mass_shooting'
                 };
 
                 const data = {
-                        data: this.store.points,
-                        incidentType: incidentMap[newVal]
-                    };
-                        
-                    let table = await this.store.fetchTableData(data);
-                    this.tableItems = table;
-                    //Call and set the other api based on points, with POST method
-                    // set data for bar chart based on results from post
-                    this.rerender()
+                    data: this.store.points,
+                    incidentType: incidentMap[newVal]
+                };
 
-                
+                let table = await this.store.fetchTableData(data);
+                this.tableItems = table;
+                //Call and set the other api based on points, with POST method
+                // set data for bar chart based on results from post
+                this.rerender()
+
+
                 // this.store.selectedValue = newVal;
             },
         }
@@ -277,159 +277,142 @@ export default {
 </script>
 
 <template>
-    <div v-if="isDataReady" style="max-height: 50% overflow-y: hidden" class="table-container"
-        ref="tableContainer">
+    <div v-if="isDataReady" style="max-height: 50% overflow-y: hidden" class="table-container" ref="tableContainer">
         <div v-if="sixHeaders">
             <v-card>
-            <v-card-title>
-                <v-row>
-                    <v-col cols="8">
-            Policy Correlations and Clusters
-                </v-col>
-                <v-col cols="4">
-            <v-select
-            :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide', 'Mass Shooting']"
-            label="Incident Type"
-            density="compact"
-            v-model="selectedValue"
-            ></v-select>
-            </v-col>
-            </v-row>
-            <v-spacer></v-spacer>
-            <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Search"
-                single-line
-                hide-details
-            ></v-text-field>
-            </v-card-title>
-        </v-card>
-            <v-data-table-virtual :headers="headers6" :items="tableItems" :search="search" density="compact" :height="tableHeight"
-                :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table-virtual>
+                <v-card-title>
+                    <v-row>
+                        <v-col cols="12">
+                            Policy Correlations and Clusters
+                        </v-col>
+                    </v-row>
+                    <v-spacer></v-spacer>
+                    <v-row>
+                        <v-col cols="4">
+                            <v-select :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide', 'Mass Shooting']"
+                                label="Correlation" density="compact" v-model="selectedValue"></v-select>
+                        </v-col>
+                        <v-col cols="8">
+                            <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line
+                                hide-details></v-text-field>
+
+                        </v-col>
+                    </v-row>
+
+                </v-card-title>
+            </v-card>
+            <v-data-table-virtual :headers="headers6" :items="tableItems" :search="search" density="compact"
+                :height="tableHeight" :footer-props="{ 'items-per-page-options': [5, 10, 25] }"
+                class="elevation-1 my-data-table"></v-data-table-virtual>
         </div>
         <div v-if="fiveHeaders">
             <v-card>
-            <v-card-title>
-                <v-row>
-                    <v-col cols="12">
-            Policy Correlations and Clusters
-                </v-col>
-            </v-row>
-            <v-spacer></v-spacer>
-            <v-row>
-                <v-col cols="4">
-                    <v-select
-                :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide', 'Mass Shooting']"
-                label="Correlation"
-                density="compact"
-                v-model="selectedValue"
-                ></v-select>
-        </v-col>
-                <v-col cols="8">
-                    <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Search"
-                single-line
-                hide-details
-            ></v-text-field>
-               
-                </v-col>
-            </v-row>
-            
-            </v-card-title>
-        </v-card>
-            <v-data-table-virtual :headers="headers5" :items="tableItems" :search="search" density="compact" :height="tableHeight"
-                :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table-virtual>
+                <v-card-title>
+                    <v-row>
+                        <v-col cols="12">
+                            Policy Correlations and Clusters
+                        </v-col>
+                    </v-row>
+                    <v-spacer></v-spacer>
+                    <v-row>
+                        <v-col cols="4">
+                            <v-select :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide', 'Mass Shooting']"
+                                label="Correlation" density="compact" v-model="selectedValue"></v-select>
+                        </v-col>
+                        <v-col cols="8">
+                            <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line
+                                hide-details></v-text-field>
+
+                        </v-col>
+                    </v-row>
+
+                </v-card-title>
+            </v-card>
+            <v-data-table-virtual :headers="headers5" :items="tableItems" :search="search" density="compact"
+                :height="tableHeight" :footer-props="{ 'items-per-page-options': [5, 10, 25] }"
+                class="elevation-1 my-data-table"></v-data-table-virtual>
         </div>
         <div v-else-if="fourHeaders">
             <v-card>
-            <v-card-title>
-                <v-row>
-                    <v-col cols="8">
-            Policy Correlations and Clusters
-                </v-col>
-                <v-col cols="4">
-            <v-select
-            :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide', 'Mass Shooting']"
-            label="Correlation"
-            density="compact"
-            v-model="selectedValue"
-            ></v-select>
-            </v-col>
-            </v-row>
-            <v-spacer></v-spacer>
-            <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Search"
-                single-line
-                hide-details
-            ></v-text-field>
-            </v-card-title>
-        </v-card>
-            <v-data-table-virtual :headers="headers4" :items="tableItems" :search="search" density="compact" :height="tableHeight"
-                :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table-virtual>
+                <v-card-title>
+                    <v-row>
+                        <v-col cols="12">
+                            Policy Correlations and Clusters
+                        </v-col>
+                    </v-row>
+                    <v-spacer></v-spacer>
+                    <v-row>
+                        <v-col cols="4">
+                            <v-select :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide', 'Mass Shooting']"
+                                label="Correlation" density="compact" v-model="selectedValue"></v-select>
+                        </v-col>
+                        <v-col cols="8">
+                            <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line
+                                hide-details></v-text-field>
+
+                        </v-col>
+                    </v-row>
+
+                </v-card-title>
+            </v-card>
+            <v-data-table-virtual :headers="headers4" :items="tableItems" :search="search" density="compact"
+                :height="tableHeight" :footer-props="{ 'items-per-page-options': [5, 10, 25] }"
+                class="elevation-1 my-data-table"></v-data-table-virtual>
         </div>
         <div v-else-if="threeHeaders">
             <v-card>
-            <v-card-title>
-                <v-row>
-                    <v-col cols="8">
-            Policy Correlations and Clusters
-                </v-col>
-                <v-col cols="4">
-            <v-select
-            :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide', 'Mass Shooting']"
-            label="Correlation"
-            density="compact"
-            v-model="selectedValue"
-            ></v-select>
-            </v-col>
-            </v-row>
-            <v-spacer></v-spacer>
-            <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Search"
-                single-line
-                hide-details
-            ></v-text-field>
-            </v-card-title>
-        </v-card>
-            
-            <v-data-table-virtual :headers="headers3" :items="tableItems" :search="search" density="compact" :height="tableHeight"
-                :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table-virtual>
+                <v-card-title>
+                    <v-row>
+                        <v-col cols="12">
+                            Policy Correlations and Clusters
+                        </v-col>
+                    </v-row>
+                    <v-spacer></v-spacer>
+                    <v-row>
+                        <v-col cols="4">
+                            <v-select :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide', 'Mass Shooting']"
+                                label="Correlation" density="compact" v-model="selectedValue"></v-select>
+                        </v-col>
+                        <v-col cols="8">
+                            <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line
+                                hide-details></v-text-field>
+
+                        </v-col>
+                    </v-row>
+
+                </v-card-title>
+            </v-card>
+
+            <v-data-table-virtual :headers="headers3" :items="tableItems" :search="search" density="compact"
+                :height="tableHeight" :footer-props="{ 'items-per-page-options': [5, 10, 25] }"
+                class="elevation-1 my-data-table"></v-data-table-virtual>
         </div>
         <div v-else-if="twoHeaders">
             <v-card>
-            <v-card-title>
-                <v-row>
-                    <v-col cols="8">
-            Policy Correlations and Clusters
-                </v-col>
-                <v-col cols="4">
-            <v-select
-            :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide', 'Mass Shooting']"
-            label="Correlation"
-            density="compact"
-            v-model="selectedValue"
-            ></v-select>
-            </v-col>
-            </v-row>
-            <v-spacer></v-spacer>
-            <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Search"
-                single-line
-                hide-details
-            ></v-text-field>
-            </v-card-title>
-        </v-card>
-            <v-data-table-virtual :headers="headers2" :items="tableItems" :search="search" density="compact" :height="tableHeight"
-                :footer-props="{ 'items-per-page-options': [5, 10, 25] }" class="elevation-1 my-data-table"></v-data-table-virtual>
+                <v-card-title>
+                    <v-row>
+                        <v-col cols="12">
+                            Policy Correlations and Clusters
+                        </v-col>
+                    </v-row>
+                    <v-spacer></v-spacer>
+                    <v-row>
+                        <v-col cols="4">
+                            <v-select :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide', 'Mass Shooting']"
+                                label="Correlation" density="compact" v-model="selectedValue"></v-select>
+                        </v-col>
+                        <v-col cols="8">
+                            <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line
+                                hide-details></v-text-field>
+
+                        </v-col>
+                    </v-row>
+
+                </v-card-title>
+            </v-card>
+            <v-data-table-virtual :headers="headers2" :items="tableItems" :search="search" density="compact"
+                :height="tableHeight" :footer-props="{ 'items-per-page-options': [5, 10, 25] }"
+                class="elevation-1 my-data-table"></v-data-table-virtual>
         </div>
     </div>
     <div v-else class="vdiv">
