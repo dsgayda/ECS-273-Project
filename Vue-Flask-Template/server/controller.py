@@ -223,55 +223,58 @@ def processPolicyScatterplot(num_clusters: int = 3, method: str = 't-SNE', agg_s
     cluster_names = []
     for i in range(num_clusters):
         cluster_names.append(f'cluster {i + 1}')
+    
+    # load data
+    policy_data_filepath = "../server/data/policyDatabase.xlsx"
+    policy_df = pd.read_excel(policy_data_filepath)
+    policy_df = policy_df[(policy_df.year > 2013) & (policy_df.year < 2019)]
+    if agg_state:
+        agg_df = policy_df.drop(columns=['year', 'lawtotal']).groupby('state').apply(
+                        lambda x: np.concatenate([x[col].values for col in x.columns if col != 'state'])
+                        ).reset_index()
+        X = agg_df[0].to_numpy()
+        X = np.stack(X)
+
+    else:
+        X = policy_df.drop(columns=['state', 'year', 'lawtotal'])
 
     # if we have calculated this already, it is much faster to save the result
     # and return it than recalculate it every time 
-    output_filepath = f'../server/data/policyClusters_{num_clusters}_{method}_{agg_state}.pickle'
+    output_filepath = f'../server/data/policyClusters_{num_clusters}_{agg_state}.pickle'
     dirname = os.path.dirname(__file__)
     filename = os.path.join(dirname, output_filepath)
     if os.path.exists(filename):
-        df_embeddings = pd.read_pickle(output_filepath)
+        cluster_data = pd.read_pickle(output_filepath)
     else: 
-        # load data
-        policy_data_filepath = "../server/data/policyDatabase.xlsx"
-        policy_df = pd.read_excel(policy_data_filepath)
-        policy_df = policy_df[(policy_df.year > 2013) & (policy_df.year < 2019)]
-        if agg_state:
-            agg_df = policy_df.drop(columns=['year', 'lawtotal']).groupby('state').apply(
-                            lambda x: np.concatenate([x[col].values for col in x.columns if col != 'state'])
-                            ).reset_index()
-            X = agg_df[0].to_numpy()
-            X = np.stack(X)
-
-        else:
-            X = policy_df.drop(columns=['state', 'year', 'lawtotal'])
-
         # cluster data
         clusterer = KMeans(n_clusters=num_clusters, init='k-means++')
         predictions = clusterer.fit_predict(X)
+        cluster_data = pd.DataFrame(X)
+        cluster_data['preds'] = predictions
+        cluster_data.to_pickle(output_filepath)
 
-        if method == 'PCA':
-            reducer = PCA(n_components=2)
-        elif method == 't-SNE':
-            reducer = TSNE(n_components=2, verbose=1)
-        elif method == 'NMF':
-            reducer = NMF(n_components=2)
-        else:
-            raise ValueError("Requested a method that is not supported")
-        
-        data_embedded = reducer.fit_transform(X)
-        df_embeddings = pd.DataFrame()
-        df_embeddings['cluster'] = predictions
-        df_embeddings["dimension1"] = data_embedded[:, 0]
-        df_embeddings["dimension2"] = data_embedded[:, 1]
+    if method == 'PCA':
+        reducer = PCA(n_components=2)
+    elif method == 't-SNE':
+        reducer = TSNE(n_components=2, verbose=1)
+    elif method == 'NMF':
+        reducer = NMF(n_components=2)
+    else:
+        raise ValueError("Requested a method that is not supported")
+    
+    data_embedded = reducer.fit_transform(cluster_data.drop(columns=['preds']))
+    df_embeddings = pd.DataFrame()
+    df_embeddings['cluster'] = cluster_data['preds']
+    df_embeddings["dimension1"] = data_embedded[:, 0]
+    df_embeddings["dimension2"] = data_embedded[:, 1]
 
-        if agg_state:
-            df_embeddings['state'] = agg_df.state
-            df_embeddings = policy_df.set_index('state')[['year']].join(df_embeddings.set_index('state')).reset_index()
-        else:
-            df_embeddings['state'] = policy_df['state']    
-            df_embeddings['year'] = policy_df['year']
-        df_embeddings.to_pickle(output_filepath)
+    if agg_state:
+        df_embeddings['state'] = agg_df['state']
+        df_embeddings = policy_df.set_index('state')[['year']].join(df_embeddings.set_index('state')).reset_index()
+    else:
+        df_embeddings['state'] = policy_df['state']    
+        df_embeddings['year'] = policy_df['year']
+
     return df_embeddings.to_dict(orient='records'), list(cluster_names)
 
 
@@ -406,4 +409,4 @@ def processPolicyCorrelations(policy_clusters:dict, incidence_type='all_incident
 if __name__ == "__main__":
     os.chdir('C:/Users/nammy/Desktop/ECS-273-Project/Vue-Flask-Template/dashboard/')
     cluster_data, clusters = processPolicyScatterplot()
-    processGroupedBarChart(cluster_data, clusters)
+    # processGroupedBarChart(cluster_data, clusters)
