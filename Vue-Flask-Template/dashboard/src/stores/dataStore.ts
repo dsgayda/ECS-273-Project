@@ -32,14 +32,7 @@ export const useDataStore = defineStore("dataStore", {
     color: d3
       .scaleOrdinal()
       .domain(["0", "1", "2", "3", "4"])
-      .range([
-        d3.schemeAccent[0],
-        d3.schemeAccent[7],
-        '#228B22',
-        d3.schemeAccent[4],
-        d3.schemeAccent[5],
-        '#CCCCCC'
-      ]),
+      .range(['#24a4d0', '#24d0a0', '#cdadf1', '#95bb88', '#343573', '#8e87da']),
     geoMapData: {},
   }),
   getters: {
