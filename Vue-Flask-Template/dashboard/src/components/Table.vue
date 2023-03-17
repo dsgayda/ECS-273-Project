@@ -31,7 +31,7 @@ export default {
             selectedValue: "All Incidents",
             headers6: [
                 { title: 'category', align: 'start', sortable: true, key: 'category' },
-                { title: 'correlation', align: 'end', key: 'correlation' },
+                { title: 'indicator', align: 'end', key: 'correlation' },
                 { title: 'cluster 1', align: 'end', key: 'cluster 0' },
                 { title: 'cluster 2', align: 'end', key: 'cluster 1' },
                 { title: 'cluster 3', align: 'end', key: 'cluster 2' },
@@ -41,7 +41,7 @@ export default {
             ],
             headers5: [
                 { title: 'category', align: 'start', sortable: true, key: 'category' },
-                { title: 'correlation', align: 'end', key: 'correlation' },
+                { title: 'indicator', align: 'end', key: 'correlation' },
                 { title: 'cluster 1', align: 'end', key: 'cluster 0' },
                 { title: 'cluster 2', align: 'end', key: 'cluster 1' },
                 { title: 'cluster 3', align: 'end', key: 'cluster 2' },
@@ -50,7 +50,7 @@ export default {
             ],
             headers4: [
                 { title: 'category', align: 'start', sortable: true, key: 'category' },
-                { title: 'correlation', align: 'end', key: 'correlation' },
+                { title: 'indicator', align: 'end', key: 'correlation' },
                 { title: 'cluster 1', align: 'end', key: 'cluster 0' },
                 { title: 'cluster 2', align: 'end', key: 'cluster 1' },
                 { title: 'cluster 3', align: 'end', key: 'cluster 2' },
@@ -58,14 +58,14 @@ export default {
             ],
             headers3: [
                 { title: 'category', align: 'start', sortable: true, key: 'category' },
-                { title: 'correlation', align: 'end', key: 'correlation' },
+                { title: 'indicator', align: 'end', key: 'correlation' },
                 { title: 'cluster 1', align: 'end', key: 'cluster 0' },
                 { title: 'cluster 2', align: 'end', key: 'cluster 1' },
                 { title: 'cluster 3', align: 'end', key: 'cluster 2' },
             ],
             headers2: [
                 { title: 'category', align: 'start', sortable: true, key: 'category' },
-                { title: 'correlation', align: 'end', key: 'correlation' },
+                { title: 'indicator', align: 'end', key: 'correlation' },
                 { title: 'cluster 1', align: 'end', key: 'cluster 0' },
                 { title: 'cluster 2', align: 'end', key: 'cluster 1' },
             ]
@@ -289,7 +289,7 @@ export default {
                 <v-col cols="4">
             <v-select
             :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide', 'Mass Shooting']"
-            label="Correlation"
+            label="Incident Type"
             density="compact"
             v-model="selectedValue"
             ></v-select>

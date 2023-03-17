@@ -131,7 +131,8 @@ export default {
                 tooltip.transition()
                     .duration(200)
                     .style('opacity', .9);
-                tooltip.html(`${d.state}, ${d.year}`)
+                // tooltip.html(`${d.state}, ${d.year}`)
+                tooltip.html(`${d.state}`)
                     .style('left', (e.pageX) + 'px')
                     .style('top', (e.pageY - 28) + 'px')
 

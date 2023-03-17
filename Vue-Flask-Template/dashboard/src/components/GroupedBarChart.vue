@@ -172,7 +172,7 @@ export default {
                 .attr('transform', `translate(${parentRect.width / 2}, ${parentRect.height + 25})`)
                 .attr("text-anchor", "middle")
                 .style('font-size', '12px') 
-                .text("Incidence Type");
+                .text("Incident Type");
 
                         
             // Add Y axis
