@@ -131,7 +131,7 @@ export default {
         'store.numClusters'(newNumClusters) {
             console.log('new num!', newNumClusters);
             // Trying to update by fetching new data but it's not working yet...
-            this.store.fetchData({numClusters: newNumClusters});
+            this.store.fetchData({numClusters: newNumClusters},{reductionType: this.reductionType});
             this.rerender();
         },
         selectedDimensionReduction: {
