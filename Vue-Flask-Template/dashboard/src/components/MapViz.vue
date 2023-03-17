@@ -108,7 +108,32 @@ export default {
                     .attr("stroke", "#ccc")
                     .attr('opacity', '.6')
                     .attr("d", path)
-                    .attr('transform', `translate(${0}, 0)`);
+                    .attr('transform', `translate(${0}, 0)`)
+                    .on('mousemove', (e, d) => {
+                        console.log('mouse over state: ', this.states.filter(s => s.state === d.properties.name)[0])
+                        let stateInfo = this.states.filter(s => s.state === d.properties.name)[0];
+                        d3.select('.d3-tooltip').transition()
+                            .duration(200)
+                            .style('opacity', .9);
+                        d3.select('.d3-tooltip')
+                        .html(`State: ${stateInfo.state}<br>
+                            Cluster: ${stateInfo.cluster + 1}<br>
+                            Incidents: ${(stateInfo.incidents_per_capita * 50000).toFixed(1)}<br>
+                            Avg. # Policies: ${stateInfo.policies_implemented}`)
+                            
+                            .style('left', (e.pageX + 10) + 'px')
+                            .style('top', (e.pageY) + 'px')
+
+                            .style('visibility', 'visible');
+                        // cluster: 2, incidents_per_capita: 0.00008333123749441487, policies_implemented: 104.2, state: 'California'
+                    })
+                    .on('mouseout', (e, d) => {
+                        d3.select('.d3-tooltip').transition()
+                            // .duration(500)
+                            // .style('opacity', 0)
+                            .style('visibility', 'hidden');
+
+                    });
 
                 // Find the minimum and maximum policies_implemented values
                 const policiesImplementedExtent = d3.extent(this.states, d => d.policies_implemented);
@@ -142,7 +167,7 @@ export default {
                 // let redcolor = d3.scaleSequential(d3.extent(Array.from(this.states.map(s => s.incidents_per_capita).values()).flat()), d3.interpolateReds).nice()
 
                 // Color gradient green -> yellow -> red
-                let colorRange = ["green", "yellow", "red"];
+                let colorRange = ["white", "yellow", "red"];
 
                 // Define the domain of the linear scale using the extent of the incidents_per_capita values
                 let colorDomain = d3.extent(Array.from(this.states.map(s => s.incidents_per_capita).values()).flat());
@@ -176,7 +201,31 @@ export default {
                     .attr("fill", d => {
                         return RYG_color(this.states.filter(s => s.state === d.properties.name)[0].incidents_per_capita)
                     })
-                    .attr("transform", d => transform(d, this.states));
+                    .attr("transform", d => transform(d, this.states))
+                    .on('mousemove', (e, d) => {
+                        console.log('mouse over state: ', this.states.filter(s => s.state === d.properties.name)[0])
+                        let stateInfo = this.states.filter(s => s.state === d.properties.name)[0];
+                        d3.select('.d3-tooltip').transition()
+                            .duration(200)
+                            .style('opacity', .9);
+                        d3.select('.d3-tooltip')
+                        .html(`State: ${stateInfo.state}<br>
+                            Cluster: ${stateInfo.cluster + 1}<br>
+                            Incidents: ${(stateInfo.incidents_per_capita * 50000).toFixed(1)}<br>
+                            Avg. # Policies: ${stateInfo.policies_implemented}`)
+                            .style('left', (e.pageX + 10) + 'px')
+                            .style('top', (e.pageY) + 'px')
+
+                            .style('visibility', 'visible');
+                        // cluster: 2, incidents_per_capita: 0.00008333123749441487, policies_implemented: 104.2, state: 'California'
+                    })
+                    .on('mouseout', (e, d) => {
+                        d3.select('.d3-tooltip').transition()
+                            // .duration(500)
+                            // .style('opacity', 0)
+                            .style('visibility', 'hidden');
+
+                    })
 
                 this.createLegend(svg, RYG_color, colorDomain)
                     ;
@@ -192,7 +241,7 @@ export default {
             const legendMargin = { top: 10, right: 10, bottom: 10, left: 10 };
 
             const legend = svg.append("g")
-                .attr("transform", `translate(${this.margin.left - 50}, ${this.size.height - this.size.height/10})`);
+                .attr("transform", `translate(${this.margin.left - 50}, ${this.size.height - this.size.height / 10})`);
 
             const gradient = legend.append("defs")
                 .append("linearGradient")
@@ -240,17 +289,17 @@ export default {
                 // .attr('dy', '0.5rem') // relative distance from the indicated coordinates.
                 .style('text-anchor', 'middle')
                 .style('font-weight', 'bold')
-                .style('font-size', '8px') 
+                .style('font-size', '8px')
                 .attr('transform', `translate(${legendWidth / 2}, -5)`)
                 .text('Gun Incidents Per 50k People') // text content
-            
-    //             legend.append('g').append('rect')
-    // .attr('width', 250)
-    // .attr('height', 100)
-    // .attr('fill', 'white') // Add the fill color for the box
-    // .attr('stroke', 'black')
-    // .attr('stroke-width', 1)
-    // .attr('transform', `translate(${this.size.width - this.size.width/3}, ${-this.size.height + this.size.height/8})`); // Fix the typo in the attribute name
+
+            //             legend.append('g').append('rect')
+            // .attr('width', 250)
+            // .attr('height', 100)
+            // .attr('fill', 'white') // Add the fill color for the box
+            // .attr('stroke', 'black')
+            // .attr('stroke-width', 1)
+            // .attr('transform', `translate(${this.size.width - this.size.width/3}, ${-this.size.height + this.size.height/8})`); // Fix the typo in the attribute name
 
 
         },

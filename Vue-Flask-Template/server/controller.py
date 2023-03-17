@@ -330,6 +330,7 @@ def processPolicyCorrelations(policy_clusters:dict, incidence_type='all_incident
     correlation_df.drop(columns=['incidence_type'], inplace=True)
 
     # join with cluster policy data
+        
     policy_clusters.set_index(['state', 'year'], inplace=True)
     cluster_data = policy_metadata.join(policy_clusters)
     cluster_data = cluster_data[['sub_category', 'percent_policies_implemented', 'cluster']]
