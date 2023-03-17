@@ -192,6 +192,7 @@ def processTopPoliciesPerState(n_policies: int = 3):
     
     return output_data
 
+
 def processPolicyScatterplot(input_num_clusters: int = 3, input_method: str = 't-SNE'):
     # filter out the UserWarning
     warnings.filterwarnings("ignore", category=UserWarning)
@@ -253,72 +254,6 @@ def processPolicyScatterplot(input_num_clusters: int = 3, input_method: str = 't
         df_embeddings.to_pickle(output_filepath)
     # now that all data has been generated, rerun function
     processPolicyScatterplot(input_num_clusters, input_method)
-    
-
-
-def processPolicyScatterplotBad(input_num_clusters: int = 3, input_method: str = 't-SNE', input_groupby_state=True):
-    """
-    groupby_state is true if we want one point per state, otherwise we get one point for each {state, year}
-    """
-    # filter out the UserWarning
-    warnings.filterwarnings("ignore", category=UserWarning)
-
-    # create cluster labels
-    cluster_names = []
-    for i in range(input_num_clusters):
-        cluster_names.append(f'cluster {i + 1}')
- 
-    input_filepath = f'../server/data/policyClusters_{input_num_clusters}_{input_method}_{input_groupby_state}.pickle'
-    dirname = os.path.dirname(__file__)
-    filename = os.path.join(dirname, input_filepath)
-    
-    # have all clustering options been precalculated?
-    if os.path.exists(filename):
-        df_embeddings = pd.read_pickle(input_filepath)
-    else: # precalculate all clustering options
-        # load data
-        policy_data_filepath = "../server/data/policyDatabase.xlsx"
-        policy_df = pd.read_excel(policy_data_filepath)
-        policy_df = policy_df[(policy_df.year > 2013) & (policy_df.year < 2019)]
-        for groupby_state in [True, False]: # group by state or no
-            if groupby_state:
-                agg_df = policy_df.drop(columns=['year', 'lawtotal']).groupby('state').apply(
-                                lambda x: np.concatenate([x[col].values for col in x.columns if col != 'state'])
-                                ).reset_index()
-                X = agg_df[0].to_numpy()
-                X = np.stack(X)
-
-            else:
-                X = policy_df.drop(columns=['state', 'year', 'lawtotal'])
-            # cluster data
-            for num_clusters in range(2, 7):
-                clusterer = KMeans(n_clusters=num_clusters, init='k-means++')
-                predictions = clusterer.fit_predict(X)
-                # dimension reduction
-                for method in ['t-SNE', 'NMF', 'PCA']:
-                    output_filepath = f'../server/data/policyClusters_{num_clusters}_{method}_{groupby_state}.pickle'
-                    if method == 'PCA':
-                        reducer = PCA(n_components=2)
-                    elif method == 't-SNE':
-                        reducer = TSNE(n_components=2)
-                    elif method == 'NMF':
-                        reducer = NMF(n_components=2)
-                    data_embedded = reducer.fit_transform(X)
-                    # start creating output data frame
-                    df_embeddings = pd.DataFrame()
-                    df_embeddings["dimension1"] = data_embedded[:, 0]
-                    df_embeddings["dimension2"] = data_embedded[:, 1]
-                    df_embeddings['cluster'] = predictions
-                    if groupby_state:
-                        df_embeddings['state'] = agg_df.state
-                        df_embeddings = policy_df.set_index('state')[['year']].join(df_embeddings.set_index('state')).reset_index()
-                    else:
-                        df_embeddings['state'] = policy_df['state']    
-                        df_embeddings['year'] = policy_df['year']
-                    df_embeddings.to_pickle(output_filepath)
-        df_embeddings = pd.read_pickle(input_filepath) # load in relevant table
-            
-    return df_embeddings.to_dict(orient='records'), list(cluster_names)
 
 
 def processGroupedBarChart(policy_clusters: dict, cluster_names:list):
