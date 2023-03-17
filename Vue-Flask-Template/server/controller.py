@@ -210,9 +210,16 @@ def processPolicyScatterplot(input_num_clusters: int = 3, input_method: str = 't
         df_dim = pd.read_pickle(dim_red_filepath)
         df_embeddings = df_dim.set_index(['state', 'year']).join(df_preds.set_index(['state', 'year'])).reset_index()
         return df_embeddings.to_dict(orient='records'), cluster_names
-        
 
-    # if we don't have data already, calculate all data and then rerun function
+    # create folders for data  
+    cluster_data_dir = '../server/data/clustering_data/'
+    dim_data_dir = '../server/data/dimension_reduction_data/'
+    if not os.path.exists(cluster_data_dir):
+        os.makedirs(cluster_data_dir)
+    if not os.path.exists(dim_data_dir):
+        os.makedirs(dim_data_dir)
+
+    # calculate all data and then call function again
     # load data
     policy_data_filepath = "../server/data/policyDatabase.xlsx"
     policy_df = pd.read_excel(policy_data_filepath)
@@ -252,8 +259,9 @@ def processPolicyScatterplot(input_num_clusters: int = 3, input_method: str = 't
         df_embeddings['state'] = agg_df.state
         df_embeddings = policy_df.set_index('state')[['year']].join(df_embeddings.set_index('state')).reset_index()
         df_embeddings.to_pickle(output_filepath)
+        
     # now that all data has been generated, rerun function
-    processPolicyScatterplot(input_num_clusters, input_method)
+    return processPolicyScatterplot(input_num_clusters, input_method)
 
 
 def processGroupedBarChart(policy_clusters: dict, cluster_names:list):
