@@ -204,7 +204,27 @@ export default {
                         }
                     }
 
+                    for (let i in table) {
+                        for (let key in table[i]) {
+                            if (key !== 'category' && key !== 'correlation') {
+
+                                let percentageString = (table[i][key] * 100).toFixed(2) + '%';
+                                const percentage = parseFloat(percentageString);
+
+                                if (percentage.toFixed(2).slice(-2) === '00') {
+                                percentageString = percentage.toFixed(0) + '%';
+                                } else {
+                                percentageString = percentage.toFixed(2) + '%';
+                                }
+                                table[i][key] = percentageString;
+                            }
+                        }
+                    }
+
                     this.tableItems = table;
+
+
+                    console.log('table: ', table)
                     //Call and set the other api based on points, with POST method
                     // set data for bar chart based on results from post
                     this.rerender()
@@ -223,7 +243,8 @@ export default {
                     'All Incidents': 'all_incidents',
                      'Gang Related': 'gang',
                     Suicide: 'suicide',
-                    'Non-Suicide': 'non_suicide'
+                    'Non-Suicide': 'non_suicide',
+                    'Mass Shooting': 'mass_shooting'
                 };
 
                 const data = {
@@ -267,7 +288,7 @@ export default {
                 </v-col>
                 <v-col cols="4">
             <v-select
-            :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide']"
+            :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide', 'Mass Shooting']"
             label="Correlation"
             density="compact"
             v-model="selectedValue"
@@ -291,26 +312,32 @@ export default {
             <v-card>
             <v-card-title>
                 <v-row>
-                    <v-col cols="8">
+                    <v-col cols="12">
             Policy Correlations and Clusters
                 </v-col>
-                <v-col cols="4">
-            <v-select
-            :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide']"
-            label="Correlation"
-            density="compact"
-            v-model="selectedValue"
-            ></v-select>
-            </v-col>
             </v-row>
             <v-spacer></v-spacer>
-            <v-text-field
+            <v-row>
+                <v-col cols="4">
+                    <v-select
+                :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide', 'Mass Shooting']"
+                label="Correlation"
+                density="compact"
+                v-model="selectedValue"
+                ></v-select>
+        </v-col>
+                <v-col cols="8">
+                    <v-text-field
                 v-model="search"
                 append-icon="mdi-magnify"
                 label="Search"
                 single-line
                 hide-details
             ></v-text-field>
+               
+                </v-col>
+            </v-row>
+            
             </v-card-title>
         </v-card>
             <v-data-table-virtual :headers="headers5" :items="tableItems" :search="search" density="compact" :height="tableHeight"
@@ -325,7 +352,7 @@ export default {
                 </v-col>
                 <v-col cols="4">
             <v-select
-            :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide']"
+            :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide', 'Mass Shooting']"
             label="Correlation"
             density="compact"
             v-model="selectedValue"
@@ -354,7 +381,7 @@ export default {
                 </v-col>
                 <v-col cols="4">
             <v-select
-            :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide']"
+            :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide', 'Mass Shooting']"
             label="Correlation"
             density="compact"
             v-model="selectedValue"
@@ -384,7 +411,7 @@ export default {
                 </v-col>
                 <v-col cols="4">
             <v-select
-            :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide']"
+            :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide', 'Mass Shooting']"
             label="Correlation"
             density="compact"
             v-model="selectedValue"
