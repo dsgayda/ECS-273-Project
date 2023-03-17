@@ -31,6 +31,7 @@ export default {
     },
     data() {
         return {
+            reductionType: 'PCA',
             selectedDimensionReduction: 3,
         }
     },
@@ -107,12 +108,16 @@ export default {
                 .enter()
                 .append('option')
                 .text(function (d) { return d; }) // text showed in the menu
-                .attr("value", function (d) { return d; }) // corresponding value returned by the button
+                .attr("value", function (d) { 
+                    // console.log('reductionType: ', d.valueOf());
+                    return d; 
+                }) // corresponding value returned by the button
 
 
         },
         rerender() {
             d3.selectAll('.scatter-tools-container').selectAll('*').remove() // Clean all the elements in the chart
+            d3.select('.dimension-button').selectAll('*').remove()
             this.initChart()
         }
 
@@ -140,6 +145,19 @@ export default {
                 // now what??
             },
             immediate: true
+        },
+        reductionType: {
+            async handler(newreductionType) {
+                // for when the user chooses a new num clusters
+                // data to pass into backend
+                // const data = {
+                //     clusters: this.numClusters,
+                //     reductionType: newreductionType,
+                // }
+                this.store.fetchData({numClusters: this.numClusters}, {reductionType: newreductionType});
+                this.rerender();
+                // now what??
+            },
         }
     },
     // The following are general setup for resize events.
@@ -158,7 +176,8 @@ export default {
 <template>
     <select id="dimensionButton" 
             label="DimensionReduction"
-            v-model="selectedDimensionReduction">
+            v-model="reductionType"
+            class="dimension-button">
     </select>
     <div class="scatter-tools-container d-flex" ref="scatterToolsContainer"></div>
 </template>
