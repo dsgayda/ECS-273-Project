@@ -197,6 +197,9 @@ def processPolicyScatterplot(input_num_clusters: int = 3, input_method: str = 't
     """
     groupby_state is true if we want one point per state, otherwise we get one point for each {state, year}
     """
+    # filter out the UserWarning
+    warnings.filterwarnings("ignore", category=UserWarning)
+
     # create cluster labels
     cluster_names = []
     for i in range(input_num_clusters):
@@ -234,14 +237,15 @@ def processPolicyScatterplot(input_num_clusters: int = 3, input_method: str = 't
                     if method == 'PCA':
                         reducer = PCA(n_components=2)
                     elif method == 't-SNE':
-                        reducer = TSNE(n_components=2, verbose=1)
+                        reducer = TSNE(n_components=2)
                     elif method == 'NMF':
                         reducer = NMF(n_components=2)
                     data_embedded = reducer.fit_transform(X)
+                    # start creating output data frame
                     df_embeddings = pd.DataFrame()
-                    df_embeddings['cluster'] = predictions
                     df_embeddings["dimension1"] = data_embedded[:, 0]
                     df_embeddings["dimension2"] = data_embedded[:, 1]
+                    df_embeddings['cluster'] = predictions
                     if groupby_state:
                         df_embeddings['state'] = agg_df.state
                         df_embeddings = policy_df.set_index('state')[['year']].join(df_embeddings.set_index('state')).reset_index()
