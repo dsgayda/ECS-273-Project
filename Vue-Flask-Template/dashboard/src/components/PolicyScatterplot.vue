@@ -88,7 +88,7 @@ export default {
                 .append('div')
                 .attr('class', 'd3-tooltip')
                 .style('position', 'fixed')
-                .style('z-index', '10')
+                .style('z-index', '0')
                 .style('padding', '1px')
                 .style('background', 'rgba(0,0,0,0.6)')
                 .style('border-radius', '4px')

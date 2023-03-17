@@ -95,8 +95,8 @@ export default {
                     .call(slider);
 
             svg.append('g').append('text') // adding the text
-                .attr('transform', `translate(${centerX}, ${centerY - this.margin.top})`)
-                .style('text-anchor', 'middle')
+                .attr('transform', `translate(${centerX - 10}, ${centerY - this.margin.top})`)
+                .style('text-anchor', 'right')
                 .style('font-weight', 'bold')
                 .style('font-size', '12px') 
                 .text('Clusters') // text content
