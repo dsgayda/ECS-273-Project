@@ -192,8 +192,71 @@ def processTopPoliciesPerState(n_policies: int = 3):
     
     return output_data
 
+def processPolicyScatterplot(input_num_clusters: int = 3, input_method: str = 't-SNE'):
+    # filter out the UserWarning
+    warnings.filterwarnings("ignore", category=UserWarning)
 
-def processPolicyScatterplot(input_num_clusters: int = 3, input_method: str = 't-SNE', input_groupby_state=True):
+    # create cluster labels
+    cluster_names = [f'cluster {i + 1}' for i in range(input_num_clusters)]
+
+    # check if we already have data:
+    cluster_filepath = f'../server/data/clustering_data/{input_num_clusters}.pickle'
+    dim_red_filepath = f'../server/data/dimension_reduction_data/{input_method}.pickle'
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, cluster_filepath)
+    if os.path.exists(filename): # have all clustering options been precalculated?
+        df_preds = pd.read_pickle(cluster_filepath)
+        df_dim = pd.read_pickle(dim_red_filepath)
+        df_embeddings = df_dim.set_index(['state', 'year']).join(df_preds.set_index(['state', 'year'])).reset_index()
+        return df_embeddings.to_dict(orient='records'), cluster_names
+        
+
+    # if we don't have data already, calculate all data and then rerun function
+    # load data
+    policy_data_filepath = "../server/data/policyDatabase.xlsx"
+    policy_df = pd.read_excel(policy_data_filepath)
+    policy_df = policy_df[(policy_df.year > 2013) & (policy_df.year < 2019)]
+    # create input data for clustering
+    agg_df = policy_df.drop(columns=['year', 'lawtotal']).groupby('state').apply(
+                lambda x: np.concatenate([x[col].values for col in x.columns if col != 'state'])
+                ).reset_index()
+    X = agg_df[0].to_numpy()
+    X = np.stack(X)
+
+
+    # cluster data
+    for num_clusters in range(2, 7):
+        output_filepath = f'../server/data/clustering_data/{num_clusters}.pickle'
+        clusterer = KMeans(n_clusters=num_clusters, init='k-means++')
+        predictions = clusterer.fit_predict(X)
+        predictions = pd.DataFrame({'cluster': predictions})
+        predictions['state'] = agg_df.state
+        predictions = policy_df.set_index('state')[['year']].join(predictions.set_index('state')).reset_index()
+        predictions.to_pickle(output_filepath)
+        
+    # dimension reduction
+    for method in ['t-SNE', 'NMF', 'PCA']:
+        output_filepath = f'../server/data/dimension_reduction_data/{method}.pickle'
+        if method == 'PCA':
+            reducer = PCA(n_components=2)
+        elif method == 't-SNE':
+            reducer = TSNE(n_components=2)
+        elif method == 'NMF':
+            reducer = NMF(n_components=2)
+        data_embedded = reducer.fit_transform(X)
+        # create output data frame
+        df_embeddings = pd.DataFrame()
+        df_embeddings["dimension1"] = data_embedded[:, 0]
+        df_embeddings["dimension2"] = data_embedded[:, 1]
+        df_embeddings['state'] = agg_df.state
+        df_embeddings = policy_df.set_index('state')[['year']].join(df_embeddings.set_index('state')).reset_index()
+        df_embeddings.to_pickle(output_filepath)
+    # now that all data has been generated, rerun function
+    processPolicyScatterplot(input_num_clusters, input_method)
+    
+
+
+def processPolicyScatterplotBad(input_num_clusters: int = 3, input_method: str = 't-SNE', input_groupby_state=True):
     """
     groupby_state is true if we want one point per state, otherwise we get one point for each {state, year}
     """
@@ -358,4 +421,4 @@ def processPolicyCorrelations(policy_clusters:dict, incidence_type='all_incident
     
 if __name__ == "__main__":
     os.chdir('C:/Users/nammy/Desktop/ECS-273-Project/Vue-Flask-Template/dashboard/')
-    cluster_data, clusters = processPolicyScatterplot()
+    cluster_data, clusters = processPolicyScatterplot(5, 't-SNE')
