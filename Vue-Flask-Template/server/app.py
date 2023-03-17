@@ -12,19 +12,6 @@ CORS(app)
 def hello_world():
     return "<p>Hello, World!</p>"
 
-# @app.route("/fetchExample", methods=["GET", "POST"])
-# @cross_origin()
-# def fetchExample():
-#     if request.method == "GET": # handling GET request
-#         points, cluster_names = processExample()
-#         resp = jsonify(data=points, clusters=cluster_names)
-#         return resp
-#     else: # handling POST request, which is only effective when ExampleWithInteractions.vue is loaded
-#         request_context = request.get_json() # JSON object
-#         method = request_context['method']
-#         points, cluster_names = processExample(method)
-#         resp = jsonify(data=points, clusters=cluster_names)
-#         return resp
 
 @app.route("/fetchMap", methods=["GET", "POST"])
 @cross_origin()
@@ -77,14 +64,6 @@ def fetchPolicyCorrelationTable():
     resp = jsonify(data=table)
     return resp
 
-# @app.route("/fetchPolicyClusterCategories", methods=["GET", "POST"])
-# @cross_origin()
-# def fetchPolicyClusterCategories():
-#     data = request.get_json()
-#     points = data.get("data", [])
-#     categories = processPolicyClusterCategories(points, 2) # TODO: Take input cluster
-#     resp = jsonify(data=categories)
-#     return resp
 
 @app.route("/fetchGeoMap", methods=["GET", "POST"])
 @cross_origin()
