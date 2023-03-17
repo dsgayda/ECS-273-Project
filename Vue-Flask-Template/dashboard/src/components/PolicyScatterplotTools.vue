@@ -33,7 +33,7 @@ export default {
     data() {
         return {
             selectedDimensionReduction: 3,
-            reductionType: 'PCA',
+            reductionType: 't-SNE',
         }
     },
     computed: {
@@ -201,7 +201,7 @@ export default {
             
             class="dimension-button">
     </select> -->
-    <v-select :items="['PCA', 't-SNE', 'NMF']"
+    <v-select :items="['t-SNE', 'NMF', 'PCA']"
                                 label="Reduction" density="compact" v-model="reductionType"></v-select>
     <div class="scatter-tools-container d-flex" ref="scatterToolsContainer"></div>
 </template>

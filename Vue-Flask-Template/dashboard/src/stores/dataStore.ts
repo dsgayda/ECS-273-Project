@@ -41,7 +41,7 @@ export const useDataStore = defineStore("dataStore", {
     },
   },
   actions: {
-    async fetchData({numClusters = 3} = {}, {reductionType = "PCA"} = {}) {
+    async fetchData({numClusters = 3} = {}, {reductionType = "t-SNE"} = {}) {
       this.reductionType = reductionType;
       console.log('fetching data!: ', numClusters)
       // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
