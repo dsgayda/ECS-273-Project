@@ -27,12 +27,13 @@ export default {
             margin,
             methods,
             numClusters,
+
         }
     },
     data() {
         return {
-            reductionType: 't-SNE',
             selectedDimensionReduction: 3,
+            reductionType: 'PCA',
         }
     },
     computed: {
@@ -101,6 +102,7 @@ export default {
                 .style('font-size', '12px') 
                 .text('Clusters') // text content
             
+            // const reductionType = this.reductionType;
             // MAKE BUTTON
             d3.select("#dimensionButton")
                 .selectAll('myOptions')
@@ -109,14 +111,31 @@ export default {
                 .append('option')
                 .text(function (d) { return d; }) // text showed in the menu
                 .attr("value", function (d) { 
-                    // console.log('reductionType: ', d.valueOf());
+                    // this.reductionType = d.valueOf();
+                    // d3.select('.dimension-button').attr('v-model', this.reductionType)
+                    
                     return d; 
                 }) // corresponding value returned by the button
-
+                .attr('selected', function(d) {
+                    console.log('selected')
+                    if (d.valueOf() === this.reductionType) {
+                        return d.valueOf()
+                    }
+                })
+                .on("change", function (d) {
+                    console.log('d change: ', d.valueOf())
+                    // if (d.valueOf() === this.reductionType) {
+                    //     return d.valueOf()
+                    // }
+                    // console.log('reductionType: ', d.valueOf());
+                    // this.reductionType = d.valueOf();
+                    // d3.select('.dimension-button').attr('v-model', d.valueOf())
+                })
 
         },
         rerender() {
             d3.selectAll('.scatter-tools-container').selectAll('*').remove() // Clean all the elements in the chart
+            console.log('huh? : ', d3.select('.dimension-button').selectAll('option'))
             d3.select('.dimension-button').selectAll('*').remove()
             this.initChart()
         }
@@ -130,6 +149,7 @@ export default {
         },
         'store.numClusters'(newNumClusters) {
             console.log('new num!', newNumClusters);
+            console.log('storenum: ', this.reductionType)
             // Trying to update by fetching new data but it's not working yet...
             this.store.fetchData({numClusters: newNumClusters},{reductionType: this.reductionType});
             this.rerender();
@@ -148,12 +168,14 @@ export default {
         },
         reductionType: {
             async handler(newreductionType) {
+                console.log('reductionType here: ', newreductionType);
                 // for when the user chooses a new num clusters
                 // data to pass into backend
                 // const data = {
                 //     clusters: this.numClusters,
                 //     reductionType: newreductionType,
                 // }
+                // this.reductionType = newreductionType;
                 this.store.fetchData({numClusters: this.numClusters}, {reductionType: newreductionType});
                 this.rerender();
                 // now what??
@@ -174,11 +196,13 @@ export default {
 <!-- "ref" registers a reference to the HTML element so that we can access it via the reference in Vue.  -->
 <!-- We use flex to arrange the layout-->
 <template>
-    <select id="dimensionButton" 
+    <!-- <select id="dimensionButton" 
             label="DimensionReduction"
-            v-model="reductionType"
+            
             class="dimension-button">
-    </select>
+    </select> -->
+    <v-select :items="['PCA', 't-SNE', 'NMF']"
+                                label="Reduction" density="compact" v-model="reductionType"></v-select>
     <div class="scatter-tools-container d-flex" ref="scatterToolsContainer"></div>
 </template>
 
