@@ -17,7 +17,7 @@ import {
 export const useDataStore = defineStore("dataStore", {
   state: () => ({
     points: [] as PolicyPoint[], // "as <Type>" is a TypeScript expression to indicate what data structures this variable is supposed to store.
-    methods: ['PCA', 't-SNE'] as string[],
+    methods: ['t-SNE', 'NMF', 'PCA'] as string[],
     states: [] as MapState[],
     top_policies: [] as TopPolicies[],
     bars: [] as GroupedBar[],
@@ -41,7 +41,7 @@ export const useDataStore = defineStore("dataStore", {
     },
   },
   actions: {
-    async fetchData({numClusters = 3} = {}, {reductionType = "PCA"} = {}) {
+    async fetchData({numClusters = 3} = {}, {reductionType = "t-SNE"} = {}) {
       console.log('fetching data!: ', numClusters)
       // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
       let resp = await axios.post(`${server}/fetchPolicyScatterplot`,

@@ -31,7 +31,7 @@ export default {
     },
     data() {
         return {
-            reductionType: 'PCA',
+            reductionType: 't-SNE',
             selectedDimensionReduction: 3,
         }
     },

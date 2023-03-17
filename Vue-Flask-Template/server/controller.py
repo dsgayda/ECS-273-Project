@@ -4,6 +4,7 @@ import os
 from sklearn.cluster import KMeans
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
+from sklearn.decomposition import NMF
 from pprint import pprint
 import warnings
 from pandas.errors import PerformanceWarning
@@ -214,7 +215,7 @@ def processTopPoliciesPerState(n_policies: int = 3):
     return output_data
 
 
-def processPolicyScatterplot(num_clusters: int = 3, method: str = 'PCA', agg_state=True):
+def processPolicyScatterplot(num_clusters: int = 3, method: str = 't-SNE', agg_state=True):
     """
     agg_state is true if we want one point per state, otherwise we get one point for each {state, year}
     """
@@ -253,6 +254,8 @@ def processPolicyScatterplot(num_clusters: int = 3, method: str = 'PCA', agg_sta
             reducer = PCA(n_components=2)
         elif method == 't-SNE':
             reducer = TSNE(n_components=2, verbose=1)
+        elif method == 'NMF':
+            reducer = NMF(n_components=2)
         else:
             raise ValueError("Requested a method that is not supported")
         
