@@ -51,7 +51,7 @@ export default {
             <!-- Left-Middle Box -->
             <v-row style="height: 5%; border-left: 1px solid #BBBBBB; border-right: 1px solid #BBBBBB;" class="middle-box">
               <v-col cols="12" style=" overflow-y: auto; ">
-                <h6 style="word-wrap: break-word;">Table (below) provides policy types, the correlation between that policy and an incidence types, and avg. percentage of policies
+                <h6 style="word-wrap: break-word;">Table (below) provides policy types, the correlation between that policy and an incidence types as the indicator, and avg. percentage of policies
                   implemented in that category for each cluster. </h6>
               </v-col>
             </v-row>
