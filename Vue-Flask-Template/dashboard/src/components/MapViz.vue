@@ -61,6 +61,16 @@ export default {
         async initChart() {
 
             if (this.store.geoMapData?.objects?.states) {
+
+            let multiplier = 50000;
+            if (this.selectedValue === "Mass Shooting") {
+                multiplier = 10000000
+            }
+            else if (this.selectedValue === "Gang Related" || this.selectedValue === "Suicide") {
+                multiplier = 1000000
+            }
+
+
                 const mappydata = new Map(Object.entries(this.states));
 
 
@@ -126,7 +136,7 @@ export default {
                         d3.select('.d3-tooltip')
                             .html(`State: ${stateInfo.state}<br>
                             Cluster: ${stateInfo.cluster + 1}<br>
-                            Incidents: ${(stateInfo.incidents_per_capita * 50000).toFixed(1)}<br>
+                            Incidents: ${(stateInfo.incidents_per_capita * multiplier).toFixed(1)}<br>
                             Avg. # Policies: ${stateInfo.policies_implemented}`)
 
                             .style('left', (e.pageX + 10) + 'px')
@@ -224,7 +234,7 @@ export default {
                         d3.select('.d3-tooltip')
                             .html(`State: ${stateInfo.state}<br>
                             Cluster: ${stateInfo.cluster + 1}<br>
-                            Incidents: ${(stateInfo.incidents_per_capita * 50000).toFixed(1)}<br>
+                            Incidents: ${(stateInfo.incidents_per_capita * multiplier).toFixed(1)}<br>
                             Avg. # Policies: ${stateInfo.policies_implemented}`)
                             .style('left', (e.pageX + 10) + 'px')
                             .style('top', (e.pageY) + 'px')
@@ -284,7 +294,7 @@ export default {
                     .style('font-size', '12px')
                     .attr('transform', `translate(${legendSize.width/8}, ${8})`);
 
-                this.createLegend(svg, RYG_color, colorDomain)
+                this.createLegend(svg, RYG_color, colorDomain, multiplier)
                     ;
             }
 
@@ -292,7 +302,7 @@ export default {
         initLegend() {
 
         },
-        createLegend(svg, colorScale, colorDomain) {
+        createLegend(svg, colorScale, colorDomain, multiplier) {
             const legendWidth = 250;
             const legendHeight = 5;
             const legendMargin = { top: 10, right: 10, bottom: 10, left: 10 };
@@ -328,29 +338,27 @@ export default {
                 .attr("height", legendHeight)
                 .style("fill", "url(#gradient)");
 
-            if (this.selectedValue === 'Non-Suicide' || this.selectedValue === 'All Incidents') {
-                
             const legendScale = d3.scaleLinear()
-                .domain([colorDomain[0] * 50000, colorDomain[1] * 50000])
+                .domain([colorDomain[0] * multiplier, colorDomain[1] * multiplier])
                 .range([0, legendWidth]);
 
             const tickValues = legendScale.ticks(10);
-            if (tickValues[0] > colorDomain[0] * 50000) {
-                tickValues.unshift(colorDomain[0] * 50000);
+            if (tickValues[0] > colorDomain[0] * multiplier) {
+                tickValues.unshift(colorDomain[0] * multiplier);
             }
-            if (tickValues[tickValues.length - 1] < colorDomain[1] * 50000) {
-                tickValues.push(colorDomain[1] * 50000);
+            if (tickValues[tickValues.length - 1] < colorDomain[1] * multiplier) {
+                tickValues.push(colorDomain[1] * multiplier);
             }
 
             // Check if the top tick is very close to the top value
             const topValue = tickValues[tickValues.length - 1];
-            if (Math.abs(topValue - colorDomain[1] * 50000) < 0.0001) {
+            if (Math.abs(topValue - colorDomain[1] * multiplier) < 0.0001) {
                 // Remove the tick value just below the top value
                 tickValues.pop();
             }
             // Check if the bottom tick is very close to the bottom value
             const bottomValue = tickValues[0];
-            if (Math.abs(bottomValue - colorDomain[0] * 50000) < 0.0001) {
+            if (Math.abs(bottomValue - colorDomain[0] * multiplier) < 0.0001) {
                 // Remove the tick value just below the top value
                 tickValues.shift();
             }
@@ -377,109 +385,7 @@ export default {
                 .attr('transform', `translate(${legendWidth / 2}, -5)`)
                 .text('Gun Incidents Per 50k People') // text content
 
-            }
-            else if (this.selectedValue === "Mass Shooting") {
-
-                const legendScale = d3.scaleLinear()
-                    .domain([colorDomain[0] * 10000000, colorDomain[1] * 10000000])
-                    .range([0, legendWidth]);
-    
-                const tickValues = legendScale.ticks(10);
-                if (tickValues[0] > colorDomain[0] * 10000000) {
-                    tickValues.unshift(colorDomain[0] * 10000000);
-                }
-                if (tickValues[tickValues.length - 1] < colorDomain[1] * 10000000) {
-                    tickValues.push(colorDomain[1] * 10000000);
-                }
-    
-                // Check if the top tick is very close to the top value
-                const topValue = tickValues[tickValues.length - 1];
-                if (Math.abs(topValue - colorDomain[1] * 10000000) < 0.0001) {
-                    // Remove the tick value just below the top value
-                    tickValues.pop();
-                }
-                // Check if the bottom tick is very close to the bottom value
-                const bottomValue = tickValues[0];
-                if (Math.abs(bottomValue - colorDomain[0] * 10000000) < 0.0001) {
-                    // Remove the tick value just below the top value
-                    tickValues.shift();
-                }
-    
-                const legendAxis = d3.axisBottom(legendScale)
-                    .tickValues(tickValues)
-                    .tickFormat(d3.format("d"));
-    
-    
-                // const legendAxis = d3.axisBottom(legendScale)
-                //     .ticks(10)
-                //     .tickFormat(d3.format("d"));
-    
-                legend.append("g")
-                    .attr("transform", `translate(0, ${legendHeight})`)
-                    .call(legendAxis);
-    
-                const title = legend.append('g').append('text') // adding the text
-                    // .attr('transform', `translate(${this.size.width / 2}, ${this.size.height + 10})`)
-                    // .attr('dy', '0.5rem') // relative distance from the indicated coordinates.
-                    .style('text-anchor', 'middle')
-                    .style('font-weight', 'bold')
-                    .style('font-size', '8px')
-                    .attr('transform', `translate(${legendWidth / 2}, -5)`)
-                    .text('Gun Incidents Per 10M People') // text content
-    
-                
-            }
-            else {
-                
-                const legendScale = d3.scaleLinear()
-                    .domain([colorDomain[0] * 1000000, colorDomain[1] * 1000000])
-                    .range([0, legendWidth]);
-    
-                const tickValues = legendScale.ticks(10);
-                if (tickValues[0] > colorDomain[0] * 1000000) {
-                    tickValues.unshift(colorDomain[0] * 1000000);
-                }
-                if (tickValues[tickValues.length - 1] < colorDomain[1] * 1000000) {
-                    tickValues.push(colorDomain[1] * 1000000);
-                }
-    
-                // Check if the top tick is very close to the top value
-                const topValue = tickValues[tickValues.length - 1];
-                if (Math.abs(topValue - colorDomain[1] * 1000000) < 0.0001) {
-                    // Remove the tick value just below the top value
-                    tickValues.pop();
-                }
-                // Check if the bottom tick is very close to the bottom value
-                const bottomValue = tickValues[0];
-                if (Math.abs(bottomValue - colorDomain[0] * 1000000) < 0.0001) {
-                    // Remove the tick value just below the top value
-                    tickValues.shift();
-                }
-    
-                const legendAxis = d3.axisBottom(legendScale)
-                    .tickValues(tickValues)
-                    .tickFormat(d3.format("d"));
-    
-    
-                // const legendAxis = d3.axisBottom(legendScale)
-                //     .ticks(10)
-                //     .tickFormat(d3.format("d"));
-    
-                legend.append("g")
-                    .attr("transform", `translate(0, ${legendHeight})`)
-                    .call(legendAxis);
-    
-                const title = legend.append('g').append('text') // adding the text
-                    // .attr('transform', `translate(${this.size.width / 2}, ${this.size.height + 10})`)
-                    // .attr('dy', '0.5rem') // relative distance from the indicated coordinates.
-                    .style('text-anchor', 'middle')
-                    .style('font-weight', 'bold')
-                    .style('font-size', '8px')
-                    .attr('transform', `translate(${legendWidth / 2}, -5)`)
-                    .text('Gun Incidents Per 1M People') // text content
-    
-                }
-
+            
         },
 
         rerender() {
