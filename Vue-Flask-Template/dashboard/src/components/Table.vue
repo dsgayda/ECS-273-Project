@@ -13,7 +13,6 @@ import { createVuetify } from 'vuetify'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 
 import { VDataTableVirtual } from 'vuetify/labs/VDataTable'
-import * as labs from 'vuetify/labs/'
 
 // Import Vuetify components
 // import { VDataTable } from 'vuetify/lib';
@@ -25,7 +24,7 @@ export default {
     },
     data() {
         return {
-            tableHeight: '400',
+            tableHeight: '250',
             tableWidth: '100',
             search: '',
             selectedValue: "All Incidents",
@@ -174,13 +173,22 @@ export default {
         },
         'store.points': {
             async handler(newPoints) {
-                if (!isEmpty(newPoints)) {// when data changes
+                if (!isEmpty(newPoints) ) {// when data changes
                     console.log('updating table based on new points')
-                    // suicide  mass_shooting          gang  non_suicide
+
+
+                const incidentMap = {
+                    'All Incidents': 'all_incidents',
+                    'Gang Related': 'gang',
+                    Suicide: 'suicide',
+                    'Non-Suicide': 'non_suicide',
+                    'Mass Shooting': 'mass_shooting'
+                };
+
                     const data = {
                         data: this.store.points,
                         clusters: this.store.clusters,
-                        incidentType: 'non_suicide'
+                        incidentType: incidentMap[this.selectedValue]
                     };
 
                     let table = await this.store.fetchTableData(data);
@@ -223,8 +231,6 @@ export default {
 
                     this.tableItems = table;
 
-
-                    console.log('table: ', table)
                     //Call and set the other api based on points, with POST method
                     // set data for bar chart based on results from post
                     this.rerender()
@@ -277,7 +283,7 @@ export default {
 </script>
 
 <template>
-    <div v-if="isDataReady" style="max-height: 50% overflow-y: hidden" class="table-container" ref="tableContainer">
+    <div v-if="isDataReady" style="max-height: 45% overflow-y: hidden" class="table-container" ref="tableContainer">
         <div v-if="sixHeaders">
             <v-card>
                 <v-card-title>

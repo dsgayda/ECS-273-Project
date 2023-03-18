@@ -8,6 +8,10 @@ import { isEmpty, debounce } from 'lodash';
 import { mapState, storeToRefs } from 'pinia';
 import { useDataStore } from '../stores/dataStore';
 
+import {
+  ComponentSize
+} from "../types";
+
 export default {
     setup() { // Composition API syntax
         const store = useDataStore()
@@ -15,14 +19,14 @@ export default {
         const { resize } = storeToRefs(store);
         const { points } = storeToRefs(store);
         const { clusters } = storeToRefs(store);
-        const { size } = storeToRefs(store);
+        // const { size } = storeToRefs(store);
         const { margin } = storeToRefs(store);
         const { color } = storeToRefs(store);
         const { numClusters } = storeToRefs(store);
-
+        const size = { width: 0, height: 0 } as ComponentSize;
         return {
             store, // Return store as the local state, but when you update the property value, the store is also updated.
-            // resize,
+            resize,
             color,
             points,
             clusters,
@@ -41,7 +45,7 @@ export default {
     methods: {
         onResize() {  // record the updated size of the target element
             let target = this.$refs.scatterContainer as HTMLElement
-            if (!target) return;
+            // if (!target) return;
             this.size = { width: target.clientWidth, height: target.clientHeight };
         },
         initChart() {
@@ -51,15 +55,28 @@ export default {
             let svg = d3.select(sc)
                 .append('svg')
                 .attr('id', 'scatter-svg')
-                .attr('width', '100%')
+                .attr('width', '98%')
                 .attr('height', '100%')
             // .style('display', 'block');
             // // get the size of the parent container
             // const parentRect = sc.getBoundingClientRect();
             const parentRect = { width: sc.clientWidth, height: sc.clientHeight };
+            
+            // Add a group element for the title text
+            const title = svg.append('g')
+            .attr('class', 'title')
+            .attr('transform', `translate(${this.size.width/2 + this.margin.left + this.margin.right}, ${0})`);
+
+            // Add the text element to the group
+            title.append('text')
+            .text('Clustering State Policies')
+            .attr('dy', '0.5rem')
+            .style('text-anchor', 'middle')
+            .style('font-weight', 'bold')
+            .style('font-size', '20px');
 
             // update the viewBox attribute based on the size of the parent container
-            svg.attr('viewBox', `${this.margin.left} ${this.margin.top} ${parentRect.width} ${parentRect.height}`);
+            svg.attr('viewBox', `${this.margin.left} ${this.margin.top} ${parentRect.width} ${parentRect.height - this.margin.bottom - this.margin.top * 2}`);
 
 
             // we need compute the [min, max] from the data values of the attributes that will be used to represent x- and y-axis.
@@ -96,6 +113,14 @@ export default {
                 .text('a simple tooltip')
                 .style('visibility', 'hidden');
 
+                // Create a rectangular background element
+            const bgRect = svg.insert('rect', ':first-child')
+            .attr('x', this.margin.left + this.margin.right)
+            .attr('y', this.margin.top)
+            .attr('width', this.size.width)
+            .attr('height', this.size.height - this.margin.top)
+            .style('fill', '#EFEFEF');
+
             // We iterate through each <PolicyPoint> element in the array, create a circle for each and indicate the coordinates, the circle size, the color, and the opacity.
             const points = svg.selectAll('circle') // select all circles
                 .data<ScatterPoint>(this.points) // bind data
@@ -110,7 +135,7 @@ export default {
                 .style('fill', (d: PolicyPoint) => {
                     return colorScale((d.cluster).toString())
                 })
-                .style('opacity', .5)
+                // .style('opacity', .5)
                 .attr('transform', `translate(${this.margin.left - 20}, ${this.margin.top})`)
                
 
@@ -166,36 +191,39 @@ export default {
                         .style('filter', 'none');
                 });
             
-            // Add legend
-            let legend = svg.append('g')
-                .attr('id', 'legend')
-                .attr('transform', `translate(${parentRect.width - this.margin.right}, ${this.margin.top + this.margin.bottom})`);
 
-            // Add a circle and text element for each cluster in the legend
-            legend.selectAll('circle')
-                .data(this.clusters)
-                .join('circle')
-                .attr('cx', 0)
-                .attr('cy', (d, i) => i * 25)
-                .attr('r', 7)
-                .style('fill', (d, i) => colorScale(i.toString()))
-                .style('opacity', 0.7);
+            // let svg2 = d3.select(sc)
+            //     .append('svg')
+            //     .attr('id', 'scatter-svg')
+            //     .attr('width', '15%')
+            //     .attr('height', '100%')
+            // // Add legend
+            // let legend = svg.append('g')
+            //     .attr('id', 'legend')
+
+
+
+            // // Add a circle and text element for each cluster in the legend
+            // legend.selectAll('circle')
+            //     .data(this.clusters)
+            //     .join('circle')
+            //     .attr('cx', 0)
+            //     .attr('cy', (d, i) => i * 25)
+            //     .attr('r', 7)
+            //     .attr('transform', `translate(${this.size.width}, ${this.margin.top + this.margin.bottom})`)
+            //     .style('fill', (d, i) => colorScale(i.toString()));
                 
-            legend.selectAll('text')
-                .data(this.clusters)
-                .join('text')
-                .attr('x', 15)
-                .attr('y', (d, i) => i * 25 + 5)
-                .text(d => `${d}`)
-                .style('font-size', '12px')
+            // legend.selectAll('text')
+            //     .data(this.clusters)
+            //     .join('text')
+            //     .attr('x', 15)
+            //     .attr('y', (d, i) => i * 25 + 5)
+            //     .text(d => `${d}`)
+            //     .attr('transform', `translate(${this.size.width}, ${this.margin.top + this.margin.bottom})`)
+            //     .style('font-size', '12px')
+            //     .style('font-weight', '500');
 
-            const title = svg.append('g').append('text') // adding the text
-                .attr('transform', `translate(${this.size.width / 2}, ${this.size.height + 10})`)
-                .attr('dy', '0.5rem') // relative distance from the indicated coordinates.
-                .style('text-anchor', 'middle')
-                .style('font-weight', 'bold')
-                .style('font-size', '20px')
-                .text('Clustering State Policies') // text content
+            
         },
         rerender() {
             d3.select('.scatter-chart-container').selectAll('*').remove() // Clean all the elements in the chart
@@ -206,14 +234,19 @@ export default {
     watch: {
         resize(newSize) { // when window resizes
             if ((newSize.width !== 0) && (newSize.height !== 0)) {
-                this.rerender()
+                this.size = newSize;
             }
+        },
+        size: function () {
+            console.log('size changed')
+        this.$nextTick(() => {
+            this.rerender();
+        })
         },
         'store.points': {
             handler(newPoints) { // when data changes
             if (!isEmpty(newPoints)) {
                 
-                console.log('rerendering policy scatter: ', this.numClusters)
                 //Call and set the other api based on points, with POST method
                 // set data for bar chart based on results from post
                 this.rerender()
@@ -237,9 +270,7 @@ export default {
     // The following are general setup for resize events.
     mounted() {
         window.addEventListener('resize', debounce(this.onResize, 100))
-        this.$nextTick(() => {
-            this.onResize()
-        })
+        this.onResize();
     },
     beforeDestroy() {
         window.removeEventListener('resize', this.onResize)
@@ -249,7 +280,7 @@ export default {
 
 <!-- "ref" registers a reference to the HTML element so that we can access it via the reference in Vue.  -->
 <!-- We use flex to arrange the layout-->
-<template>
+<template >
     <div class="scatter-chart-container d-flex" ref="scatterContainer">
     </div>
 </template>

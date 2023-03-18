@@ -15,15 +15,17 @@ import { csvParse } from 'd3';
 import { mapState, storeToRefs } from 'pinia';
 import { useDataStore } from '../stores/dataStore';
 import { useExampleStore } from "../stores/exampleStore";
+import { ComponentSize } from '../types';
 export default {
     setup() { // Composition API syntax
         const store = useDataStore();
         const exampleStore = useExampleStore();
 
         // Alternative expression from computed
-        const { geoMapData, size, margin, states, color } = storeToRefs(store);
+        const { geoMapData, margin, states, color, clusters, update } = storeToRefs(store);
         const { resize } = storeToRefs(exampleStore);
 
+        const size = { width: 0, height: 0 } as ComponentSize;
         return {
             exampleStore,
             store, // Return store as the local state, but when you update the property value, the store is also updated.
@@ -32,7 +34,14 @@ export default {
             geoMapData,
             size,
             margin,
-            color
+            color,
+            clusters,
+            update
+        }
+    },
+    data() {
+        return {
+            selectedValue: 'All Incidents',
         }
     },
     computed: {
@@ -44,9 +53,8 @@ export default {
     },
     methods: {
         onResize() {
-
+            // this.store.resize();
             let target = this.$refs.mapContainer as HTMLElement
-            console.log('target: ', target)
             if (!target) return;
             this.size = { width: target.clientWidth, height: target.clientHeight }; // How you update the store
         },
@@ -67,7 +75,7 @@ export default {
                     .attr("stroke-linecap", "round")
                     .attr('fill', 'lightgray')
                     .append('svg')
-                    .attr("viewBox", [0, 0, this.size.width, this.size.height])
+                    .attr("viewBox", [this.size.width / 4 - this.size.width / 2, 0, this.size.width, this.size.height])
                     .attr('width', parentRect.width)
                     .attr('height', parentRect.height)
 
@@ -105,10 +113,10 @@ export default {
                     }
                     )
                     .attr('id', 'usstates')
-                    .attr("stroke", "#ccc")
+                    .attr("stroke", "#555")
                     .attr('opacity', '.6')
                     .attr("d", path)
-                    .attr('transform', `translate(${0}, 0)`)
+                    // .attr('transform', `translate(${0}, 0)`)
                     .on('mousemove', (e, d) => {
                         console.log('mouse over state: ', this.states.filter(s => s.state === d.properties.name)[0])
                         let stateInfo = this.states.filter(s => s.state === d.properties.name)[0];
@@ -116,11 +124,11 @@ export default {
                             .duration(200)
                             .style('opacity', .9);
                         d3.select('.d3-tooltip')
-                        .html(`State: ${stateInfo.state}<br>
+                            .html(`State: ${stateInfo.state}<br>
                             Cluster: ${stateInfo.cluster + 1}<br>
                             Incidents: ${(stateInfo.incidents_per_capita * 50000).toFixed(1)}<br>
                             Avg. # Policies: ${stateInfo.policies_implemented}`)
-                            
+
                             .style('left', (e.pageX + 10) + 'px')
                             .style('top', (e.pageY) + 'px')
 
@@ -172,14 +180,19 @@ export default {
                 // Define the domain of the linear scale using the extent of the incidents_per_capita values
                 let colorDomain = d3.extent(Array.from(this.states.map(s => s.incidents_per_capita).values()).flat());
 
+                // Calculate the median value
+                let medianValue = d3.median(Array.from(this.states.map(s => s.incidents_per_capita).values()).flat());
+
                 // Create the linear scale using d3.scaleLinear() and interpolate between the colors
                 let RYG_color = d3.scaleLinear()
-                    .domain([colorDomain[0], (colorDomain[0] + colorDomain[1]) / 2, colorDomain[1]])
+                    .domain([colorDomain[0], medianValue, colorDomain[1]])
                     .range(colorRange)
-                    .interpolate(d3.interpolateRgb);
+                    .interpolate(d3.interpolateRgb)
+                    .range([colorRange[0], colorRange[1], colorRange[2]])
+                    .clamp(true);
 
                 const state = svg.append("g")
-                    .attr("stroke", "#000")
+                    .attr("stroke", "#666")
                     .selectAll("path")
                     .data(topojson.feature(data, data.objects.states).features.filter(d => {
 
@@ -209,7 +222,7 @@ export default {
                             .duration(200)
                             .style('opacity', .9);
                         d3.select('.d3-tooltip')
-                        .html(`State: ${stateInfo.state}<br>
+                            .html(`State: ${stateInfo.state}<br>
                             Cluster: ${stateInfo.cluster + 1}<br>
                             Incidents: ${(stateInfo.incidents_per_capita * 50000).toFixed(1)}<br>
                             Avg. # Policies: ${stateInfo.policies_implemented}`)
@@ -226,6 +239,50 @@ export default {
                             .style('visibility', 'hidden');
 
                     })
+
+
+
+                let legendContainer = this.$refs.legendContainer as HTMLElement;
+
+
+                const legendSize = { width: legendContainer.clientWidth, height: legendContainer.clientHeight };
+
+
+                // const svg = d3.select(sc)
+
+                //     .attr("stroke-linejoin", "round")
+                //     .attr("stroke-linecap", "round")
+                //     .attr('fill', 'lightgray')
+                //     .append('svg')
+                //     .attr("viewBox", [this.size.width/4 - this.size.width/3, 0, this.size.width, this.size.height])
+                //     .attr('width', parentRect.width)
+                //     .attr('height', parentRect.height)
+                let legend = d3.select(legendContainer).append('svg')
+                    .attr('width', legendSize.width)
+                    .attr('height', legendSize.height)
+                    // .attr('height', '100%')
+                    // .attr("viewBox", [-10, 0, legendSize.width, legendSize.height])
+                    .attr('id', 'legend')
+                // .attr('transform', `translate(${0}, ${legendSize.height})`);
+
+                // // Add a circle and text element for each cluster in the legend
+                legend.selectAll('circle')
+                    .data(this.clusters)
+                    .join('circle')
+                    .attr('cx', 0)
+                    .attr('cy', (d, i) => i * 25)
+                    .attr('r', 7)
+                    .style('fill', (d, i) => this.color(i.toString()))
+                .attr('transform', `translate(${legendSize.width/8}, ${8})`);
+
+                legend.selectAll('text')
+                    .data(this.clusters)
+                    .join('text')
+                    .attr('x', 15)
+                    .attr('y', (d, i) => i * 25 + 5)
+                    .text(d => `${d}`)
+                    .style('font-size', '12px')
+                    .attr('transform', `translate(${legendSize.width/8}, ${8})`);
 
                 this.createLegend(svg, RYG_color, colorDomain)
                     ;
@@ -271,14 +328,41 @@ export default {
                 .attr("height", legendHeight)
                 .style("fill", "url(#gradient)");
 
-            console.log('colorDomain: ', colorDomain)
+            if (this.selectedValue === 'Non-Suicide' || this.selectedValue === 'All Incidents') {
+                
             const legendScale = d3.scaleLinear()
                 .domain([colorDomain[0] * 50000, colorDomain[1] * 50000])
                 .range([0, legendWidth]);
 
+            const tickValues = legendScale.ticks(10);
+            if (tickValues[0] > colorDomain[0] * 50000) {
+                tickValues.unshift(colorDomain[0] * 50000);
+            }
+            if (tickValues[tickValues.length - 1] < colorDomain[1] * 50000) {
+                tickValues.push(colorDomain[1] * 50000);
+            }
+
+            // Check if the top tick is very close to the top value
+            const topValue = tickValues[tickValues.length - 1];
+            if (Math.abs(topValue - colorDomain[1] * 50000) < 0.0001) {
+                // Remove the tick value just below the top value
+                tickValues.pop();
+            }
+            // Check if the bottom tick is very close to the bottom value
+            const bottomValue = tickValues[0];
+            if (Math.abs(bottomValue - colorDomain[0] * 50000) < 0.0001) {
+                // Remove the tick value just below the top value
+                tickValues.shift();
+            }
+
             const legendAxis = d3.axisBottom(legendScale)
-                .ticks(5)
+                .tickValues(tickValues)
                 .tickFormat(d3.format("d"));
+
+
+            // const legendAxis = d3.axisBottom(legendScale)
+            //     .ticks(10)
+            //     .tickFormat(d3.format("d"));
 
             legend.append("g")
                 .attr("transform", `translate(0, ${legendHeight})`)
@@ -293,19 +377,114 @@ export default {
                 .attr('transform', `translate(${legendWidth / 2}, -5)`)
                 .text('Gun Incidents Per 50k People') // text content
 
-            //             legend.append('g').append('rect')
-            // .attr('width', 250)
-            // .attr('height', 100)
-            // .attr('fill', 'white') // Add the fill color for the box
-            // .attr('stroke', 'black')
-            // .attr('stroke-width', 1)
-            // .attr('transform', `translate(${this.size.width - this.size.width/3}, ${-this.size.height + this.size.height/8})`); // Fix the typo in the attribute name
+            }
+            else if (this.selectedValue === "Mass Shooting") {
 
+                const legendScale = d3.scaleLinear()
+                    .domain([colorDomain[0] * 10000000, colorDomain[1] * 10000000])
+                    .range([0, legendWidth]);
+    
+                const tickValues = legendScale.ticks(10);
+                if (tickValues[0] > colorDomain[0] * 10000000) {
+                    tickValues.unshift(colorDomain[0] * 10000000);
+                }
+                if (tickValues[tickValues.length - 1] < colorDomain[1] * 10000000) {
+                    tickValues.push(colorDomain[1] * 10000000);
+                }
+    
+                // Check if the top tick is very close to the top value
+                const topValue = tickValues[tickValues.length - 1];
+                if (Math.abs(topValue - colorDomain[1] * 10000000) < 0.0001) {
+                    // Remove the tick value just below the top value
+                    tickValues.pop();
+                }
+                // Check if the bottom tick is very close to the bottom value
+                const bottomValue = tickValues[0];
+                if (Math.abs(bottomValue - colorDomain[0] * 10000000) < 0.0001) {
+                    // Remove the tick value just below the top value
+                    tickValues.shift();
+                }
+    
+                const legendAxis = d3.axisBottom(legendScale)
+                    .tickValues(tickValues)
+                    .tickFormat(d3.format("d"));
+    
+    
+                // const legendAxis = d3.axisBottom(legendScale)
+                //     .ticks(10)
+                //     .tickFormat(d3.format("d"));
+    
+                legend.append("g")
+                    .attr("transform", `translate(0, ${legendHeight})`)
+                    .call(legendAxis);
+    
+                const title = legend.append('g').append('text') // adding the text
+                    // .attr('transform', `translate(${this.size.width / 2}, ${this.size.height + 10})`)
+                    // .attr('dy', '0.5rem') // relative distance from the indicated coordinates.
+                    .style('text-anchor', 'middle')
+                    .style('font-weight', 'bold')
+                    .style('font-size', '8px')
+                    .attr('transform', `translate(${legendWidth / 2}, -5)`)
+                    .text('Gun Incidents Per 10M People') // text content
+    
+                
+            }
+            else {
+                
+                const legendScale = d3.scaleLinear()
+                    .domain([colorDomain[0] * 1000000, colorDomain[1] * 1000000])
+                    .range([0, legendWidth]);
+    
+                const tickValues = legendScale.ticks(10);
+                if (tickValues[0] > colorDomain[0] * 1000000) {
+                    tickValues.unshift(colorDomain[0] * 1000000);
+                }
+                if (tickValues[tickValues.length - 1] < colorDomain[1] * 1000000) {
+                    tickValues.push(colorDomain[1] * 1000000);
+                }
+    
+                // Check if the top tick is very close to the top value
+                const topValue = tickValues[tickValues.length - 1];
+                if (Math.abs(topValue - colorDomain[1] * 1000000) < 0.0001) {
+                    // Remove the tick value just below the top value
+                    tickValues.pop();
+                }
+                // Check if the bottom tick is very close to the bottom value
+                const bottomValue = tickValues[0];
+                if (Math.abs(bottomValue - colorDomain[0] * 1000000) < 0.0001) {
+                    // Remove the tick value just below the top value
+                    tickValues.shift();
+                }
+    
+                const legendAxis = d3.axisBottom(legendScale)
+                    .tickValues(tickValues)
+                    .tickFormat(d3.format("d"));
+    
+    
+                // const legendAxis = d3.axisBottom(legendScale)
+                //     .ticks(10)
+                //     .tickFormat(d3.format("d"));
+    
+                legend.append("g")
+                    .attr("transform", `translate(0, ${legendHeight})`)
+                    .call(legendAxis);
+    
+                const title = legend.append('g').append('text') // adding the text
+                    // .attr('transform', `translate(${this.size.width / 2}, ${this.size.height + 10})`)
+                    // .attr('dy', '0.5rem') // relative distance from the indicated coordinates.
+                    .style('text-anchor', 'middle')
+                    .style('font-weight', 'bold')
+                    .style('font-size', '8px')
+                    .attr('transform', `translate(${legendWidth / 2}, -5)`)
+                    .text('Gun Incidents Per 1M People') // text content
+    
+                }
 
         },
 
         rerender() {
             d3.selectAll('.map-container').selectAll('*').remove() // Clean all the elements in the chart
+            d3.selectAll('.legend-container').selectAll('svg').remove()
             this.initChart()
             // d3.selectAll('#map-svg').selectAll('*').remove() // Clean all the elements in the chart
             // d3.selectAll('#map-legend-svg').selectAll('*').remove()
@@ -314,6 +493,9 @@ export default {
         }
     },
     watch: {
+        'store.update'() {
+            this.rerender();
+        },
         resize(newSize) { // when window resizes
             if ((newSize.width !== 0) && (newSize.height !== 0)) {
                 this.rerender()
@@ -332,10 +514,21 @@ export default {
         'store.points': {
             async handler(newPoints) {
                 if (!isEmpty(newPoints)) {
+
+                    const incidentMap = {
+                    'All Incidents': 'all_incidents',
+                    'Gang Related': 'gang',
+                    Suicide: 'suicide',
+                    'Non-Suicide': 'non_suicide',
+                    'Mass Shooting': 'mass_shooting'
+                };
+
                     const data = {
                         data: this.store.points,
                         clusters: this.store.clusters,
+                        incidentType: incidentMap[this.selectedValue]
                     };
+
                     let resp = await this.store.fetchGeoMap(data);
                     this.store.geoMapData = resp?.geoMapData;
                     this.store.mapData = resp?.mapData;
@@ -346,6 +539,36 @@ export default {
             },
             // immediate: true,
         },
+        selectedValue: {
+            async handler(newVal) {
+                // for when the user chooses a different incidence type
+
+                
+                const incidentMap = {
+                    'All Incidents': 'all_incidents',
+                    'Gang Related': 'gang',
+                    Suicide: 'suicide',
+                    'Non-Suicide': 'non_suicide',
+                    'Mass Shooting': 'mass_shooting'
+                };
+
+                    const data = {
+                        data: this.store.points,
+                        clusters: this.store.clusters,
+                        incidentType: incidentMap[this.selectedValue]
+                    };
+
+                let resp = await this.store.fetchGeoMap(data);
+                this.store.geoMapData = resp?.geoMapData;
+                this.store.mapData = resp?.mapData;
+                //Call and set the other api based on points, with POST method
+                // set data for bar chart based on results from post
+                this.rerender()
+
+
+                // this.store.selectedValue = newVal;
+            },
+        }
     },
     mounted() {
         window.addEventListener('resize', debounce(this.onResize, 100))
@@ -362,9 +585,28 @@ export default {
 <!-- We only use vanilla widgets here, you can use the equivalent components from the UI library -->
 <!-- Helpful References: https://vuejs.org/guide/essentials/class-and-style.html#binding-html-classes -->
 <template>
-    <div class="map-container d-flex justify-end" ref="mapContainer">
+    <v-row style="height: 100%">
+        <v-col cols="9" >
 
-    </div>
+            <div class="map-container d-flex justify-end" ref="mapContainer">
+
+            </div>
+        </v-col>
+        <v-col cols="3" >
+            <v-row style="height: 20%">
+                <v-select :items="['All Incidents', 'Gang Related', 'Suicide', 'Non-Suicide', 'Mass Shooting']" label="Incident" density="compact" v-model="selectedValue"></v-select>
+
+            </v-row>
+            <v-row style="height: 80%">
+                <div style="height: 100%; width: 100%;" class="legend-container d-flex justify-end" ref="legendContainer"></div>
+            </v-row>
+        </v-col>
+    </v-row>
+
+
+
+    <!-- <v-select :items="['t-SNE', 'NMF', 'PCA']"
+                                    label="Reduction" density="compact" v-model="yes"></v-select> -->
 </template>
 
 <style scoped>

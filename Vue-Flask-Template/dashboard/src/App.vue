@@ -35,21 +35,21 @@ export default {
           <!-- Left column -->
           <v-col cols="6">
             <!-- Left-Top Box -->
-            <v-row style="height: 5%; border-top: 1px solid #BBBBBB;  border-left: 1px solid #BBBBBB; border-right: 1px solid #BBBBBB;" class="middle-box">
+            <v-row style="height: 5%; " class="middle-box">
               <v-col cols="12" style=" overflow-y: auto; ">
                 <h6 style="word-wrap: break-word;">Map (below), has state size based on the number of gun control policies implemented (0-135), background color based on cluster, and interior
                   color based on the amount of gun violence per capita.</h6>
               </v-col>
             </v-row>
             <!-- Top-left box -->
-            <v-row style="height: 45%; border: 1px solid #BBBBBB; border-top-color: #FFFFFF;">
+            <v-row style="height: 45%; ">
 
               <v-col cols="12" style=" height: 100%; overflow-y: auto; " class="MapCol">
                 <MapViz></MapViz>
               </v-col>
             </v-row>
             <!-- Left-Middle Box -->
-            <v-row style="height: 5%; border-left: 1px solid #BBBBBB; border-right: 1px solid #BBBBBB;" class="middle-box">
+            <v-row style="height: 5%; " class="middle-box">
               <v-col cols="12" style=" overflow-y: auto; ">
                 <h6 style="word-wrap: break-word;">Table (below) provides policy types, the correlation between that policy and an incidence types as the indicator, and avg. percentage of policies
                   implemented in that category for each cluster. </h6>
@@ -59,7 +59,7 @@ export default {
             <!-- Bottom-left box -->
             <v-row style="height: 45%; ">
               <!-- Bottom-left box -->
-              <v-col cols="12" style="border: 1px solid #BBBBBB; border-top-color: #FFFFFF; overflow-y: hidden;">
+              <v-col cols="12" style="overflow-y: hidden;">
                 <Table></Table>
               </v-col>
             </v-row>
@@ -69,28 +69,28 @@ export default {
           <v-col cols="6">
 
             <!-- Top-right box -->
-            <v-row style="height: 50%; border: 1px solid #BBBBBB;">
+            <v-row style="height: 50%; ">
               <!-- Left column of top-right box -->
               <v-col cols="10" style="">
                 <PolicyScatterplot></PolicyScatterplot>
               </v-col>
 
               <!-- Right column of top-right box -->
-              <v-col cols="2" style="border: 1px solid #BBBBBB; overflow-y: auto;">
+              <v-col cols="2" style=" overflow-y: auto;">
                 <PolicyScatterplotTools></PolicyScatterplotTools>
               </v-col>
             </v-row>
 
             <!-- Bottom-right box -->
             <v-row style="height: 50%;">
-              <v-col cols="10" style=" border: 1px solid #BBBBBB;">
+              <v-col cols="12" style=" ">
                 <GroupedBarChart></GroupedBarChart>
               </v-col>
 
               <!-- Right column of bottom-right box -->
-              <v-col cols="2" style="border: 1px solid #BBBBBB; overflow-y: auto;">
+              <!-- <v-col cols="0" style=" overflow-y: auto;">
                 Right column of bottom-right box
-              </v-col>
+              </v-col> -->
             </v-row>
 
           </v-col>

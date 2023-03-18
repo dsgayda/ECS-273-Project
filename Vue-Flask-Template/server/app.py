@@ -18,8 +18,8 @@ def hello_world():
 def fetchMap():
     data = request.get_json()
     points = data.get("data", [])
-
-    states = processMap(points)
+    incident_type = data.get("incidentType", [])
+    states = processMap(points, incident_type=incident_type)
     resp = jsonify(data=states)
     return resp
 

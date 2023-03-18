@@ -20,6 +20,8 @@ export default {
 
         const {methods} = storeToRefs(store);
         const { numClusters } = storeToRefs(store);
+        const { clusters } = storeToRefs(store);
+        const { color } = storeToRefs(store);
         return {
             store, // Return store as the local state, but when you update the property value, the store is also updated.
             resize,
@@ -27,6 +29,8 @@ export default {
             margin,
             methods,
             numClusters,
+            clusters,
+            color
 
         }
     },
@@ -60,6 +64,40 @@ export default {
             // get the size of the parent container
             const parentRect = { width: sc.clientWidth, height: sc.clientHeight };
             
+
+            const centerX = (parentRect.width / 2) - this.margin.right;
+                const centerY = parentRect.height / 2;
+            let colorScale = this.color;
+             // Add legend
+             let legend = svg.append('g')
+                .attr('id', 'legend')
+
+
+
+            // Add a circle and text element for each cluster in the legend
+            legend.selectAll('circle')
+                .data(this.clusters)
+                .join('circle')
+                .attr('cx', 0)
+                .attr('cy', (d, i) => i * 25)
+                .attr('r', 7)
+                .attr('transform', `translate(
+                ${centerX - 10}, ${centerY - 150})`)
+                .style('fill', (d, i) => colorScale(i.toString()));
+                
+            legend.selectAll('text')
+                .data(this.clusters)
+                .join('text')
+                .attr('x', 15)
+                .attr('y', (d, i) => i * 25 + 5)
+                .text(d => `${d}`)
+                .attr('transform', `translate(
+                ${centerX - 10}, ${ centerY - 150})`)
+                .style('font-size', '12px')
+                .style('font-weight', '500');
+
+
+
             // MAKE SLIDER
             const slider = d3Slider
                 .sliderRight()
@@ -88,15 +126,13 @@ export default {
                 ;
 
 
-                const centerX = (parentRect.width / 2) - this.margin.right;
-                const centerY = parentRect.height - parentRect.height + this.margin.top + this.margin.bottom * 2;
                 const sliderGroup = svg
                     .append('g')
-                    .attr('transform', `translate(${centerX}, ${centerY})`)
+                    .attr('transform', `translate(${centerX}, ${centerY - 10})`)
                     .call(slider);
 
             svg.append('g').append('text') // adding the text
-                .attr('transform', `translate(${centerX - 10}, ${centerY - this.margin.top})`)
+                .attr('transform', `translate(${centerX - 10}, ${centerY - this.margin.top - 10})`)
                 .style('text-anchor', 'right')
                 .style('font-weight', 'bold')
                 .style('font-size', '12px') 
@@ -135,7 +171,6 @@ export default {
         },
         rerender() {
             d3.selectAll('.scatter-tools-container').selectAll('*').remove() // Clean all the elements in the chart
-            console.log('huh? : ', d3.select('.dimension-button').selectAll('option'))
             d3.select('.dimension-button').selectAll('*').remove()
             this.initChart()
         }

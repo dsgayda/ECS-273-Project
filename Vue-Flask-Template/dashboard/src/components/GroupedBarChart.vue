@@ -150,7 +150,7 @@ export default {
                 })
                 .on("mouseout", function() {
                     bars.style("opacity", 1);
-                    d3.selectAll("circle").style("opacity", 0.5);
+                    d3.selectAll("circle").style("opacity", 1);
                     d3.selectAll('#usstates')
                         .style("opacity", 0.6)
                         .style("stroke", '#ccc')
@@ -163,7 +163,7 @@ export default {
 
             // Add X axis
             svg.append("g")
-                .attr("transform", `translate(${this.margin.left + this.margin.right+ 20}, ${parentRect.height})`)
+                .attr("transform", `translate(${this.margin.left + this.margin.right + 20}, ${parentRect.height})`)
                 .call(d3.axisBottom(x).tickSize(0));
             
             // X axis label
