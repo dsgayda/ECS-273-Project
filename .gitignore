@@ -1,8 +1,4 @@
-
-gun_violence_data.csv
-policy_codebook.xlsx
-policy_database.xlsx
-.ipynb_checkpoints/gun_violence_preprocess-checkpoint.ipynb
-gunviolence.pickle
+.ipynb_checkpoints/*
+*.pickle
 *.csv
 *.xlsx
