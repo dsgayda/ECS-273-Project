@@ -69,7 +69,7 @@ export default {
 
             // Add the text element to the group
             title.append('text')
-            .text('Clustering State Policies')
+            .text('State Policy Clusters')
             .attr('dy', '0.5rem')
             .style('text-anchor', 'middle')
             .style('font-weight', 'bold')
