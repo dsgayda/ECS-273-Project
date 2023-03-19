@@ -168,7 +168,7 @@ export default {
                     .attr("stroke", "#555")
                     .attr('opacity', '.6')
                     .attr("d", path)
-                    .attr('transform', `translate(${100}, ${30})`)
+                    .attr('transform', `translate(${65}, ${30})`)
                     .on('mousemove', (e, d) => {
                         console.log('mouse over state: ', this.states.filter(s => s.state === d.properties.name)[0])
                         let stateInfo = this.states.filter(s => s.state === d.properties.name)[0];
@@ -211,14 +211,14 @@ export default {
                         const size = sizeScale(policiesImplemented);
 
                         return `
-                            translate(${x + 100},${y + 30})
+                            translate(${x + 65},${y + 30})
                             scale(${size})
                             translate(${-x},${-y})
                         `;
                     }
 
                     return `
-                            translate(${x + 100},${y + 30})
+                            translate(${x + 65},${y + 30})
                             translate(${-x},${-y})
                         `;
                 }
