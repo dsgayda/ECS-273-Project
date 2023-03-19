@@ -212,6 +212,7 @@ export default {
             
             class="dimension-button">
     </select> -->
+   <br>
     <v-select :items="['t-SNE', 'NMF', 'PCA']"
                                 label="Reduction" density="compact" v-model="reductionType"></v-select>
     <div class="scatter-tools-container d-flex" ref="scatterToolsContainer"></div>

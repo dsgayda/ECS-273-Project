@@ -30,21 +30,22 @@ export default {
   <div class="scrollable-container">
     <div class="scrollable-content">
       <v-container id="main-container" class="d-flex flex-column flex-nowrap" fluid>
+        <v-toolbar title="Firearms Incidents and Regulation Explorer"></v-toolbar>
+        <v-spacer style="max-height: 5px;"></v-spacer>
         <v-row>
 
           <!-- Left column -->
           <v-col cols="6">
             <!-- Left-Top Box -->
-            <v-row style="height: 5%; " class="middle-box">
-              <v-col cols="12" style=" overflow-y: auto; ">
-                <h6 style="white-space: normal;">Map (below), has state size based on the number of gun control policies implemented (0-135), background color based on cluster, and interior
-                  color based on the amount of gun violence per capita.</h6>
-              </v-col>
-            </v-row>
+            
             <!-- Top-left box -->
-            <v-row style="height: 45%; ">
+            <v-row style="height: 50%; ">
 
               <v-col no-gutters cols="12" style=" min-width: 385px; height: 100%; overflow-y: auto; " class="MapCol">
+                
+                <h6 style="white-space: normal;">Map (below), has state size based on the number of gun control policies implemented (0-135), background color based on cluster, and interior
+                  color based on the amount of gun violence per capita.</h6>
+              
                 <MapViz></MapViz>
               </v-col>
             </v-row>
