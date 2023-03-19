@@ -37,7 +37,7 @@ export default {
             <!-- Left-Top Box -->
             <v-row style="height: 5%; " class="middle-box">
               <v-col cols="12" style=" overflow-y: auto; ">
-                <h6 style="word-wrap: break-word;">Map (below), has state size based on the number of gun control policies implemented (0-135), background color based on cluster, and interior
+                <h6 style="white-space: normal;">Map (below), has state size based on the number of gun control policies implemented (0-135), background color based on cluster, and interior
                   color based on the amount of gun violence per capita.</h6>
               </v-col>
             </v-row>
@@ -51,7 +51,7 @@ export default {
             <!-- Left-Middle Box -->
             <v-row style="height: 5%; " class="middle-box">
               <v-col no-gutters cols="12" style=" overflow-y: auto; ">
-                <h6 style="word-wrap: break-word;">Table (below) provides policy types, the correlation between that policy and an incidence types as the indicator, and avg. percentage of policies
+                <h6 style="white-space: normal;">Table (below) provides policy types, the correlation between that policy and an incidence types as the indicator, and avg. percentage of policies
                   implemented in that category for each cluster. </h6>
               </v-col>
             </v-row>
