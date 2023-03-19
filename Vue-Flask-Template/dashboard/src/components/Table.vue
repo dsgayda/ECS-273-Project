@@ -151,8 +151,13 @@ export default {
             let target = this.$refs.tableContainer as HTMLElement
             if (target === undefined) return;
             this.size = { width: target.clientWidth, height: target.clientHeight };
+            
             this.tableHeight = target.clientHeight.toString();
             // this.tableWidth = target.clientWidth.toString();
+            const box = document.querySelector('.v-data-table-footer')
+                if (box) {
+                box.remove()
+                }
         },
         initChart() {
             // let tabbb = d3.selectAll('td')
@@ -272,6 +277,8 @@ export default {
     },
     // The following are general setup for resize events.
     async mounted() {
+        let target = this.$refs.tableContainer as HTMLElement
+        this.tableHeight = target.clientHeight.toString()
         window.addEventListener('resize', debounce(this.onResize, 100));
         this.onResize();
     },
@@ -284,7 +291,7 @@ export default {
 </script>
 
 <template>
-    <div v-if="isDataReady" style="max-height: 45% overflow-y: hidden" class="table-container" ref="tableContainer">
+    <div v-if="isDataReady" style="max-height: 100% overflow-y: hidden" class="table-container" ref="tableContainer">
         <div v-if="sixHeaders">
             <v-card>
                 <v-card-title>
@@ -310,7 +317,7 @@ export default {
             </v-card>
             <v-data-table
     v-model:items-per-page="itemsPerPage" :headers="headers6" :items="tableItems" :search="search" density="compact"
-                :height="tableHeight" 
+                :height="tableHeight" :hide-default-footer="true"
                 class="elevation-1 my-data-table"></v-data-table>
         </div>
         <div v-if="fiveHeaders">
@@ -338,7 +345,7 @@ export default {
             </v-card>
             <v-data-table
     v-model:items-per-page="itemsPerPage" :headers="headers5" :items="tableItems" :search="search" density="compact"
-                :height="tableHeight" 
+                :height="tableHeight" :hide-default-footer="true"
                 class="elevation-1 my-data-table"></v-data-table>
         </div>
         <div v-else-if="fourHeaders">
@@ -366,7 +373,7 @@ export default {
             </v-card>
             <v-data-table
     v-model:items-per-page="itemsPerPage" :headers="headers4" :items="tableItems" :search="search" density="compact"
-                :height="tableHeight" 
+                :height="tableHeight" :hide-default-footer="true"
                 class="elevation-1 my-data-table"></v-data-table>
         </div>
         <div v-else-if="threeHeaders">
@@ -395,7 +402,7 @@ export default {
 
             <v-data-table
     v-model:items-per-page="itemsPerPage" :headers="headers3" :items="tableItems" :search="search" density="compact"
-                :height="tableHeight" 
+                :height="tableHeight" :hide-default-footer="true"
                 class="elevation-1 my-data-table"></v-data-table>
         </div>
         <div v-else-if="twoHeaders">
@@ -423,7 +430,7 @@ export default {
             </v-card>
             <v-data-table
     v-model:items-per-page="itemsPerPage" :headers="headers2" :items="tableItems" :search="search" density="compact"
-                :height="tableHeight" 
+                :height="tableHeight" :hide-default-footer="true"
                 class="elevation-1 my-data-table"></v-data-table>
         </div>
     </div>
