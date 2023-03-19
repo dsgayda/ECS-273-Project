@@ -44,13 +44,13 @@ export default {
             <!-- Top-left box -->
             <v-row style="height: 45%; ">
 
-              <v-col cols="12" style=" height: 100%; overflow-y: auto; " class="MapCol">
+              <v-col no-gutters cols="12" style=" min-width: 385px; height: 100%; overflow-y: auto; " class="MapCol">
                 <MapViz></MapViz>
               </v-col>
             </v-row>
             <!-- Left-Middle Box -->
             <v-row style="height: 5%; " class="middle-box">
-              <v-col cols="12" style=" overflow-y: auto; ">
+              <v-col no-gutters cols="12" style=" overflow-y: auto; ">
                 <h6 style="word-wrap: break-word;">Table (below) provides policy types, the correlation between that policy and an incidence types as the indicator, and avg. percentage of policies
                   implemented in that category for each cluster. </h6>
               </v-col>
@@ -114,7 +114,7 @@ export default {
 }
 
 .scrollable-content {
-  min-width: 1150px;
+  min-width: 1500px;
 
   min-height: 500px;
   /* Set the width of the content to be larger than the container to enable horizontal scrolling */

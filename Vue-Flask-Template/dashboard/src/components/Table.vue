@@ -20,7 +20,7 @@ import { VDataTableVirtual } from 'vuetify/labs/VDataTable'
 export default {
     components: {
         VDataTable,
-        VDataTableVirtual
+        // VDataTableVirtual
     },
     data() {
         return {
@@ -28,6 +28,7 @@ export default {
             tableWidth: '100',
             search: '',
             selectedValue: "All Incidents",
+            itemsPerPage: 50,
             headers6: [
                 { title: 'category', align: 'start', sortable: true, key: 'category' },
                 { title: 'indicator', align: 'end', key: 'correlation' },
@@ -307,9 +308,10 @@ export default {
 
                 </v-card-title>
             </v-card>
-            <v-data-table-virtual :headers="headers6" :items="tableItems" :search="search" density="compact"
-                :height="tableHeight" :footer-props="{ 'items-per-page-options': [5, 10, 25] }"
-                class="elevation-1 my-data-table"></v-data-table-virtual>
+            <v-data-table
+    v-model:items-per-page="itemsPerPage" :headers="headers6" :items="tableItems" :search="search" density="compact"
+                :height="tableHeight" 
+                class="elevation-1 my-data-table"></v-data-table>
         </div>
         <div v-if="fiveHeaders">
             <v-card>
@@ -334,9 +336,10 @@ export default {
 
                 </v-card-title>
             </v-card>
-            <v-data-table-virtual :headers="headers5" :items="tableItems" :search="search" density="compact"
-                :height="tableHeight" :footer-props="{ 'items-per-page-options': [5, 10, 25] }"
-                class="elevation-1 my-data-table"></v-data-table-virtual>
+            <v-data-table
+    v-model:items-per-page="itemsPerPage" :headers="headers5" :items="tableItems" :search="search" density="compact"
+                :height="tableHeight" 
+                class="elevation-1 my-data-table"></v-data-table>
         </div>
         <div v-else-if="fourHeaders">
             <v-card>
@@ -361,9 +364,10 @@ export default {
 
                 </v-card-title>
             </v-card>
-            <v-data-table-virtual :headers="headers4" :items="tableItems" :search="search" density="compact"
-                :height="tableHeight" :footer-props="{ 'items-per-page-options': [5, 10, 25] }"
-                class="elevation-1 my-data-table"></v-data-table-virtual>
+            <v-data-table
+    v-model:items-per-page="itemsPerPage" :headers="headers4" :items="tableItems" :search="search" density="compact"
+                :height="tableHeight" 
+                class="elevation-1 my-data-table"></v-data-table>
         </div>
         <div v-else-if="threeHeaders">
             <v-card>
@@ -389,9 +393,10 @@ export default {
                 </v-card-title>
             </v-card>
 
-            <v-data-table-virtual :headers="headers3" :items="tableItems" :search="search" density="compact"
-                :height="tableHeight" :footer-props="{ 'items-per-page-options': [5, 10, 25] }"
-                class="elevation-1 my-data-table"></v-data-table-virtual>
+            <v-data-table
+    v-model:items-per-page="itemsPerPage" :headers="headers3" :items="tableItems" :search="search" density="compact"
+                :height="tableHeight" 
+                class="elevation-1 my-data-table"></v-data-table>
         </div>
         <div v-else-if="twoHeaders">
             <v-card>
@@ -416,9 +421,10 @@ export default {
 
                 </v-card-title>
             </v-card>
-            <v-data-table-virtual :headers="headers2" :items="tableItems" :search="search" density="compact"
-                :height="tableHeight" :footer-props="{ 'items-per-page-options': [5, 10, 25] }"
-                class="elevation-1 my-data-table"></v-data-table-virtual>
+            <v-data-table
+    v-model:items-per-page="itemsPerPage" :headers="headers2" :items="tableItems" :search="search" density="compact"
+                :height="tableHeight" 
+                class="elevation-1 my-data-table"></v-data-table>
         </div>
     </div>
     <div v-else class="vdiv">

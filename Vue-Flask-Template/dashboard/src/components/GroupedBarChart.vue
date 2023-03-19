@@ -119,6 +119,7 @@ export default {
                     return d.key.replaceAll(' ', '');
                 })
                 .attr("transform", `translate(${this.margin.left + this.margin.right+ 20}, ${this.margin.bottom})`)
+                .attr("class", "barchartrect")
                 ;
 
             // Add mouseover to highlight same cluster as bar under mouse

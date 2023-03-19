@@ -45,8 +45,8 @@ export default {
     methods: {
         onResize() {  // record the updated size of the target element
             let target = this.$refs.scatterContainer as HTMLElement
-            // if (!target) return;
-            this.size = { width: target.clientWidth, height: target.clientHeight };
+            if (!target) return;
+            this.size = { width: target.clientWidth, height: target.offsetHeight };
         },
         initChart() {
             // select the svg tag so that we can insert(render) elements, i.e., draw the chart, within it.
@@ -55,17 +55,20 @@ export default {
             let svg = d3.select(sc)
                 .append('svg')
                 .attr('id', 'scatter-svg')
-                .attr('width', '98%')
-                .attr('height', '100%')
+                .attr('width', sc.clientWidth)
+                .attr('height', sc.clientHeight)
             // .style('display', 'block');
             // // get the size of the parent container
             // const parentRect = sc.getBoundingClientRect();
             const parentRect = { width: sc.clientWidth, height: sc.clientHeight };
             
+            // update the viewBox attribute based on the size of the parent container
+            svg.attr('viewBox', `${this.margin.left} ${this.margin.top} ${parentRect.width} ${parentRect.height - this.margin.bottom - this.margin.top * 2}`);
+
             // Add a group element for the title text
             const title = svg.append('g')
             .attr('class', 'title')
-            .attr('transform', `translate(${this.size.width/2 + this.margin.left + this.margin.right}, ${0})`);
+            .attr('transform', `translate(${this.size.width/2}, ${this.margin.top})`);
 
             // Add the text element to the group
             title.append('text')
@@ -74,9 +77,6 @@ export default {
             .style('text-anchor', 'middle')
             .style('font-weight', 'bold')
             .style('font-size', '20px');
-
-            // update the viewBox attribute based on the size of the parent container
-            svg.attr('viewBox', `${this.margin.left} ${this.margin.top} ${parentRect.width} ${parentRect.height - this.margin.bottom - this.margin.top * 2}`);
 
 
             // we need compute the [min, max] from the data values of the attributes that will be used to represent x- and y-axis.
@@ -94,7 +94,7 @@ export default {
 
             // In viewport (our screen), the topmost side always refer to 0 in the vertical coordinates in pixels (y). 
             let yScale = d3.scaleLinear()
-                .range([parentRect.height - (this.margin.bottom + this.margin.top), this.margin.top]) //bottom side to the top side on the screen
+                .range([parentRect.height - (this.margin.bottom + this.margin.top) - 15, this.margin.top]) //bottom side to the top side on the screen
                 .domain(yExtents)
 
             let colorScale = this.color;
@@ -116,9 +116,9 @@ export default {
                 // Create a rectangular background element
             const bgRect = svg.insert('rect', ':first-child')
             .attr('x', this.margin.left + this.margin.right)
-            .attr('y', this.margin.top)
+            .attr('y', this.margin.top + 15)
             .attr('width', this.size.width)
-            .attr('height', this.size.height - this.margin.top)
+            .attr('height', this.size.height - this.margin.top - 15)
             .style('fill', '#EFEFEF');
 
             // We iterate through each <PolicyPoint> element in the array, create a circle for each and indicate the coordinates, the circle size, the color, and the opacity.
@@ -136,12 +136,12 @@ export default {
                     return colorScale((d.cluster).toString())
                 })
                 // .style('opacity', .5)
-                .attr('transform', `translate(${this.margin.left - 20}, ${this.margin.top})`)
+                .attr('transform', `translate(${this.margin.left - 20}, ${this.margin.top + 15})`)
                
 
             // Add mouseover to highlight cluster of same color as point under mouse            
             points.on("mouseover", function (e, d) {
-                const bars = d3.selectAll("rect")
+                const bars = d3.selectAll(".barchartrect")
                 const color = d3.select(this).style("fill");
                 bars.filter(function (d) {
                     return d3.select(this).style("fill") !== color;

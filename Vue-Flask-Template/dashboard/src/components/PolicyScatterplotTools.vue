@@ -65,36 +65,12 @@ export default {
             const parentRect = { width: sc.clientWidth, height: sc.clientHeight };
             
 
-            const centerX = (parentRect.width / 2) - this.margin.right;
-                const centerY = parentRect.height / 2;
+            const centerX = (sc.clientWidth / 2) - this.margin.right;
+                const centerY = sc.clientHeight / 2;
             let colorScale = this.color;
              // Add legend
              let legend = svg.append('g')
                 .attr('id', 'legend')
-
-
-
-            // Add a circle and text element for each cluster in the legend
-            legend.selectAll('circle')
-                .data(this.clusters)
-                .join('circle')
-                .attr('cx', 0)
-                .attr('cy', (d, i) => i * 25)
-                .attr('r', 7)
-                .attr('transform', `translate(
-                ${centerX - 10}, ${centerY - 150})`)
-                .style('fill', (d, i) => colorScale(i.toString()));
-                
-            legend.selectAll('text')
-                .data(this.clusters)
-                .join('text')
-                .attr('x', 15)
-                .attr('y', (d, i) => i * 25 + 5)
-                .text(d => `${d}`)
-                .attr('transform', `translate(
-                ${centerX - 10}, ${ centerY - 150})`)
-                .style('font-size', '12px')
-                .style('font-weight', '500');
 
 
 
@@ -103,7 +79,7 @@ export default {
                 .sliderRight()
                 .min(2)
                 .max(6)
-                .width(parentRect.height) // Adjust the height based on the parent container
+                .width(sc.clientHeight) // Adjust the height based on the parent container
                 .ticks(5)
                 .tickFormat(d3.format(',.0f'))
                 .step(1)
@@ -128,11 +104,11 @@ export default {
 
                 const sliderGroup = svg
                     .append('g')
-                    .attr('transform', `translate(${centerX}, ${centerY - 10})`)
+                    .attr('transform', `translate(${((sc.clientWidth / 2) - this.margin.right)}, ${25})`)
                     .call(slider);
 
             svg.append('g').append('text') // adding the text
-                .attr('transform', `translate(${centerX - 10}, ${centerY - this.margin.top - 10})`)
+                .attr('transform', `translate(${((sc.clientWidth / 2) - this.margin.right) - 10}, ${10})`)
                 .style('text-anchor', 'right')
                 .style('font-weight', 'bold')
                 .style('font-size', '12px') 
