@@ -297,7 +297,7 @@ export default {
                 <v-card-title>
                     <v-row>
                         <v-col cols="12">
-                            Policy Correlations and Clusters
+                            Policy-Incident Correlations and Clusters
                         </v-col>
                     </v-row>
                     <v-spacer></v-spacer>
@@ -325,7 +325,7 @@ export default {
                 <v-card-title>
                     <v-row>
                         <v-col cols="12">
-                            Policy Correlations and Clusters
+                            Policy-Incident Correlations and Clusters
                         </v-col>
                     </v-row>
                     <v-spacer></v-spacer>
@@ -353,7 +353,7 @@ export default {
                 <v-card-title>
                     <v-row>
                         <v-col cols="12">
-                            Policy Correlations and Clusters
+                            Policy-Incident Correlations and Clusters
                         </v-col>
                     </v-row>
                     <v-spacer></v-spacer>
@@ -381,7 +381,7 @@ export default {
                 <v-card-title>
                     <v-row>
                         <v-col cols="12">
-                            Policy Correlations and Clusters
+                            Policy-Incident Correlations and Clusters
                         </v-col>
                     </v-row>
                     <v-spacer></v-spacer>
@@ -410,7 +410,7 @@ export default {
                 <v-card-title>
                     <v-row>
                         <v-col cols="12">
-                            Policy Correlations and Clusters
+                            Policy-Incident Correlations and Clusters
                         </v-col>
                     </v-row>
                     <v-spacer></v-spacer>
