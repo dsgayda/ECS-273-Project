@@ -45,7 +45,7 @@ export default {
                 
                 <h6 style="white-space: normal;">Map (below), has state size based on the number of gun control policies implemented (0-135), background color based on cluster, and interior
                   color based on the amount of gun violence per capita.</h6>
-                  <h3 style="text-align: center;" >Policy & Incident Map</h3> 
+                  <h3 style="text-align: center;" >Policy & Incident Map</h3>
                 <MapViz></MapViz>
               </v-col>
             </v-row>
