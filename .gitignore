@@ -1,4 +1,53 @@
+# Ignore node_modules folder
+node_modules/
 
-gun_violence_data.csv
-policy_codebook.xlsx
-policy_database.xlsx
+# Ignore build artifacts
+/dist/
+/build/
+
+# Ignore log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Ignore .env file
+.env
+
+# Ignore generated files
+*.out
+*.swp
+
+# Ignore test coverage
+/coverage/
+htmlcov/
+.coverage
+pytest-*.xml
+
+# Ignore IDE files
+.vscode/
+
+# Ignore Python files
+*.pyc
+__pycache__/
+venv/
+
+# Ignore Flask generated files
+instance/
+.mypy_cache/
+*.pyc
+
+# Ignore Vue.js generated files
+.cache/
+/public/
+
+# Ignore .DS_Store files (macOS)
+.DS_Store
+
+# Ignore data files
+*.csv
+*.xlsx
+*.pickle
+
+# Ignore virtual environments
+virtualEnv/
