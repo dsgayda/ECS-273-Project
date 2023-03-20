@@ -7,8 +7,8 @@
     "dev": "vite",
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
-    "server": "python ../server/app.py --http",
-    "server3": "python3 ../server/app.py --http",
+    "server": "python3 ../server/app.py --http",
+    "server3": "python ../server/app.py --http",
     "start": "concurrently \"npm run server\" \"npm run dev\"",
     "go": "concurrently \"npm run server3\" \"npm run dev\""
   },
