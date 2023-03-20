@@ -1,0 +1,13 @@
+Flask
+Flask-Cors
+numpy
+pandas
+scikit-learn
+networkx
+nltk
+# wordcloud
+matplotlib
+seaborn
+statsmodels
+Pillow
+umap
