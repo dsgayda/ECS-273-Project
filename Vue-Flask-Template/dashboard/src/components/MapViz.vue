@@ -478,16 +478,16 @@ export default {
             const legendMargin = { top: 10, right: 10, bottom: 10, left: 10 };
 
             const legend = svg.append("g")
-                .attr("transform", `translate(${this.margin.left - 50}, ${(this.size.height - this.size.height / 10 ) - 10})`);
+                .attr("transform", `translate(${this.margin.left - 50}, ${(this.size.height - this.size.height / 10 ) - 15})`);
 
-            const gradient = legend.append("defs")
-                .append("linearGradient")
-                .attr("id", "gradient")
-                .attr("x1", "0%")
-                .attr("y1", "0%")
-                .attr("x2", "100%")
-                .attr("y2", "0%")
-                .attr("spreadMethod", "pad");
+            // const gradient = legend.append("defs")
+            //     .append("linearGradient")
+            //     .attr("id", "gradient")
+            //     .attr("x1", "0%")
+            //     .attr("y1", "0%")
+            //     .attr("x2", "100%")
+            //     .attr("y2", "0%")
+            //     .attr("spreadMethod", "pad");
 
             let colorData = [
                 { offset: "0%", color: colorScale(colorDomain[0]) },
@@ -499,23 +499,38 @@ export default {
                 // { offset: "100%", color: colorScale(colorDomain[5]) }
             ];
 
-            // let colorData = [];
-            // datas.sort((a, b) => a - b);
-            // for (let i = 0; i < datas.length; i++) {
-            // const offset = (i / (datas.length - 1)) * 100;
-            // const color = colorScale(datas[i]);
-            // colorData.push({ offset: `${offset}%`, color });
-            // }
 
-            
-            
-            gradient.selectAll("stop")
-                .data(colorData)
-                .enter()
-                .append("stop")
-                .attr("offset", d => d.offset)
-                .attr("stop-color", d => d.color)
-                .attr("stop-opacity", 1);
+                function createStops(numStops, colorScale) {
+                    const domain = colorScale.domain();
+                    const step = (domain[1] - domain[0]) / (numStops - 1);
+                    return Array.from({ length: numStops }, (_, i) => {
+                        const value = domain[0] + i * step;
+                        return {
+                        offset: `${(i / (numStops - 1)) * 100}%`,
+                        color: colorScale(value),
+                        };
+                    });
+                    }
+                    const numStops = 100;
+                    const data = createStops(numStops, colorScale);
+                    const gradient = legend
+                        .append('defs')
+                        .append('linearGradient')
+                        .attr('id', 'gradient')
+                        .attr('x1', '0%')
+                        .attr('y1', '0%')
+                        .attr('x2', '100%')
+                        .attr('y2', '0%')
+                        .attr('spreadMethod', 'pad');
+
+                        gradient
+                        .selectAll('stop')
+                        .data(data)
+                        .enter()
+                        .append('stop')
+                        .attr('offset', d => d.offset)
+                        .attr('stop-color', d => d.color)
+                        .attr('stop-opacity', 1);
 
                 legend.append("rect")
                 .attr("width", legendWidth)
@@ -541,7 +556,7 @@ export default {
                 .style('text-anchor', 'middle')
                 .style('font-weight', 'bold')
                 .style('font-size', '8px')
-                .attr('transform', `translate(${legendWidth / 2}, -10)`)
+                .attr('transform', `translate(${legendWidth / 2}, -5)`)
                 .text('Gun Incidents Per 50k People') // text content
 
 
